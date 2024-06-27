@@ -6,7 +6,7 @@
     "start": "node dist/server.js",
     "dev": "nodemon",
     "test": "jest --detectOpenHandles",
-    "generate-api": "openapi-generator-cli generate -i openapi.yaml -g nodejs-express-server -o generated-server"
+    "generate-api": "openapi-generator-cli generate -i openapi.yaml -g typescript-node -o generated-server"
   },
   "keywords": [],
   "author": "",
