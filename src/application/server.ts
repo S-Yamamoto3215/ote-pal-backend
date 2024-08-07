@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import "reflect-metadata";
 
 dotenv.config();
 
