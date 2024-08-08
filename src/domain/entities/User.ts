@@ -1,6 +1,6 @@
 import { Entity, Column, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
-import { Family } from './Family';
+import { Family } from "./Family";
 import { Work } from "./Work";
 import { TaskDetail } from "./TaskDetail";
 
@@ -24,9 +24,9 @@ export class User extends BaseEntity {
   @ManyToOne(() => Family, (family) => family.users)
   family!: Family;
 
-  @OneToMany(() => User, (user) => user.works)
+  @OneToMany(() => Work, (work) => work.user)
   works!: Work[];
 
-  @OneToMany(() => User, (user) => user.taskDetails)
+  @OneToMany(() => TaskDetail, (taskDetail) => taskDetail.user)
   taskDetails!: TaskDetail[];
 }
