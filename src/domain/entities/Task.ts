@@ -1,5 +1,6 @@
-import { Entity, Column } from "typeorm";
+import { Entity, Column, ManyToOne } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
+import { Family } from "./Family";
 
 @Entity()
 export class Task extends BaseEntity {
@@ -8,4 +9,7 @@ export class Task extends BaseEntity {
 
   @Column({ type: "text" })
   description!: string;
+
+  @ManyToOne(() => Family, (family) => family.tasks)
+  family!: Family;
 }
