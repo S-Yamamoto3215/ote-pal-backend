@@ -1,8 +1,4 @@
-import {
-  Entity,
-  Column,
-} from "typeorm";
-
+import { Entity, Column } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
 
 @Entity()
@@ -20,5 +16,5 @@ export class User extends BaseEntity {
   role!: "parent" | "child";
 
   @Column({ default: true })
-  isActive!: boolean;
+  isActive: boolean = true;
 }
