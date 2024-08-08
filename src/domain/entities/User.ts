@@ -1,6 +1,7 @@
-import { Entity, Column, ManyToOne } from "typeorm";
+import { Entity, Column, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
 import { Family } from './Family';
+import { Work } from "./Work";
 
 @Entity()
 export class User extends BaseEntity {
@@ -21,4 +22,7 @@ export class User extends BaseEntity {
 
   @ManyToOne(() => Family, (family) => family.users)
   family!: Family;
+
+  @OneToMany(() => User, (user) => user.works)
+  works!: Work[];
 }
