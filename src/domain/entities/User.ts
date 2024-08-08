@@ -1,5 +1,6 @@
-import { Entity, Column } from "typeorm";
+import { Entity, Column, ManyToOne } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
+import { Family } from './Family';
 
 @Entity()
 export class User extends BaseEntity {
@@ -17,4 +18,7 @@ export class User extends BaseEntity {
 
   @Column({ default: true })
   isActive: boolean = true;
+
+  @ManyToOne(() => Family, (family) => family.users)
+  family!: Family;
 }
