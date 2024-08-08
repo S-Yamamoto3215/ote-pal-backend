@@ -2,6 +2,7 @@ import { Entity, Column, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
 import { Family } from './Family';
 import { Work } from "./Work";
+import { TaskDetail } from "./TaskDetail";
 
 @Entity()
 export class User extends BaseEntity {
@@ -25,4 +26,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => User, (user) => user.works)
   works!: Work[];
+
+  @OneToMany(() => User, (user) => user.taskDetails)
+  taskDetails!: TaskDetail[];
 }
