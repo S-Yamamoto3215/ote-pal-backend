@@ -4,6 +4,9 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import "reflect-metadata";
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
+import yaml from "js-yaml";
 
 import { AppDataSource } from "../infrastructure/database/ormconfig";
 import sessionMiddleware from "../infrastructure/middleware/session";
@@ -25,6 +28,12 @@ app.use(morgan("dev"));
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Swagger
+const swaggerDocument = yaml.load(
+  fs.readFileSync("./src/application/config/swagger/swagger.yaml", "utf8")
+);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument as JSON));
 
 // Routes
 app.use("/auth", authRoutes);

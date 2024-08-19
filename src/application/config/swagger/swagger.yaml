@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: OtePal API
+  version: 1.0.0
+  description: API documentation for the OtePal application
+servers:
+  - url: http://localhost:3001
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - role
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  type: string
+      responses:
+        201:
+          description: User has been registered
+        400:
+          description: Validation failed or User already exists
+        500:
+          description: Server error
+  /auth/logout:
+    get:
+      summary: Logout the current user
+      tags:
+        - Auth
+      responses:
+        302:
+          description: Redirect to home page after logout
+        500:
+          description: Logout failed
