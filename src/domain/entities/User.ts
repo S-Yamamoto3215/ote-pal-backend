@@ -4,18 +4,27 @@ import { Family } from "./Family";
 import { Work } from "./Work";
 import { TaskDetail } from "./TaskDetail";
 
+import { IsEnum, IsEmail, IsNotEmpty, IsString } from "class-validator";
+
 @Entity()
 export class User extends BaseEntity {
   @Column()
+  @IsNotEmpty()
+  @IsString()
   name!: string;
 
   @Column({ unique: true })
+  @IsNotEmpty()
+  @IsEmail()
   email!: string;
 
   @Column()
+  @IsNotEmpty()
   password!: string;
 
   @Column()
+  @IsNotEmpty()
+  @IsEnum(["parent", "child"])
   role!: "parent" | "child";
 
   @Column({ default: true })
