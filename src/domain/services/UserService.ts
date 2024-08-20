@@ -19,4 +19,24 @@ export class UserService {
     user.password = await bcrypt.hash(user.password, 10);
     return await this.userRepository.save(user);
   }
+
+  async findUser(id: User["id"]): Promise<User> {
+    // TODO: UserService findUser
+    return await this.userRepository.findById(id);
+  }
+
+  async findUsersByFamilyID(familyID: User["family"]["id"]): Promise<User[]> {
+    // TODO: UserService findUsersByFamilyID
+    return await this.userRepository.findByFamilyID(familyID);
+  }
+
+  async updateUser(user: User): Promise<User> {
+    // TODO: UserService updateUser
+    return await this.userRepository.save(user);
+  }
+
+  async deleteUser(user: User): Promise<void> {
+    // TODO: UserService deleteUser
+    return await this.userRepository.delete(user);
+  }
 }
