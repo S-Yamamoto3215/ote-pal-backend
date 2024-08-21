@@ -20,23 +20,19 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  async findUser(id: User["id"]): Promise<User> {
-    // TODO: UserService findUser
+  async findUser(id: string): Promise<User | null > {
     return await this.userRepository.findById(id);
   }
 
-  async findUsersByFamilyID(familyID: User["family"]["id"]): Promise<User[]> {
-    // TODO: UserService findUsersByFamilyID
+  async findUsersByFamilyID(familyID: string): Promise<User[]> {
     return await this.userRepository.findByFamilyID(familyID);
   }
 
   async updateUser(user: User): Promise<User> {
-    // TODO: UserService updateUser
     return await this.userRepository.save(user);
   }
 
-  async deleteUser(user: User): Promise<void> {
-    // TODO: UserService deleteUser
+  async deleteUser(user: User): Promise<User> {
     return await this.userRepository.delete(user);
   }
 }

@@ -17,23 +17,19 @@ export class UserRepository {
     return await this.repository.save(user);
   }
 
-  async findById(id: User["id"]): Promise<User> {
-    // TODO: UserRepository findById
-    return await this.repository.findOne(id);
+  async findById(id: string): Promise<User | null> {
+    return await this.repository.findOne({ where: { id } });
   }
 
-  async findByFamilyID(familyID: User["family"]["id"]): Promise<User[]> {
-    // TODO: UserRepository findByFamilyID
+  async findByFamilyID(familyID: string): Promise<User[]> {
     return await this.repository.find({ where: { family: { id: familyID } } });
   }
 
-  async delete(user: User): Promise<void> {
-    // TODO: UserRepository delete
-    await this.repository.remove(user);
+  async delete(user: User): Promise<User> {
+    return await this.repository.remove(user);
   }
 
   async update(user: User): Promise<User> {
-    // TODO: UserRepository update
     return await this.repository.save(user);
   }
 }
