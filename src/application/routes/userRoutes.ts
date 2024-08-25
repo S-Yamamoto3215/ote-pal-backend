@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   findUser,
-  findUsersByFamilyID,
+  findMyFamilyUsers,
   updateUser,
   deleteUser,
 } from "../../infrastructure/controller/userController";
@@ -9,7 +9,7 @@ import {
 const router = Router();
 
 router.get("/:id", findUser);
-router.get("/family/:familyID", findUsersByFamilyID);
+router.get("/:id/family-members", findMyFamilyUsers);
 router.put("/", updateUser);
 router.delete("/", deleteUser);
 

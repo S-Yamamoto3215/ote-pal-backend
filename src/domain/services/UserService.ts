@@ -20,12 +20,12 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  async findUser(id: string): Promise<User | null > {
+  async findUser(id: string): Promise<User | null> {
     return await this.userRepository.findById(id);
   }
 
-  async findUsersByFamilyID(familyID: string): Promise<User[]> {
-    return await this.userRepository.findByFamilyID(familyID);
+  async findMyFamilyUsers(id: string): Promise<User[]> {
+    return await this.userRepository.findMyFamilyUsers(id);
   }
 
   async updateUser(user: User): Promise<User> {

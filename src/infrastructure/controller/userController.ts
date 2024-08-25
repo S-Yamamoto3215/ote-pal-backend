@@ -25,11 +25,11 @@ export const findUser = async (req: Request, res: Response) => {
   }
 };
 
-export const findUsersByFamilyID = async (req: Request, res: Response) => {
-  const { familyID } = req.params;
+export const findMyFamilyUsers = async (req: Request, res: Response) => {
+  const { id } = req.params;
 
   try {
-    const users = await userService.findUsersByFamilyID(familyID);
+    const users = await userService.findMyFamilyUsers(id);
     res.status(200).json(users);
   } catch (error) {
     if (error instanceof UserError) {

@@ -21,8 +21,9 @@ export class UserRepository {
     return await this.repository.findOne({ where: { id } });
   }
 
-  async findByFamilyID(familyID: string): Promise<User[]> {
-    return await this.repository.find({ where: { family: { id: familyID } } });
+  async findMyFamilyUsers(id: string): Promise<User[]> {
+    const user = await this.repository.findOne({ where: { id } });
+    return user?.family.users || [];
   }
 
   async delete(user: User): Promise<User> {
