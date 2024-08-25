@@ -1,0 +1,9 @@
+get:
+  summary: Logout the current user
+  tags:
+    - Auth
+  responses:
+    '302':
+      description: Redirect to home page after logout
+    '500':
+      description: Logout failed
