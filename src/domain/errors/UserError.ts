@@ -30,5 +30,7 @@ export class UserError extends Error {
 export enum UserErrorType {
   AlreadyExists = "AlreadyExists",
   ValidationError = "ValidationError",
+  NonUser = "NonUser",
+  PasswordValid = "PasswordValid",
   Other = "Other",
 }

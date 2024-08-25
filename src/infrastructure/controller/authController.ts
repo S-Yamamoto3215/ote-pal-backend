@@ -33,6 +33,22 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  try {
+    const loginToken = await userService.loginUser(email, password);
+    res.status(200).json({ message: "Login successful", token: loginToken });
+  } catch (error) {
+    if (error instanceof UserError) {
+      return res
+        .status(error.getStatusCode())
+        .json({ message: error.getErrorMessage() });
+    }
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export const logoutUser = (req: Request, res: Response) => {
   req.logout((err) => {
     if (err) {
