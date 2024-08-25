@@ -1,0 +1,18 @@
+get:
+  summary: Get family members by user ID
+  tags:
+    - User
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: User ID
+  responses:
+    '200':
+      description: Family members found. returns Users object
+    '404':
+      description: Family members not found
+    '500':
+      description: Server error

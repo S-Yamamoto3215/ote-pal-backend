@@ -30,6 +30,9 @@ export const findMyFamilyUsers = async (req: Request, res: Response) => {
 
   try {
     const users = await userService.findMyFamilyUsers(id);
+    if (!users) {
+      return res.status(404).json({ message: "Family members not found" });
+    }
     res.status(200).json(users);
   } catch (error) {
     if (error instanceof UserError) {

@@ -39,7 +39,7 @@ paths:
         '201':
           description: User has been registered
         '400':
-          description: Validation failed or User already exists
+          description: Validation failed
         '500':
           description: Server error
   /auth/logout:
@@ -52,4 +52,92 @@ paths:
           description: Redirect to home page after logout
         '500':
           description: Logout failed
+  /users:
+    put:
+      summary: Update user by ID
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - role
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                role:
+                  type: string
+      responses:
+        '200':
+          description: User has been updated
+        '400':
+          description: Validation failed
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+    delete:
+      summary: Delete user by ID
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: User ID
+      responses:
+        '200':
+          description: User has been deleted
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: User ID
+      responses:
+        '200':
+          description: User found. returns user object
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  /users/{id}/family-members:
+    get:
+      summary: Get family members by user ID
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: User ID
+      responses:
+        '200':
+          description: Family members found. returns Users object
+        '404':
+          description: Family members not found
+        '500':
+          description: Server error
 components: {}

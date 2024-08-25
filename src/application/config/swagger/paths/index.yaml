@@ -2,3 +2,9 @@
   $ref: auth/register.yaml
 /auth/logout:
   $ref: auth/logout.yaml
+/users:
+  $ref: user/users.yaml
+/users/{id}:
+  $ref: user/id.yaml
+/users/{id}/family-members:
+  $ref: user/family-members.yaml
