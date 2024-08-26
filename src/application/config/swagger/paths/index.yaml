@@ -1,5 +1,7 @@
 /auth/register:
   $ref: auth/register.yaml
+/auth/login:
+  $ref: auth/login.yaml
 /auth/logout:
   $ref: auth/logout.yaml
 /users:
