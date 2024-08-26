@@ -1,5 +1,6 @@
 import { Router } from "express";
-import passport from "../../infrastructure/middleware/passport";
+import passport from "passport";
+
 import {
   registerUser,
   logoutUser,
@@ -7,16 +8,15 @@ import {
 
 const router = Router();
 
+router.post("/register", registerUser);
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "/home",
+    successRedirect: "/",
     failureRedirect: "/login",
     failureFlash: true,
   })
 );
-
-router.post("/register", registerUser);
 router.get("/logout", logoutUser);
 
 export default router;

@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { validate } from "class-validator";
 
 import { User } from "../../domain/entities/User";
 import { UserError } from "../../domain/errors/UserError";
@@ -15,30 +14,9 @@ export const registerUser = async (req: Request, res: Response) => {
   newUser.password = password;
   newUser.role = role;
 
-  const errors = await validate(newUser);
-  if (errors.length > 0) {
-    return res.status(400).json({ message: "Validation failed" });
-  }
-
   try {
     await userService.registerUser(newUser);
     res.status(201).json({ message: "User has been registered" });
-  } catch (error) {
-    if (error instanceof UserError) {
-      return res
-        .status(error.getStatusCode())
-        .json({ message: error.getErrorMessage() });
-    }
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-export const loginUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  try {
-    const loginToken = await userService.loginUser(email, password);
-    res.status(200).json({ message: "Login successful", token: loginToken });
   } catch (error) {
     if (error instanceof UserError) {
       return res

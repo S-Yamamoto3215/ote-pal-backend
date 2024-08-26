@@ -1,8 +1,10 @@
+import { validate } from "class-validator";
+
 import { User } from "../entities/User";
 import { UserError, UserErrorType } from "../errors/UserError";
 import { UserRepository } from "../repositories/UserRepository";
-import { hashPassword, comparePassword } from "./helpers/bcrypt";
-import { generateToken } from "./helpers/jwt";
+import { hashPassword } from "./helpers/bcrypt";
+
 export class UserService {
   private userRepository: UserRepository;
 
@@ -11,6 +13,11 @@ export class UserService {
   }
 
   async registerUser(user: User): Promise<User> {
+    const errors = await validate(user);
+    if (errors.length > 0) {
+      throw new UserError("Validation failed", UserErrorType.ValidationError);
+    }
+
     const existingUser = await this.userRepository.findByEmail(user.email);
     if (existingUser) {
       throw new UserError("User already exists", UserErrorType.AlreadyExists);
@@ -18,22 +25,6 @@ export class UserService {
 
     user.password = await hashPassword(user.password);
     return await this.userRepository.save(user);
-  }
-
-  async loginUser(email: string, password: string): Promise<string> {
-    const user = await this.userRepository.findByEmail(email);
-    if (!user) {
-      throw new UserError("User not found", UserErrorType.NonUser);
-    }
-
-    const isPasswordValid = await comparePassword(password, user.password);
-    if (!isPasswordValid) {
-      throw new UserError("Invalid password", UserErrorType.PasswordValid);
-    }
-
-    const token = generateToken(user);
-
-    return token;
   }
 
   async findUser(id: string): Promise<User | null> {

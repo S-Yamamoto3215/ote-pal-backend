@@ -1,47 +1,28 @@
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import bcrypt from "bcrypt";
-import { AppDataSource } from "../database/ormconfig";
-import { User } from "../../domain/entities/User";
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+
+import { UserRepository } from "../../domain/repositories/UserRepository";
+import { comparePassword } from "../../domain/services/helpers/bcrypt";
 
 passport.use(
   new LocalStrategy(
-    { usernameField: "email" },
-    async (email, password, done) => {
+    {
+      usernameField: "email",
+      passwordField: "passwd",
+    },
+    async (username, password, done) => {
       try {
-        const userRepository = AppDataSource.getRepository(User);
-        const user = await userRepository.findOne({ where: { email } });
-
+        const userRepository = new UserRepository();
+        const user = await userRepository.findByEmail(username);
         if (!user) {
-          return done(null, false, { message: "Incorrect email." });
+          return done(null, false, { message: "Incorrect username." });
         }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
+        const isValid = comparePassword(password, user.password);
+        if (!isValid) {
           return done(null, false, { message: "Incorrect password." });
         }
-
         return done(null, user);
-      } catch (err) {
-        return done(err);
-      }
+      } catch (error) {}
     }
   )
 );
-
-passport.serializeUser((user: Express.User, done) => {
-  const appUser = user as User;
-  done(null, appUser.id);
-});
-
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({ where: { id } });
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});
-
-export default passport;
