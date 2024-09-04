@@ -1,36 +1,67 @@
 import { User } from "../entities/User";
+import { OrmUser } from "../../infrastructure/database/entities/User";
 import { Repository } from "typeorm";
 import { AppDataSource } from "../../infrastructure/database/ormconfig";
 
-export class UserRepository {
-  private repository: Repository<User>;
+export interface IUserRepository {
+  save(user: User): Promise<OrmUser>;
+  findById(userId: string): Promise<OrmUser | null>;
+  findByEmail(email: string): Promise<OrmUser | null>;
+  findMyFamilyUsers(familyId: string): Promise<OrmUser[]>;
+  update(user: User): Promise<OrmUser>;
+  delete(user: User): Promise<OrmUser>;
+}
+
+// TODO: Implement the methods of the IUserRepository interface
+export class UserRepository implements IUserRepository {
+  private repository: Repository<OrmUser>;
 
   constructor() {
-    this.repository = AppDataSource.getRepository(User);
+    this.repository = AppDataSource.getRepository(OrmUser);
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return await this.repository.findOne({ where: { email } });
+  async save(user: User): Promise<OrmUser> {
+    const newUser = new OrmUser();
+    // TODO: Userエンティティの値をOrmUserエンティティに変換して保存する
+    newUser.id = user.getId();
+    // newUser.email = user.getEmail();
+    // newUser.password = user.getPassword();
+    // newUser.role = user.getRole();
+    // newUser.isActive = user.getIsActive();
+    // newUser.family = user.getFamily();
+
+    return await this.repository.save(newUser);
   }
 
-  async save(user: User): Promise<User> {
-    return await this.repository.save(user);
+  async findById(userId: string): Promise<OrmUser | null> {
+    return await this.repository.findOneBy({ id: userId });
   }
 
-  async findById(id: string): Promise<User | null> {
-    return await this.repository.findOne({ where: { id } });
+  async findByEmail(email: string): Promise<OrmUser | null> {
+    return await this.repository.findOneBy({ email: email });
   }
 
-  async findMyFamilyUsers(id: string): Promise<User[]> {
-    const user = await this.repository.findOne({ where: { id } });
-    return user?.family.users || [];
+  async findMyFamilyUsers(userId: string): Promise<OrmUser[]> {
+    const currentUser = await this.repository.findOneBy({ id: userId });
+    return currentUser?.family.users || [];
   }
 
-  async delete(user: User): Promise<User> {
-    return await this.repository.remove(user);
+  async update(user: User): Promise<OrmUser> {
+    const targetUser = await this.repository.findOneBy({ id: user.getId() });
+    if (!targetUser) {
+      throw new Error("User not found");
+    }
+    // TODO: Userエンティティの値をOrmUserエンティティに変換して更新する
+
+    return await this.repository.save(targetUser);
   }
 
-  async update(user: User): Promise<User> {
-    return await this.repository.save(user);
+  async delete(user: User): Promise<OrmUser> {
+    const targetUser = await this.repository.findOneBy({ id: user.getId() });
+    if (!targetUser) {
+      throw new Error("User not found");
+    }
+
+    return await this.repository.remove(targetUser);
   }
 }
