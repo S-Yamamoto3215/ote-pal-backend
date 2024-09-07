@@ -1,4 +1,0 @@
-@startuml
-title ユーザーの編集
-(*) --> (*)
-@enduml

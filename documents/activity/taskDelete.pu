@@ -1,4 +1,0 @@
-@startuml
-title タスク詳細の作成
-(*) --> (*)
-@enduml

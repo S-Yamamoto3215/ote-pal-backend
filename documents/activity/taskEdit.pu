@@ -1,4 +1,0 @@
-@startuml
-title タスクの編集
-(*) --> (*)
-@enduml

@@ -1,4 +1,0 @@
-@startuml
-title 支払いの閲覧
-(*) --> (*)
-@enduml

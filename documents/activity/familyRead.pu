@@ -1,4 +1,0 @@
-@startuml
-title 家族情報の閲覧
-(*) --> (*)
-@enduml

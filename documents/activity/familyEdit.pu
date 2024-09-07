@@ -1,4 +1,0 @@
-@startuml
-title 家族設定の編集
-(*) --> (*)
-@enduml

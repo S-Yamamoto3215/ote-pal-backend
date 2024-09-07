@@ -1,4 +1,0 @@
-@startuml
-title ワークの作成
-(*) --> (*)
-@enduml

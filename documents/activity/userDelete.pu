@@ -1,4 +1,0 @@
-@startuml
-title ユーザーの削除
-(*) --> (*)
-@enduml

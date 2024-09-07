@@ -1,4 +1,0 @@
-@startuml
-title ユーザーの招待
-(*) --> (*)
-@enduml

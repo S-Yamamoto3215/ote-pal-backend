@@ -1,4 +1,0 @@
-@startuml
-title ユーザーの閲覧
-(*) --> (*)
-@enduml
