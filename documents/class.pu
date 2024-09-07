@@ -1,0 +1,60 @@
+@startuml class
+class User {
+  id: int
+  family_id: int
+  name: string
+  email: string
+  password: string
+  role: enum
+}
+
+class Family {
+  id: int
+  name: string
+  payment_schedule: date
+}
+
+class Task {
+  id: int
+  family_id: int
+  name: string
+  description: string
+  reward: int
+}
+
+class TaskDetail {
+  id: int
+  task_id: int
+  user_id: int
+  custom_description: string
+  custom_reward: int
+}
+
+
+class Work {
+  id: int
+  task_id: int
+  user_id: int
+  status: enum
+}
+
+class Payment {
+  id: int
+  work_id: int
+  user_id: int
+  amount: int
+  pay_date: date
+  approved: boolean
+}
+
+Family "1" -down- "*" User
+Family "1" -right- "*" Task
+
+User "1" -down- "*" Payment
+User "1" -right- "*" Work
+
+Task "1" -right- "*" TaskDetail
+Task "1" -down- "*" Work
+
+Work "1" -down- "1" Payment
+@enduml
