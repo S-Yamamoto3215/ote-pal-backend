@@ -1,0 +1,87 @@
+@startuml usecase
+left to right direction
+
+actor 親 as Parent_U
+actor 親 as Parent_T
+actor 親 as Parent_W
+actor 親 as Parent_F
+actor 親 as Parent_P
+actor 子 as Children_U
+actor 子 as Children_T
+actor 子 as Children_W
+actor 子 as Children_F
+actor 子 as Children_P
+
+rectangle User {
+  usecase (ユーザー作成) as UserCreate
+  usecase (ユーザー編集) as UserEdit
+  usecase (ユーザー閲覧) as UserRead
+  usecase (ユーザー招待) as UserInvitation
+  usecase (ユーザー削除) as UserDelete
+}
+
+rectangle Task {
+  usecase (タスク作成) as TaskCreate
+  usecase (タスク編集) as TaskEdit
+  usecase (タスク閲覧) as TaskRead
+  usecase (タスク削除) as TaskDelete
+}
+
+rectangle Work {
+  usecase (ワーク作成) as WorkCreate
+  usecase (ワークの申請) as WorkRequest
+  usecase (ワーク承認/拒否) as WorkApproval
+}
+
+rectangle Family {
+  usecase (家族閲覧) as FamilyRead
+  usecase (家族設定) as FamilyEdit
+}
+
+rectangle Payment {
+  usecase (支払い作成) as PaymentCreate
+  usecase (支払い承認/拒否) as PaymentApproval
+  usecase (支払い閲覧) as PaymentRead
+}
+
+Parent_U --> UserCreate
+
+Parent_U --> UserEdit
+
+UserEdit <-- Children_U
+
+Parent_U --> UserRead
+UserRead <-- Children_U
+
+Parent_U --> UserInvitation
+
+Parent_U --> UserDelete
+UserDelete <-- Children_U
+
+Parent_T --> TaskCreate
+
+Parent_T --> TaskEdit
+
+Parent_T --> TaskRead
+TaskRead <-- Children_T
+
+Parent_T --> TaskDelete
+
+WorkCreate <-- Children_W
+
+WorkRequest <-- Children_W
+
+Parent_W --> WorkApproval
+
+Parent_F --> FamilyRead
+FamilyRead <-- Children_F
+
+Parent_F --> FamilyEdit
+
+Parent_P --> PaymentCreate
+
+PaymentApproval <-- Children_P
+
+Parent_P --> PaymentRead
+PaymentRead <-- Children_P
+@enduml
