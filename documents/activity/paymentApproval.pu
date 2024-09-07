@@ -1,0 +1,4 @@
+@startuml
+title 支払いの承認/拒否
+(*) --> (*)
+@enduml

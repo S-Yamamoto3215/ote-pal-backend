@@ -1,0 +1,4 @@
+@startuml
+title 仕事の実績(work)を申請する
+(*) --> (*)
+@enduml

@@ -1,0 +1,4 @@
+@startuml
+title ワークの承認/拒否
+(*) --> (*)
+@enduml
