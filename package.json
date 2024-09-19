@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/application/server.ts",
+    "start": "ts-node src/main.ts",
     "build": "tsc",
     "open-api-biuld": "redocly bundle src/application/config/swagger/index.yaml -o src/application/config/swagger/swagger.yaml"
   },

@@ -1,1 +1,1 @@
-// TODO: アプリのエントリーポイント
+console.log("Application is up and running");
