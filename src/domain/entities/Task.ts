@@ -13,21 +13,21 @@ import { TaskDetail } from "@/domain/entities/TaskDetail";
 @Entity()
 export class Task {
   @PrimaryGeneratedColumn()
-  private id?: number;
+  id?: number;
 
   @Column({
     update: false,
   })
-  private family_id: number;
+  family_id: number;
 
   @Column()
-  private name: string;
+  name: string;
 
   @Column()
-  private description: string;
+  description: string;
 
   @Column()
-  private reward: number;
+  reward: number;
 
   @OneToMany(() => TaskDetail, (taskDetail) => taskDetail.task)
   taskDetails!: TaskDetail[];

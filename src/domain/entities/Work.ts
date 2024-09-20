@@ -14,29 +14,29 @@ import { Payment } from "@/domain/entities/Payment";
 @Entity()
 export class Work {
   @PrimaryGeneratedColumn()
-  private id: number | undefined;
+  id: number | undefined;
 
   @Column({
     update: false,
     unique: true,
   })
-  private payment_id: number;
+  payment_id: number;
 
   @Column({
     update: false,
   })
-  private task_id: number;
+  task_id: number;
 
   @Column({
     update: false,
   })
-  private user_id: number;
+  user_id: number;
 
   @Column({
     type: "enum",
     enum: ["InProgress", "Completed", "Approved", "Rejected"],
   })
-  private status: "InProgress" | "Completed" | "Approved" | "Rejected";
+  status: "InProgress" | "Completed" | "Approved" | "Rejected";
 
   @OneToOne(() => Payment)
   @JoinColumn()

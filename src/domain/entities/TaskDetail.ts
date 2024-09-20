@@ -5,27 +5,27 @@ import { Task } from "@/domain/entities/Task";
 @Entity()
 export class TaskDetail {
   @PrimaryGeneratedColumn()
-  private id?: number;
+  id?: number;
 
   @Column({
     update: false,
   })
-  private task_id: number;
+  task_id: number;
 
   @Column({
     update: false,
   })
-  private user_id: number;
+  user_id: number;
 
   @Column({
     nullable: true,
   })
-  private custom_description: string;
+  custom_description: string;
 
   @Column({
     nullable: true,
   })
-  private custom_reward: number;
+  custom_reward: number;
 
   @ManyToOne(() => Task, (task) => task.taskDetails)
   task?: Task;

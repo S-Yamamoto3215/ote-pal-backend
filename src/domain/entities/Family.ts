@@ -6,13 +6,13 @@ import { Task } from "@/domain/entities/Task";
 @Entity()
 export class Family {
   @PrimaryGeneratedColumn()
-  private id?: number;
+  id?: number;
 
   @Column()
-  private name: string;
+  name: string;
 
   @Column()
-  private payment_schedule: Date;
+  payment_schedule: Date;
 
   @OneToMany(() => User, (user) => user.family)
   users!: User[];

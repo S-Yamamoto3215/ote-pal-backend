@@ -12,30 +12,30 @@ import { Work } from "@/domain/entities/Work";
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  private id?: number;
+  id?: number;
 
   @Column({
     update: false,
   })
-  private familyId: number;
+  familyId: number;
 
   @Column()
-  private name: string;
+  name: string;
 
   @Column({
     unique: true,
   })
-  private email: string;
+  email: string;
 
   @Column()
-  private password: string;
+  password: string;
 
   @Column({
     type: "enum",
     enum: ["Parent", "Child"],
     update: false,
   })
-  private role: "Parent" | "Child";
+  role: "Parent" | "Child";
 
   @OneToMany(() => Work, (work) => work.user)
   works!: Work[];

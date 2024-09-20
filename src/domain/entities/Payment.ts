@@ -3,16 +3,16 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn()
-  private id?: number;
+  id?: number;
 
   @Column()
-  private amount: number;
+  amount: number;
 
   @Column()
-  private pay_date: Date;
+  pay_date: Date;
 
   @Column()
-  private approved: boolean;
+  approved: boolean;
 
   constructor(
     amount: number,
