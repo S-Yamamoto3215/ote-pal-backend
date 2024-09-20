@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from "typeorm";
+
+import { Family } from "./Family";
+import { Work } from "./Work";
+import { Payment } from "./Payment";
 
 @Entity()
 export class User {
@@ -14,7 +24,7 @@ export class User {
   private name: string;
 
   @Column({
-    unique: true
+    unique: true,
   })
   private email: string;
 
@@ -27,6 +37,12 @@ export class User {
     update: false,
   })
   private role: "Parent" | "Child";
+
+  @OneToMany(() => Work, (work) => work.user)
+  works!: Work[];
+
+  @ManyToOne(() => Family, (family) => family.users)
+  family?: Family;
 
   constructor(
     familyId: number,

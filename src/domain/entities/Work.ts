@@ -1,9 +1,26 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+} from "typeorm";
+
+import { User } from "./User";
+import { Task } from "./Task";
+import { Payment } from "./Payment";
 
 @Entity()
 export class Work {
   @PrimaryGeneratedColumn()
   private id: number | undefined;
+
+  @Column({
+    update: false,
+    unique: true,
+  })
+  private payment_id: number;
 
   @Column({
     update: false,
@@ -21,11 +38,23 @@ export class Work {
   })
   private status: "InProgress" | "Completed" | "Approved" | "Rejected";
 
+  @OneToOne(() => Payment)
+  @JoinColumn()
+  payment?: Payment;
+
+  @ManyToOne(() => User, (user) => user.works)
+  user?: User;
+
+  @ManyToOne(() => Task, (task) => task.works)
+  task?: Task;
+
   constructor(
+    payment_id: number,
     task_id: number,
     user_id: number,
     status: "InProgress" | "Completed" | "Approved" | "Rejected"
   ) {
+    this.payment_id = payment_id;
     this.task_id = task_id;
     this.user_id = user_id;
     this.status = status;
@@ -33,6 +62,10 @@ export class Work {
 
   getId(): number | undefined {
     return this.id;
+  }
+
+  getPaymentId(): number {
+    return this.payment_id;
   }
 
   getTaskId(): number {
@@ -49,6 +82,10 @@ export class Work {
 
   setId(id: number): void {
     this.id = id;
+  }
+
+  setPaymentId(payment_id: number): void {
+    this.payment_id = payment_id;
   }
 
   setTaskId(task_id: number): void {

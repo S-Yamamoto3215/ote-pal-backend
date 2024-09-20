@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+
+import { Task } from "./Task";
 
 @Entity()
 export class TaskDetail {
@@ -24,6 +26,9 @@ export class TaskDetail {
     nullable: true,
   })
   private custom_reward: number;
+
+  @ManyToOne(() => Task, (task) => task.taskDetails)
+  task?: Task;
 
   constructor(
     task_id: number,

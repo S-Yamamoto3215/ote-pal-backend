@@ -1,4 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+
+import { User } from "./User";
+import { Task } from "./Task";
 
 @Entity()
 export class Family {
@@ -10,6 +13,12 @@ export class Family {
 
   @Column()
   private payment_schedule: Date;
+
+  @OneToMany(() => User, (user) => user.family)
+  users!: User[];
+
+  @OneToMany(() => Task, (task) => task.family)
+  tasks!: Task[];
 
   constructor(name: string, payment_schedule: Date) {
     this.name = name;

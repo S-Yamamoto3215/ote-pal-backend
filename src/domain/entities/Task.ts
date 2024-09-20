@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from "typeorm";
+
+import { Family } from "./Family";
+import { Work } from "./Work";
+import { TaskDetail } from "./TaskDetail";
 
 @Entity()
 export class Task {
@@ -18,6 +28,15 @@ export class Task {
 
   @Column()
   private reward: number;
+
+  @OneToMany(() => TaskDetail, (taskDetail) => taskDetail.task)
+  taskDetails!: TaskDetail[];
+
+  @OneToMany(() => Work, (work) => work.task)
+  works!: Work[];
+
+  @ManyToOne(() => Family, (family) => family.tasks)
+  family?: Family;
 
   constructor(
     family_id: number,
