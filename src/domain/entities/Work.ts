@@ -17,15 +17,14 @@ export class Work {
 
   @Column({
     type: "enum",
-    enum: ["In Progress", "Completed", "Approved", "Rejected"],
-    default: "In Progress",
+    enum: ["InProgress", "Completed", "Approved", "Rejected"],
   })
-  private status: "In Progress" | "Completed" | "Approved" | "Rejected";
+  private status: "InProgress" | "Completed" | "Approved" | "Rejected";
 
   constructor(
     task_id: number,
     user_id: number,
-    status: "In Progress" | "Completed" | "Approved" | "Rejected"
+    status: "InProgress" | "Completed" | "Approved" | "Rejected"
   ) {
     this.task_id = task_id;
     this.user_id = user_id;
@@ -44,7 +43,7 @@ export class Work {
     return this.user_id;
   }
 
-  getStatus(): "In Progress" | "Completed" | "Approved" | "Rejected" {
+  getStatus(): "InProgress" | "Completed" | "Approved" | "Rejected" {
     return this.status;
   }
 
@@ -61,7 +60,7 @@ export class Work {
   }
 
   setStatus(
-    status: "In Progress" | "Completed" | "Approved" | "Rejected"
+    status: "InProgress" | "Completed" | "Approved" | "Rejected"
   ): void {
     this.status = status;
   }
