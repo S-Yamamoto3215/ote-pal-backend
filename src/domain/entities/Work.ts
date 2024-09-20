@@ -1,17 +1,38 @@
-class Work {
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+
+@Entity()
+export class Work {
+  @PrimaryGeneratedColumn()
+  private id: number | undefined;
+
+  @Column({
+    update: false,
+  })
+  private task_id: number;
+
+  @Column({
+    update: false,
+  })
+  private user_id: number;
+
+  @Column({
+    type: "enum",
+    enum: ["In Progress", "Completed", "Approved", "Rejected"],
+    default: "In Progress",
+  })
+  private status: "In Progress" | "Completed" | "Approved" | "Rejected";
+
   constructor(
-    private id: number | null,
-    private task_id: number,
-    private user_id: number,
-    private status: "In Progress" | "Completed" | "Approved" | "Rejected",
+    task_id: number,
+    user_id: number,
+    status: "In Progress" | "Completed" | "Approved" | "Rejected"
   ) {
-    this.id = id;
     this.task_id = task_id;
     this.user_id = user_id;
     this.status = status;
   }
 
-  getId(): number | null {
+  getId(): number | undefined {
     return this.id;
   }
 
@@ -39,7 +60,9 @@ class Work {
     this.user_id = user_id;
   }
 
-  setStatus(status: "In Progress" | "Completed" | "Approved" | "Rejected"): void {
+  setStatus(
+    status: "In Progress" | "Completed" | "Approved" | "Rejected"
+  ): void {
     this.status = status;
   }
 }

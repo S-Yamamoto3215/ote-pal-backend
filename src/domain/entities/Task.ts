@@ -1,19 +1,37 @@
-class Task {
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+
+@Entity()
+export class Task {
+  @PrimaryGeneratedColumn()
+  private id?: number;
+
+  @Column({
+    update: false,
+  })
+  private family_id: number;
+
+  @Column()
+  private name: string;
+
+  @Column()
+  private description: string;
+
+  @Column()
+  private reward: number;
+
   constructor(
-    private id: number | null,
-    private family_id: number,
-    private name: string,
-    private description: string,
-    private reward: number,
+    family_id: number,
+    name: string,
+    description: string,
+    reward: number
   ) {
-    this.id = id;
     this.family_id = family_id;
     this.name = name;
     this.description = description;
     this.reward = reward;
   }
 
-  getId(): number | null {
+  getId(): number | undefined {
     return this.id;
   }
 

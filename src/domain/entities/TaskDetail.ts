@@ -1,19 +1,43 @@
-class TaskDetail {
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+
+@Entity()
+export class TaskDetail {
+  @PrimaryGeneratedColumn()
+  private id?: number;
+
+  @Column({
+    update: false,
+  })
+  private task_id: number;
+
+  @Column({
+    update: false,
+  })
+  private user_id: number;
+
+  @Column({
+    nullable: true,
+  })
+  private custom_description: string;
+
+  @Column({
+    nullable: true,
+  })
+  private custom_reward: number;
+
   constructor(
-    private id: number | null,
-    private task_id: number,
-    private user_id: number,
-    private custom_description: string,
-    private custom_reward: number,
+    task_id: number,
+    user_id: number,
+    custom_description: string,
+    custom_reward: number
   ) {
-    this.id = id;
     this.task_id = task_id;
     this.user_id = user_id;
     this.custom_description = custom_description;
     this.custom_reward = custom_reward;
   }
 
-  getId(): number | null {
+  getId(): number | undefined {
     return this.id;
   }
 

@@ -1,15 +1,22 @@
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+
+@Entity()
 export class Family {
-  constructor(
-    private id: number | null,
-    private name: string,
-    private payment_schedule: Date,
-  ) {
-    this.id = id;
+  @PrimaryGeneratedColumn()
+  private id?: number;
+
+  @Column()
+  private name: string;
+
+  @Column()
+  private payment_schedule: Date;
+
+  constructor(name: string, payment_schedule: Date) {
     this.name = name;
     this.payment_schedule = payment_schedule;
   }
 
-  getId(): number | null {
+  getId(): number | undefined {
     return this.id;
   }
 

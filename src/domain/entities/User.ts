@@ -1,13 +1,40 @@
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+
+@Entity()
 export class User {
+  @PrimaryGeneratedColumn()
+  private id?: number;
+
+  @Column({
+    update: false,
+  })
+  private familyId: number;
+
+  @Column()
+  private name: string;
+
+  @Column({
+    unique: true
+  })
+  private email: string;
+
+  @Column()
+  private password: string;
+
+  @Column({
+    type: "enum",
+    enum: ["Parent", "Child"],
+    update: false,
+  })
+  private role: "Parent" | "Child";
+
   constructor(
-    private id: number | null,
-    private familyId: number,
-    private name: string,
-    private email: string,
-    private password: string,
-    private role: "Parent" | "Child"
+    familyId: number,
+    name: string,
+    email: string,
+    password: string,
+    role: "Parent" | "Child"
   ) {
-    this.id = id;
     this.familyId = familyId;
     this.name = name;
     this.email = email;
@@ -15,7 +42,7 @@ export class User {
     this.role = role;
   }
 
-  getId(): number | null {
+  getId(): number | undefined {
     return this.id;
   }
 

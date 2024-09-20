@@ -1,13 +1,36 @@
-class Payment {
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+
+@Entity()
+export class Payment {
+  @PrimaryGeneratedColumn()
+  private id?: number;
+
+  @Column({
+    update: false,
+  })
+  private work_id: number;
+
+  @Column({
+    update: false,
+  })
+  private user_id: number;
+
+  @Column()
+  private amount: number;
+
+  @Column()
+  private pay_date: Date;
+
+  @Column()
+  private approved: boolean;
+
   constructor(
-    private id: number | null,
-    private work_id: number,
-    private user_id: number,
-    private amount: number,
-    private pay_date: Date,
-    private approved: boolean,
+    work_id: number,
+    user_id: number,
+    amount: number,
+    pay_date: Date,
+    approved: boolean
   ) {
-    this.id = id;
     this.work_id = work_id;
     this.user_id = user_id;
     this.amount = amount;
@@ -15,7 +38,7 @@ class Payment {
     this.approved = approved;
   }
 
-  getId(): number | null {
+  getId(): number | undefined {
     return this.id;
   }
 
