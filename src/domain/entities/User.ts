@@ -6,9 +6,8 @@ import {
   OneToMany,
 } from "typeorm";
 
-import { Family } from "./Family";
-import { Work } from "./Work";
-import { Payment } from "./Payment";
+import { Family } from "@/domain/entities/Family";
+import { Work } from "@/domain/entities/Work";
 
 @Entity()
 export class User {

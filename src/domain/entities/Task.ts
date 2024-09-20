@@ -6,9 +6,9 @@ import {
   OneToMany,
 } from "typeorm";
 
-import { Family } from "./Family";
-import { Work } from "./Work";
-import { TaskDetail } from "./TaskDetail";
+import { Family } from "@/domain/entities/Family";
+import { Work } from "@/domain/entities/Work";
+import { TaskDetail } from "@/domain/entities/TaskDetail";
 
 @Entity()
 export class Task {

@@ -1,6 +1,6 @@
 import express from "express";
-import { setMiddleware } from "./middlewares/setMiddleware";
-import { setRoutes } from "./routes/setRoutes";
+import { setMiddleware } from "@/infrastructure/http/middlewares/setMiddleware";
+import { setRoutes } from "@/infrastructure/http/routes/setRoutes";
 
 const app = express();
 

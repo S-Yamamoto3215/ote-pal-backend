@@ -7,9 +7,9 @@ import {
   JoinColumn,
 } from "typeorm";
 
-import { User } from "./User";
-import { Task } from "./Task";
-import { Payment } from "./Payment";
+import { User } from "@/domain/entities/User";
+import { Task } from "@/domain/entities/Task";
+import { Payment } from "@/domain/entities/Payment";
 
 @Entity()
 export class Work {

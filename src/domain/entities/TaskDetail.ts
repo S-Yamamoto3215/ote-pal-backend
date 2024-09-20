@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
-import { Task } from "./Task";
+import { Task } from "@/domain/entities/Task";
 
 @Entity()
 export class TaskDetail {

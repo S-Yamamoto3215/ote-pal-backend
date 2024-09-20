@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 
-import { User } from "./User";
-import { Task } from "./Task";
+import { User } from "@/domain/entities/User";
+import { Task } from "@/domain/entities/Task";
 
 @Entity()
 export class Family {
