@@ -5,22 +5,22 @@ import { UserControllerFactory } from "@/application/factories/User/UserControll
 export const userRouter = Router();
 const userController = UserControllerFactory.create();
 
-userRouter.get("/", (req, res) => {
-  userController.getAllUsers(req, res);
+userRouter.get("/", (req, res, next) => {
+  userController.getAllUsers(req, res, next);
 });
 
-userRouter.get("/:userId", (req, res) => {
-  userController.getUserById(req, res);
+userRouter.get("/:userId", (req, res, next) => {
+  userController.getUserById(req, res, next);
 });
 
-userRouter.post("/", (req, res) => {
-  userController.createUser(req, res);
+userRouter.post("/", (req, res, next) => {
+  userController.createUser(req, res, next);
 });
 
-userRouter.put("/", (req, res) => {
-  userController.updateUser(req, res);
+userRouter.put("/", (req, res, next) => {
+  userController.updateUser(req, res, next);
 });
 
-userRouter.delete("/", (req, res) => {
-  userController.deleteUser(req, res);
+userRouter.delete("/", (req, res, next) => {
+  userController.deleteUser(req, res, next);
 });

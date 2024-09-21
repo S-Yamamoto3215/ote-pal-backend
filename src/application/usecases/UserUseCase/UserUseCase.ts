@@ -3,6 +3,8 @@ import { IUserRepository } from "@/domain/repositories/UserRepository";
 
 import { IUserUseCase } from "@/application/usecases/UserUseCase";
 
+import { AppError } from "@/infrastructure/errors/AppError";
+
 interface CreateUserInput {
   familyId: number;
   name: string;
@@ -15,42 +17,66 @@ export class UserUseCase implements IUserUseCase {
   constructor(private userRepository: IUserRepository) { }
 
   async getUserById(userId: number): Promise<User | null> {
-    return this.userRepository.findById(userId);
+    try {
+      const user = await this.userRepository.findById(userId);
+      if (!user) {
+        throw new AppError("NotFound", "User not found");
+      }
+      return user;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async findAllByFamilyId(familyId: number): Promise<User[]> {
-    return this.userRepository.findAllByFamilyId(familyId);
+    try {
+      return this.userRepository.findAllByFamilyId(familyId);
+    } catch (error) {
+      throw error;
+    }
   }
 
   async createUser(input: CreateUserInput): Promise<User> {
-    const user = new User(
-      input.familyId,
-      input.name,
-      input.email,
-      input.password,
-      input.role
-    );
+    try {
+      const user = new User(
+        input.familyId,
+        input.name,
+        input.email,
+        input.password,
+        input.role
+      );
 
-    return this.userRepository.save(user);
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updateUser(userId: number, input: CreateUserInput): Promise<User> {
-    const user = await this.userRepository.findById(userId);
+    try {
+      const user = await this.userRepository.findById(userId);
 
-    if (!user) {
-      throw new Error("User not found");
+      if (!user) {
+        throw new AppError("NotFound", "User not found");
+      }
+
+      user.setFamilyId(input.familyId);
+      user.setName(input.name);
+      user.setEmail(input.email);
+      user.setPassword(input.password);
+      user.setRole(input.role);
+
+      return this.userRepository.save(user);
+    } catch (error) {
+      throw error;
     }
-
-    user.familyId = input.familyId;
-    user.name = input.name;
-    user.email = input.email;
-    user.password = input.password;
-    user.role = input.role;
-
-    return this.userRepository.save(user);
   }
 
   async deleteUser(userId: number): Promise<void> {
-    await this.userRepository.delete(userId);
+    try {
+      await this.userRepository.delete(userId);
+    } catch (error) {
+      throw error;
+    }
   }
 }

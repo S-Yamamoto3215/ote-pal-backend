@@ -2,6 +2,7 @@ import { Repository, DataSource } from "typeorm";
 
 import { User } from "@/domain/entities/User";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
+import { AppError } from "@/infrastructure/errors/AppError";
 
 export class UserRepository implements IUserRepository {
   private repo: Repository<User>;
@@ -11,21 +12,41 @@ export class UserRepository implements IUserRepository {
   }
 
   async save(user: User): Promise<User> {
-    return this.repo.save(user);
+    try {
+      return this.repo.save(user);
+    } catch (error) {
+      throw new AppError("DatabaseError", 'Failed to save user');
+    }
   }
 
   async findById(id: number): Promise<User | null> {
-    return this.repo.findOneBy({ id });
+    try {
+      return this.repo.findOneBy({ id });
+    } catch (error) {
+      throw new AppError("DatabaseError", 'Failed to find user');
+    }
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.repo.findOneBy({ email });
+    try {
+      return this.repo.findOneBy({ email });
+    } catch (error) {
+      throw new AppError("DatabaseError", 'Failed to find user');
+    }
   }
 
   async findAllByFamilyId(familyId: number): Promise<User[]> {
-    return this.repo.find({ where: { familyId } });
+    try {
+      return this.repo.find({ where: { familyId } });
+    } catch (error) {
+      throw new AppError("DatabaseError", 'failed to find users');
+    }
   }
   async delete(id: number): Promise<void> {
-    await this.repo.delete(id);
+    try {
+      await this.repo.delete(id);
+    } catch (error) {
+      throw new AppError("DatabaseError", 'failed to delete user');
+    }
   }
 }
