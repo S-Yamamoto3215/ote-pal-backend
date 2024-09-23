@@ -8,15 +8,15 @@ import { IUserUseCase } from "@/application/usecases/UserUseCase";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 interface CreateUserInput {
-  family: Family;
   name: string;
   email: string;
   password: string;
   role: "Parent" | "Child";
+  familyId: number;
 }
 
 export class UserUseCase implements IUserUseCase {
-  constructor(private userRepository: IUserRepository) { }
+  constructor(private userRepository: IUserRepository) {}
 
   async getUserById(userId: number): Promise<User | null> {
     try {
@@ -30,9 +30,9 @@ export class UserUseCase implements IUserUseCase {
     }
   }
 
-  async findAllByFamily(family: Family): Promise<User[]> {
+  async findAllByFamilyId(familyId: number): Promise<User[]> {
     try {
-      return this.userRepository.findAllByFamily(family);
+      return this.userRepository.findAllByFamilyId(familyId);
     } catch (error) {
       throw error;
     }
@@ -41,11 +41,11 @@ export class UserUseCase implements IUserUseCase {
   async createUser(input: CreateUserInput): Promise<User> {
     try {
       const user = new User(
-        input.family,
         input.name,
         input.email,
         input.password,
-        input.role
+        input.role,
+        input.familyId
       );
 
       return this.userRepository.save(user);
@@ -66,7 +66,7 @@ export class UserUseCase implements IUserUseCase {
       user.setEmail(input.email);
       user.setPassword(input.password);
       user.setRole(input.role);
-      user.setFamily(input.family);
+      user.setFamilyId(input.familyId);
 
       return this.userRepository.save(user);
     } catch (error) {

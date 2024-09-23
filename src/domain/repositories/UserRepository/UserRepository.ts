@@ -36,17 +36,17 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async findAllByFamily(family: Family): Promise<User[]> {
+  async findAllByFamilyId(familyId: number): Promise<User[]> {
     try {
-      return this.repo.find({ where: { family } });
+      return this.repo.find({ where: { familyId } });
     } catch (error) {
       throw new AppError("DatabaseError", "failed to find users");
     }
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(userId: number): Promise<void> {
     try {
-      await this.repo.delete(id);
+      await this.repo.delete(userId);
     } catch (error) {
       throw new AppError("DatabaseError", "failed to delete user");
     }

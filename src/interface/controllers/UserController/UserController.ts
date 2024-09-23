@@ -8,8 +8,8 @@ export class UserController implements IUserController {
 
   async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const family = req.body.family;
-      const users = await this.userUseCase.findAllByFamily(family);
+      const { familyId } = req.body;
+      const users = await this.userUseCase.findAllByFamilyId(familyId);
       res.json(users);
     } catch (error) {
       next(error);
@@ -28,14 +28,14 @@ export class UserController implements IUserController {
 
   async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { family, name, email, password, role } = req.body;
+      const { name, email, password, role, familyId } = req.body;
 
       const user = await this.userUseCase.createUser({
-        family,
         name,
         email,
         password,
         role,
+        familyId,
       });
 
       res.json(user);
@@ -46,14 +46,15 @@ export class UserController implements IUserController {
 
   async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userId, family, name, email, password, role } = req.body;
+      const { userId, name, email, password, role, familyId } =
+        req.body;
 
       const user = await this.userUseCase.updateUser(userId, {
-        family,
         name,
         email,
         password,
         role,
+        familyId,
       });
 
       res.json(user);

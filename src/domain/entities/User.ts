@@ -47,24 +47,29 @@ export class User {
   @IsEnum(["Parent", "Child"], { message: "Role must be 'Parent' or 'Child'" })
   role: "Parent" | "Child";
 
-  @OneToMany(() => Work, (work) => work.user)
-  works!: Work[];
+  @OneToMany(() => Work, (work) => work.user, {
+    createForeignKeyConstraints: false,
+    persistence: false,
+  })
+  readonly works?: Work[];
 
+  @Column()
+  familyId!: number;
   @ManyToOne(() => Family, (family) => family.users)
-  family!: Family;
+  readonly family!: Family;
 
   constructor(
-    family: Family,
     name: string,
     email: string,
     password: string,
-    role: "Parent" | "Child"
+    role: "Parent" | "Child",
+    familyId: number
   ) {
-    this.family = family;
     this.name = name;
     this.email = email;
     this.password = password;
     this.role = role;
+    this.familyId = familyId;
   }
 
   validate(): void {
@@ -77,7 +82,10 @@ export class User {
     }
   }
 
-  getId(): number | undefined {
+  getId(): number {
+    if (this.id === undefined) {
+      throw new AppError("ValidationError", "User id is undefined or null");
+    }
     return this.id;
   }
 
@@ -98,7 +106,7 @@ export class User {
   }
 
   getFamilyId(): number | undefined {
-    return this.family.id;
+    return this.familyId;
   }
 
   setId(id: number): void {
@@ -121,7 +129,7 @@ export class User {
     this.role = role;
   }
 
-  setFamily(family: Family): void {
-    this.family = family;
+  setFamilyId(familyId: number): void {
+    this.familyId = familyId;
   }
 }

@@ -7,6 +7,7 @@ import { AppError } from "@/infrastructure/errors/AppError";
 
 import { createTestDatabase, closeTestDataSource } from "@tests/utils/database/setupTestDatabase";
 import { seedDatabase } from "@tests/utils/database/seedDatabase";
+import { userSeeds } from "@tests/resources/User/UserSeeds";
 
 let dataSource: DataSource;
 let userRepository: UserRepository;
@@ -22,17 +23,66 @@ afterAll(async () => {
 });
 
 describe("UserRepository", () => {
+  describe("findById", () => {
+    it("should find a user by id", async () => {
+      const userId = 1
+      const user = await userRepository.findById(userId);
+
+      expect(user?.getId()).toBe(userId);
+    });
+
+    it("should return null if user not found", async () => {
+      const userId = 999;
+      const user = await userRepository.findById(userId);
+
+      expect(user).toBeNull();
+    });
+  });
+
+  describe("findByEmail", () => {
+    it("should find a user by email", async () => {
+      const targetUser = userSeeds[0];
+      const user = await userRepository.findByEmail(targetUser.email);
+
+      expect(user?.getId()).toBe(targetUser.id);
+      expect(user?.getEmail()).toBe(targetUser.email);
+    });
+
+    it("should return null if user not found", async () => {
+      const user = await userRepository.findByEmail("nofindmail@exsample.com");
+
+      expect(user).toBeNull();
+    });
+  });
+
+  describe("findAllByFamilyId", () => {
+    it("should find all users by family", async () => {
+      const targetFamilyId = 1;
+      const users = await userRepository.findAllByFamilyId(targetFamilyId);
+
+      expect(users.length).toBe(3);
+      users.forEach((user) => {
+        expect(user.getFamilyId()).toBe(targetFamilyId);
+      });
+    });
+
+    it("should return an empty array if no users found", async () => {
+      const targetFamilyId = 999;
+      const users = await userRepository.findAllByFamilyId(targetFamilyId);
+
+      expect(users.length).toBe(0);
+    });
+  });
+
   describe("save", () => {
     it("should save a user", async () => {
       const initialCount = await dataSource.getRepository(User).count();
-
-      const family = await dataSource.getRepository(Family).findOne({where: {id: 1}});
       const newUser = new User(
-        family!,
         "Test User",
         "testuser1@exsample.com",
         "password1234",
-        "Parent"
+        "Parent",
+        1
       );
       const createdUser = await userRepository.save(newUser);
       const finalCount = await dataSource.getRepository(User).count();
@@ -40,107 +90,21 @@ describe("UserRepository", () => {
       expect(createdUser).toBe(newUser);
       expect(finalCount).toBe(initialCount + 1);
     });
-
-    // it("should throw an error if save fails", async () => {
-    //   const user = new User();
-    //   userRepoMock.save.mockRejectedValue(new Error("Save failed"));
-
-    //   await expect(userRepository.save(user)).rejects.toThrow(AppError);
-    //   await expect(userRepository.save(user)).rejects.toThrow("Failed to save user");
-    // });
-  });
-
-  describe("findById", () => {
-    // it("should find a user by id", async () => {
-    //   const user = new User();
-    //   userRepoMock.findOneBy.mockResolvedValue(user);
-
-    //   const result = await userRepository.findById(1);
-
-    //   expect(result).toBe(user);
-    //   expect(userRepoMock.findOneBy).toHaveBeenCalledWith({ id: 1 });
-    // });
-
-    // it("should return null if user not found", async () => {
-    //   userRepoMock.findOneBy.mockResolvedValue(null);
-
-    //   const result = await userRepository.findById(1);
-
-    //   expect(result).toBeNull();
-    //   expect(userRepoMock.findOneBy).toHaveBeenCalledWith({ id: 1 });
-    // });
-
-    // it("should throw an error if findById fails", async () => {
-    //   userRepoMock.findOneBy.mockRejectedValue(new Error("Find failed"));
-
-    //   await expect(userRepository.findById(1)).rejects.toThrow(AppError);
-    //   await expect(userRepository.findById(1)).rejects.toThrow("Failed to find user");
-    // });
-  });
-
-  describe("findByEmail", () => {
-    // it("should find a user by email", async () => {
-    //   const user = new User();
-    //   userRepoMock.findOneBy.mockResolvedValue(user);
-
-    //   const result = await userRepository.findByEmail("test@example.com");
-
-    //   expect(result).toBe(user);
-    //   expect(userRepoMock.findOneBy).toHaveBeenCalledWith({ email: "test@example.com" });
-    // });
-
-    // it("should return null if user not found", async () => {
-    //   userRepoMock.findOneBy.mockResolvedValue(null);
-
-    //   const result = await userRepository.findByEmail("test@example.com");
-
-    //   expect(result).toBeNull();
-    //   expect(userRepoMock.findOneBy).toHaveBeenCalledWith({ email: "test@example.com" });
-    // });
-
-    // it("should throw an error if findByEmail fails", async () => {
-    //   userRepoMock.findOneBy.mockRejectedValue(new Error("Find failed"));
-
-    //   await expect(userRepository.findByEmail("test@example.com")).rejects.toThrow(AppError);
-    //   await expect(userRepository.findByEmail("test@example.com")).rejects.toThrow("Failed to find user");
-    // });
-  });
-
-  describe("findAllByFamily", () => {
-    // it("should find all users by family", async () => {
-    //   const family = new Family();
-    //   const users = [new User(), new User()];
-    //   userRepoMock.find.mockResolvedValue(users);
-
-    //   const result = await userRepository.findAllByFamily(family);
-
-    //   expect(result).toBe(users);
-    //   expect(userRepoMock.find).toHaveBeenCalledWith({ where: { family } });
-    // });
-
-    // it("should throw an error if findAllByFamily fails", async () => {
-    //   const family = new Family();
-    //   userRepoMock.find.mockRejectedValue(new Error("Find failed"));
-
-    //   await expect(userRepository.findAllByFamily(family)).rejects.toThrow(AppError);
-    //   await expect(userRepository.findAllByFamily(family)).rejects.toThrow("failed to find users");
-    // });
   });
 
   describe("delete", () => {
-    // it("should delete a user by id", async () => {
-    //   userRepoMock.delete.mockResolvedValue({} as any);
+    it("should delete a user by id", async () => {
+      const targetEmail = "testuser1@exsample.com";
+      const targetUser = await userRepository.findByEmail(targetEmail);
+      const initialCount = await dataSource.getRepository(User).count();
 
-    //   await userRepository.delete(1);
+      await userRepository.delete(targetUser?.getId()!);
 
-    //   expect(userRepoMock.delete).toHaveBeenCalledWith(1);
-    // });
+      const deletedUser = await userRepository.findByEmail(targetEmail);
 
-    // it("should throw an error if delete fails", async () => {
-    //   userRepoMock.delete.mockRejectedValue(new Error("Delete failed"));
-
-    //   await expect(userRepository.delete(1)).rejects.toThrow(AppError);
-    //   await expect(userRepository.delete(1)).rejects.toThrow("failed to delete user");
-    // });
+      expect(deletedUser).toBeNull();
+      const finalCount = await dataSource.getRepository(User).count();
+      expect(finalCount).toBe(initialCount - 1);
+    });
   });
 });

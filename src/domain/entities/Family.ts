@@ -14,11 +14,17 @@ export class Family {
   @Column({ name: "payment_schedule", type: "date" })
   payment_schedule: string;
 
-  @OneToMany(() => User, (user) => user.family)
-  users!: User[];
+  @OneToMany(() => User, (user) => user.family, {
+    createForeignKeyConstraints: false,
+    persistence: false,
+  })
+  readonly users?: User[];
 
-  @OneToMany(() => Task, (task) => task.family)
-  tasks!: Task[];
+  @OneToMany(() => Task, (task) => task.family, {
+    createForeignKeyConstraints: false,
+    persistence: false,
+  })
+  readonly tasks?: Task[];
 
   constructor(name: string, payment_schedule: string) {
     this.name = name;
