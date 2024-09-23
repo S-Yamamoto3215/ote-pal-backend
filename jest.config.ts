@@ -1,11 +1,16 @@
+import dotenv from "dotenv";
 import type { Config } from "@jest/types";
+import { pathsToModuleNameMapper } from "ts-jest";
+import { compilerOptions } from "./tsconfig.json";
+
+dotenv.config({ path: ".env.test" });
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",
   testEnvironment: "node",
-  moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
-  },
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: "<rootDir>/",
+  }),
   moduleFileExtensions: ["ts", "js", "json", "node"],
   testMatch: ["**/tests/**/*.test.ts"],
   collectCoverage: true,

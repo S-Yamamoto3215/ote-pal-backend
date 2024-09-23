@@ -11,8 +11,8 @@ export class Family {
   @Column()
   name: string;
 
-  @Column()
-  payment_schedule: Date;
+  @Column({ name: "payment_schedule", type: "date" })
+  payment_schedule: string;
 
   @OneToMany(() => User, (user) => user.family)
   users!: User[];
@@ -20,7 +20,7 @@ export class Family {
   @OneToMany(() => Task, (task) => task.family)
   tasks!: Task[];
 
-  constructor(name: string, payment_schedule: Date) {
+  constructor(name: string, payment_schedule: string) {
     this.name = name;
     this.payment_schedule = payment_schedule;
   }
@@ -33,7 +33,7 @@ export class Family {
     return this.name;
   }
 
-  getPaymentSchedule(): Date {
+  getPaymentSchedule(): string {
     return this.payment_schedule;
   }
 
@@ -45,7 +45,7 @@ export class Family {
     this.name = name;
   }
 
-  setPaymentSchedule(payment_schedule: Date): void {
+  setPaymentSchedule(payment_schedule: string): void {
     this.payment_schedule = payment_schedule;
   }
 }

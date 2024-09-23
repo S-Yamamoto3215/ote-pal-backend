@@ -1,7 +1,9 @@
 import { User } from "@/domain/entities/User";
 
+import { testFamily1, testFamily2 } from "@tests/resources/Family/FamilyEntitys";
+
 export const parentUser = new User(
-  1,
+  testFamily1,
   "Parent User",
   "parent@example.com",
   "password",
@@ -9,7 +11,7 @@ export const parentUser = new User(
 );
 
 export const childUser1 = new User(
-  1,
+  testFamily1,
   "Child User1",
   "child1@example.com",
   "password",
@@ -17,7 +19,7 @@ export const childUser1 = new User(
 );
 
 export const childUser2 = new User(
-  1,
+  testFamily1,
   "Child User2",
   "child2@example.com",
   "password",
@@ -25,7 +27,7 @@ export const childUser2 = new User(
 );
 
 export const otherFamilyUser = new User(
-  2,
+  testFamily2,
   "Other Family User",
   "other@example.com",
   "password",

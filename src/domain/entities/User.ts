@@ -23,9 +23,6 @@ export class User {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column({ update: false })
-  familyId: number;
-
   @Column()
   @IsNotEmpty({ message: "Name is required" })
   @Length(1, 20, { message: "Name must be between 1 and 20" })
@@ -54,22 +51,20 @@ export class User {
   works!: Work[];
 
   @ManyToOne(() => Family, (family) => family.users)
-  family?: Family;
+  family!: Family;
 
   constructor(
-    familyId: number,
+    family: Family,
     name: string,
     email: string,
     password: string,
     role: "Parent" | "Child"
   ) {
-    this.familyId = familyId;
+    this.family = family;
     this.name = name;
     this.email = email;
     this.password = password;
     this.role = role;
-
-    this.validate();
   }
 
   validate(): void {
@@ -84,10 +79,6 @@ export class User {
 
   getId(): number | undefined {
     return this.id;
-  }
-
-  getFamilyId(): number {
-    return this.familyId;
   }
 
   getName(): string {
@@ -106,33 +97,31 @@ export class User {
     return this.role;
   }
 
-  setId(id: number): void {
-    this.id = id;
-    this.validate();
+  getFamilyId(): number | undefined {
+    return this.family.id;
   }
 
-  setFamilyId(familyId: number): void {
-    this.familyId = familyId;
-    this.validate();
+  setId(id: number): void {
+    this.id = id;
   }
 
   setName(name: string): void {
     this.name = name;
-    this.validate();
   }
 
   setEmail(email: string): void {
     this.email = email;
-    this.validate();
   }
 
   setPassword(password: string): void {
     this.password = password;
-    this.validate();
   }
 
   setRole(role: "Parent" | "Child"): void {
     this.role = role;
-    this.validate();
+  }
+
+  setFamily(family: Family): void {
+    this.family = family;
   }
 }

@@ -1,4 +1,6 @@
 import { User } from "@/domain/entities/User";
+import { Family } from "@/domain/entities/Family";
+
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 
 import { IUserUseCase } from "@/application/usecases/UserUseCase";
@@ -6,7 +8,7 @@ import { IUserUseCase } from "@/application/usecases/UserUseCase";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 interface CreateUserInput {
-  familyId: number;
+  family: Family;
   name: string;
   email: string;
   password: string;
@@ -28,9 +30,9 @@ export class UserUseCase implements IUserUseCase {
     }
   }
 
-  async findAllByFamilyId(familyId: number): Promise<User[]> {
+  async findAllByFamily(family: Family): Promise<User[]> {
     try {
-      return this.userRepository.findAllByFamilyId(familyId);
+      return this.userRepository.findAllByFamily(family);
     } catch (error) {
       throw error;
     }
@@ -39,7 +41,7 @@ export class UserUseCase implements IUserUseCase {
   async createUser(input: CreateUserInput): Promise<User> {
     try {
       const user = new User(
-        input.familyId,
+        input.family,
         input.name,
         input.email,
         input.password,
@@ -60,11 +62,11 @@ export class UserUseCase implements IUserUseCase {
         throw new AppError("NotFound", "User not found");
       }
 
-      user.setFamilyId(input.familyId);
       user.setName(input.name);
       user.setEmail(input.email);
       user.setPassword(input.password);
       user.setRole(input.role);
+      user.setFamily(input.family);
 
       return this.userRepository.save(user);
     } catch (error) {

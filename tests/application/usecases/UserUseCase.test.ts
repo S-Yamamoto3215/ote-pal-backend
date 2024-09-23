@@ -3,8 +3,8 @@ import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { UserUseCase } from "@/application/usecases/UserUseCase/UserUseCase";
 import { AppError } from "@/infrastructure/errors/AppError";
 
-import { parentUser, childUser1, childUser2, otherFamilyUser } from "../../resources/Users";
-
+import { parentUser, childUser1, childUser2 } from "@tests/resources/User/UserEntitys";
+import { testFamily1 } from "@tests/resources/Family/FamilyEntitys";
 
 describe("UserUseCase", () => {
   let userRepository: jest.Mocked<IUserRepository>;
@@ -14,7 +14,7 @@ describe("UserUseCase", () => {
     userRepository = {
       findById: jest.fn(),
       save: jest.fn(),
-      findAllByFamilyId: jest.fn(),
+      findAllByFamily: jest.fn(),
       delete: jest.fn(),
     } as unknown as jest.Mocked<IUserRepository>;
 
@@ -53,51 +53,51 @@ describe("UserUseCase", () => {
     });
   });
 
-  describe("findAllByFamilyId", () => {
+  describe("findAllByFamily", () => {
     it("should return users when found", async () => {
-      const familyId = 1;
+      const family = testFamily1;
       const users = [parentUser, childUser1, childUser2];
-      userRepository.findAllByFamilyId.mockResolvedValue(users);
+      userRepository.findAllByFamily.mockResolvedValue(users);
 
-      const result = await userUseCase.findAllByFamilyId(familyId);
+      const result = await userUseCase.findAllByFamily(family);
 
       expect(result).toEqual(users);
-      expect(userRepository.findAllByFamilyId).toHaveBeenCalledWith(familyId);
+      expect(userRepository.findAllByFamily).toHaveBeenCalledWith(family);
     });
 
     it("should return an empty array when no users are found", async () => {
-      const familyId = 1;
-      userRepository.findAllByFamilyId.mockResolvedValue([]);
+      const family = testFamily1;
+      userRepository.findAllByFamily.mockResolvedValue([]);
 
-      const result = await userUseCase.findAllByFamilyId(familyId);
+      const result = await userUseCase.findAllByFamily(family);
 
       expect(result).toEqual([]);
-      expect(userRepository.findAllByFamilyId).toHaveBeenCalledWith(familyId);
+      expect(userRepository.findAllByFamily).toHaveBeenCalledWith(family);
     });
 
     it("should propagate any other errors", async () => {
-      const familyId = 1;
+      const family = testFamily1;
       const error = new Error("Database error");
-      userRepository.findAllByFamilyId.mockRejectedValue(error);
+      userRepository.findAllByFamily.mockRejectedValue(error);
 
-      await expect(userUseCase.findAllByFamilyId(familyId)).rejects.toThrow(
+      await expect(userUseCase.findAllByFamily(family)).rejects.toThrow(
         error
       );
-      expect(userRepository.findAllByFamilyId).toHaveBeenCalledWith(familyId);
+      expect(userRepository.findAllByFamily).toHaveBeenCalledWith(family);
     });
   });
 
   describe("createUser", () => {
     it("should create and return a new user", async () => {
       const input = {
-        familyId: 1,
+        family: testFamily1,
         name: "John Doe",
         email: "john.doe@example.com",
         password: "password123",
         role: "Parent" as "Parent" | "Child",
       };
       const newUser = new User(
-        input.familyId,
+        input.family,
         input.name,
         input.email,
         input.password,
@@ -113,7 +113,7 @@ describe("UserUseCase", () => {
 
     it("should propagate any errors", async () => {
       const input = {
-        familyId: 1,
+        family: testFamily1,
         name: "John Doe",
         email: "john.doe@example.com",
         password: "password123",
@@ -131,14 +131,14 @@ describe("UserUseCase", () => {
     it("should update and return the user when found", async () => {
       const userId = 1;
       const input = {
-        familyId: 1,
+        family: testFamily1,
         name: "John Doe",
         email: "john.doe@example.com",
         password: "newpassword123",
         role: "Parent" as "Parent" | "Child",
       };
       const existingUser = new User(
-        input.familyId,
+        input.family,
         "Old Name",
         "old.email@example.com",
         "oldpassword",
@@ -146,7 +146,7 @@ describe("UserUseCase", () => {
       );
       userRepository.findById.mockResolvedValue(existingUser);
       const updatedUser = new User(
-        input.familyId,
+        input.family,
         input.name,
         input.email,
         input.password,
@@ -164,7 +164,7 @@ describe("UserUseCase", () => {
     it("should throw an AppError when user is not found", async () => {
       const userId = 1;
       const input = {
-        familyId: 1,
+        family: testFamily1,
         name: "John Doe",
         email: "john.doe@example.com",
         password: "newpassword123",
@@ -184,7 +184,7 @@ describe("UserUseCase", () => {
     it("should propagate any other errors", async () => {
       const userId = 1;
       const input = {
-        familyId: 1,
+        family: testFamily1,
         name: "John Doe",
         email: "john.doe@example.com",
         password: "newpassword123",
