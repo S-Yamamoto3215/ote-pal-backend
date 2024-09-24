@@ -117,6 +117,9 @@ export class User {
   }
 
   setId(id: number): void {
+    if (this.id !== undefined) {
+      throw new AppError("ValidationError", "User id is already set");
+    }
     this.id = id;
   }
 

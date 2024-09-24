@@ -1,48 +1,73 @@
 import { User } from "@/domain/entities/User";
 import { AppError } from "@/infrastructure/errors/AppError";
 
+import { userSeeds } from "@tests/resources/User/UserSeeds";
+
 describe("User Entity", () => {
   it("should create a valid User", () => {
-    const user = new User("John Doe", "john.doe@example.com", "password123", "Parent", 1);
-    expect(user.getName()).toBe("John Doe");
-    expect(user.getEmail()).toBe("john.doe@example.com");
-    expect(user.getPassword()).toBe("password123");
-    expect(user.getRole()).toBe("Parent");
-    expect(user.getFamilyId()).toBe(1);
+    const { name, email, password, role, familyId } = userSeeds[0];
+    const user = new User(name, email, password, role as "Parent", familyId);
+    expect(user.getName()).toBe(name);
+    expect(user.getEmail()).toBe(email);
+    expect(user.getPassword()).toBe(password);
+    expect(user.getRole()).toBe(role);
+    expect(user.getFamilyId()).toBe(familyId);
   });
 
   it("should throw validation error for invalid email", () => {
-    const user = new User("John Doe", "invalid-email", "password123", "Parent", 1);
+    const { name, password, role, familyId } = userSeeds[0];
+    const user = new User(name, "invalid-email", password, role as "Parent", familyId);
     expect(() => user.validate()).toThrow(AppError);
   });
 
   it("should throw validation error for empty name", () => {
-    const user = new User("", "john.doe@example.com", "password123", "Parent", 1);
+    const { email, password, role, familyId } = userSeeds[0];
+    const user = new User("", email, password, role as "Parent", familyId);
     expect(() => user.validate()).toThrow(AppError);
   });
 
   it("should throw validation error for short password", () => {
-    const user = new User("John Doe", "john.doe@example.com", "123", "Parent", 1);
+    const { name, email, role, familyId } = userSeeds[0];
+    const user = new User(name, email, "123", role as "Parent", familyId);
     expect(() => user.validate()).toThrow(AppError);
   });
 
   it("should throw validation error for invalid role", () => {
-    const user = new User("John Doe", "john.doe@example.com", "password123", "InvalidRole" as "Parent", 1);
+    const { name, email, password, familyId } = userSeeds[0];
+    const user = new User( name, email, password, "InvalidRole" as "Parent", familyId);
     expect(() => user.validate()).toThrow(AppError);
   });
 
   it("should set and get properties correctly", () => {
-    const user = new User("John Doe", "john.doe@example.com", "password123", "Parent", 1);
+    const { name, email, password, role, familyId } = userSeeds[0];
+    const user = new User(name, email, password, role as "Parent", familyId);
+    user.setId(2);
     user.setName("Jane Doe");
     user.setEmail("jane.doe@example.com");
     user.setPassword("newpassword123");
     user.setRole("Child");
     user.setFamilyId(2);
 
+    expect(user.getId()).toBe(2);
     expect(user.getName()).toBe("Jane Doe");
     expect(user.getEmail()).toBe("jane.doe@example.com");
     expect(user.getPassword()).toBe("newpassword123");
     expect(user.getRole()).toBe("Child");
     expect(user.getFamilyId()).toBe(2);
+  });
+
+  it("should throw an error if the user id is undefined", () => {
+    const { name, email, password, role, familyId } = userSeeds[0];
+    const user = new User(name, email, password, role as "Parent", familyId);
+    expect(() => user.getId()).toThrow(AppError);
+    expect(() => user.getId()).toThrow("User id is undefined or null");
+  });
+
+  it("should throw an error if trying to set the user id when it is already set", () => {
+    const { id, name, email, password, role, familyId } = userSeeds[0];
+    const user = new User(name, email, password, role as "Parent", familyId);
+    user.setId(id);
+    expect(() => user.setId(2)).toThrow(AppError);
+    expect(() => user.setId(2)).toThrow("User id is already set");
   });
 });
