@@ -14,7 +14,11 @@ const config: Config.InitialOptions = {
   moduleFileExtensions: ["ts", "js", "json", "node"],
   testMatch: ["**/tests/**/*.test.ts"],
   collectCoverage: true,
-  collectCoverageFrom: ["src/**/*.ts", "!src/**/index.ts"],
+  collectCoverageFrom: [
+    "src/**/*.ts",
+    "!src/**/index.ts",
+    "!src/**/I*.ts",
+  ],
   coverageProvider: "v8",
 };
 

@@ -1,5 +1,4 @@
 import { User } from "@/domain/entities/User";
-import { Family } from "@/domain/entities/Family";
 
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 

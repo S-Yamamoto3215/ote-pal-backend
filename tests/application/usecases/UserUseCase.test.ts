@@ -3,6 +3,7 @@ import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { UserUseCase } from "@/application/usecases/UserUseCase/UserUseCase";
 import { AppError } from "@/infrastructure/errors/AppError";
 
+import { userSeeds } from "@tests/resources/User/UserSeeds";
 import { parentUser, childUser1, childUser2 } from "@tests/resources/User/UserEntitys";
 
 describe("UserUseCase", () => {
@@ -52,7 +53,7 @@ describe("UserUseCase", () => {
     });
   });
 
-  describe("findAllByFamily", () => {
+  describe("findAllByFamilyId", () => {
     it("should return users when found", async () => {
       const targetFamilyId = 1;
       const users = [parentUser, childUser1, childUser2];
@@ -94,26 +95,37 @@ describe("UserUseCase", () => {
 
   describe("createUser", () => {
     it("should create and return a new user", async () => {
-      const input = {
-        name: "John Doe",
-        email: "john.doe@example.com",
-        password: "password123",
-        role: "Parent" as "Parent" | "Child",
-        familyId: 1,
+      const input = userSeeds[0]
+      const inputData = {
+        name: input.name,
+        email: input.email,
+        password: input.password,
+        role: input.role as "Parent" | "Child",
+        familyId: input.familyId,
       };
-      const newUser = new User(
-        input.name,
-        input.email,
-        input.password,
-        input.role,
-        input.familyId
-      );
+      const newUser = new User(inputData.name, inputData.email, inputData.password, inputData.role, inputData.familyId);
       userRepository.save.mockResolvedValue(newUser);
 
-      const result = await userUseCase.createUser(input);
+      const result = await userUseCase.createUser(inputData);
 
       expect(result).toEqual(newUser);
       expect(userRepository.save).toHaveBeenCalledWith(newUser);
+    });
+
+    it("should throw an AppError when invalid input is provided", async () => {
+      const input = userSeeds[0];
+      const inputData = {
+        name: "",
+        email: input.email,
+        password: input.password,
+        role: input.role as "Parent" | "Child",
+        familyId: input.familyId,
+      };
+      const appError = new AppError("ValidationError", "Invalid input provided");
+      userRepository.save.mockRejectedValue(appError);
+
+      await expect(userUseCase.createUser(inputData)).rejects.toThrow(appError);
+      expect(userRepository.save).toHaveBeenCalled();
     });
 
     it("should propagate any errors", async () => {

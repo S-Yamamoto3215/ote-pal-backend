@@ -1,7 +1,6 @@
 import { Repository, DataSource } from "typeorm";
 
 import { User } from "@/domain/entities/User";
-import { Family } from "@/domain/entities/Family";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { AppError } from "@/infrastructure/errors/AppError";
 
@@ -14,6 +13,7 @@ export class UserRepository implements IUserRepository {
 
   async save(user: User): Promise<User> {
     try {
+      user.validate();
       return this.repo.save(user);
     } catch (error) {
       throw new AppError("DatabaseError", "Failed to save user");

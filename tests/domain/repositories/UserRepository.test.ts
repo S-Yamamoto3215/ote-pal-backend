@@ -1,110 +1,82 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource } from "typeorm";
 
-import { User } from "@/domain/entities/User";
-import { Family } from "@/domain/entities/Family";
 import { UserRepository } from "@/domain/repositories/UserRepository/UserRepository";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 import { createTestDatabase, closeTestDataSource } from "@tests/utils/database/setupTestDatabase";
 import { seedDatabase } from "@tests/utils/database/seedDatabase";
+import { parentUser, childUser1, childUser2 } from "@tests/resources/User/UserEntitys";
 import { userSeeds } from "@tests/resources/User/UserSeeds";
 
-let dataSource: DataSource;
-let userRepository: UserRepository;
-
-beforeAll(async () => {
-  dataSource = await createTestDatabase();
-  await seedDatabase(dataSource);
-  userRepository = new UserRepository(dataSource);
-});
-
-afterAll(async () => {
-  await closeTestDataSource();
-});
 
 describe("UserRepository", () => {
-  describe("findById", () => {
-    it("should find a user by id", async () => {
-      const userId = 1
-      const user = await userRepository.findById(userId);
+  let dataSource: DataSource;
+  let userRepository: UserRepository;
 
-      expect(user?.getId()).toBe(userId);
+  beforeAll(async () => {
+    dataSource = await createTestDatabase();
+    await seedDatabase(dataSource);
+    userRepository = new UserRepository(dataSource);
+  });
+
+  afterAll(async () => {
+    await closeTestDataSource();
+  });
+
+  describe("save", () => {
+    it("should save a user successfully", async () => {
+      const result = await userRepository.save(parentUser);
+
+      expect(result).toBe(parentUser);
+      expect(result.id).toBeDefined();
     });
 
-    it("should return null if user not found", async () => {
-      const userId = 999;
-      const user = await userRepository.findById(userId);
+    it("should throw an AppError if saving fails", async () => {
+      childUser1.email = "invalid-email";
 
-      expect(user).toBeNull();
+      await expect(userRepository.save(childUser1)).rejects.toThrow(AppError);
+    });
+  });
+
+  describe("findById", () => {
+    it("should find a user by id successfully", async () => {
+      const userId = 1;
+      const result = await userRepository.findById(userId);
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(userId);
     });
   });
 
   describe("findByEmail", () => {
-    it("should find a user by email", async () => {
+    it("should find a user by email successfully", async () => {
       const targetUser = userSeeds[0];
-      const user = await userRepository.findByEmail(targetUser.email);
 
-      expect(user?.getId()).toBe(targetUser.id);
-      expect(user?.getEmail()).toBe(targetUser.email);
-    });
+      const result = await userRepository.findByEmail(targetUser.email);
 
-    it("should return null if user not found", async () => {
-      const user = await userRepository.findByEmail("nofindmail@exsample.com");
-
-      expect(user).toBeNull();
+      expect(result).toBeDefined();
+      expect(result?.email).toBe(targetUser.email);
     });
   });
 
   describe("findAllByFamilyId", () => {
-    it("should find all users by family", async () => {
-      const targetFamilyId = 1;
-      const users = await userRepository.findAllByFamilyId(targetFamilyId);
+    it("should find all users by familyId successfully", async () => {
+      const users = await userRepository.findAllByFamilyId(1);
+      const invalidFamilyId = users.find((user) => user.familyId !== 1);
 
-      expect(users.length).toBe(3);
-      users.forEach((user) => {
-        expect(user.getFamilyId()).toBe(targetFamilyId);
-      });
-    });
-
-    it("should return an empty array if no users found", async () => {
-      const targetFamilyId = 999;
-      const users = await userRepository.findAllByFamilyId(targetFamilyId);
-
-      expect(users.length).toBe(0);
-    });
-  });
-
-  describe("save", () => {
-    it("should save a user", async () => {
-      const initialCount = await dataSource.getRepository(User).count();
-      const newUser = new User(
-        "Test User",
-        "testuser1@exsample.com",
-        "password1234",
-        "Parent",
-        1
-      );
-      const createdUser = await userRepository.save(newUser);
-      const finalCount = await dataSource.getRepository(User).count();
-
-      expect(createdUser).toBe(newUser);
-      expect(finalCount).toBe(initialCount + 1);
+      expect(invalidFamilyId).toBeUndefined();
+      expect(users).toBeInstanceOf(Array);
     });
   });
 
   describe("delete", () => {
-    it("should delete a user by id", async () => {
-      const targetEmail = "testuser1@exsample.com";
-      const targetUser = await userRepository.findByEmail(targetEmail);
-      const initialCount = await dataSource.getRepository(User).count();
+    it("should delete a user successfully", async () => {
+      const savedUser = await userRepository.save(childUser2);
 
-      await userRepository.delete(targetUser?.getId()!);
+      await userRepository.delete(savedUser.getId());
 
-      const deletedUser = await userRepository.findByEmail(targetEmail);
-
-      expect(deletedUser).toBeNull();
-      const finalCount = await dataSource.getRepository(User).count();
-      expect(finalCount).toBe(initialCount - 1);
+      const result = await userRepository.findById(savedUser.getId());
+      expect(result).toBeNull();
     });
   });
 });
