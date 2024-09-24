@@ -11,7 +11,7 @@ export class Family {
   @Column()
   name: string;
 
-  @Column({ name: "payment_schedule", type: "date" })
+  @Column()
   payment_schedule: string;
 
   @OneToMany(() => User, (user) => user.family, {

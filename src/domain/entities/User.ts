@@ -15,6 +15,7 @@ import {
 
 import { Family } from "@/domain/entities/Family";
 import { Work } from "@/domain/entities/Work";
+import { TaskDetail } from "@/domain/entities/TaskDetail";
 
 import { AppError } from "@/infrastructure/errors/AppError";
 
@@ -47,16 +48,22 @@ export class User {
   @IsEnum(["Parent", "Child"], { message: "Role must be 'Parent' or 'Child'" })
   role: "Parent" | "Child";
 
+  @Column()
+  familyId!: number;
+  @ManyToOne(() => Family, (family) => family.users)
+  readonly family!: Family;
+
   @OneToMany(() => Work, (work) => work.user, {
     createForeignKeyConstraints: false,
     persistence: false,
   })
   readonly works?: Work[];
 
-  @Column()
-  familyId!: number;
-  @ManyToOne(() => Family, (family) => family.users)
-  readonly family!: Family;
+  @OneToMany(() => TaskDetail, (taskDetail) => taskDetail.user, {
+    createForeignKeyConstraints: false,
+    persistence: false,
+  })
+  readonly taskDetails?: TaskDetail[];
 
   constructor(
     name: string,

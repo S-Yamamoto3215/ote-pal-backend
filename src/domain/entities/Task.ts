@@ -15,11 +15,6 @@ export class Task {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column({
-    update: false,
-  })
-  family_id: number;
-
   @Column()
   name: string;
 
@@ -29,33 +24,37 @@ export class Task {
   @Column()
   reward: number;
 
-  @OneToMany(() => TaskDetail, (taskDetail) => taskDetail.task)
-  taskDetails!: TaskDetail[];
-
-  @OneToMany(() => Work, (work) => work.task)
-  works!: Work[];
-
+  @Column()
+  familyId!: number;
   @ManyToOne(() => Family, (family) => family.tasks)
-  family?: Family;
+  readonly family!: Family;
+
+  @OneToMany(() => TaskDetail, (taskDetail) => taskDetail.task, {
+    createForeignKeyConstraints: false,
+    persistence: false,
+  })
+  readonly taskDetails?: TaskDetail[];
+
+  @OneToMany(() => Work, (work) => work.task, {
+    createForeignKeyConstraints: false,
+    persistence: false,
+  })
+  readonly works?: Work[];
 
   constructor(
-    family_id: number,
     name: string,
     description: string,
-    reward: number
+    reward: number,
+    familyId: number
   ) {
-    this.family_id = family_id;
     this.name = name;
     this.description = description;
     this.reward = reward;
+    this.familyId = familyId;
   }
 
   getId(): number | undefined {
     return this.id;
-  }
-
-  getFamilyId(): number {
-    return this.family_id;
   }
 
   getName(): string {
@@ -70,12 +69,12 @@ export class Task {
     return this.reward;
   }
 
-  setId(id: number): void {
-    this.id = id;
+  getFamilyId(): number {
+    return this.familyId;
   }
 
-  setFamilyId(family_id: number): void {
-    this.family_id = family_id;
+  setId(id: number): void {
+    this.id = id;
   }
 
   setName(name: string): void {
@@ -88,5 +87,9 @@ export class Task {
 
   setReward(reward: number): void {
     this.reward = reward;
+  }
+
+  setFamilyId(familyId: number): void {
+    this.familyId = familyId;
   }
 }

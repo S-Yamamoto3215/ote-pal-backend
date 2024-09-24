@@ -1,21 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
+import { User } from "@/domain/entities/User";
 import { Task } from "@/domain/entities/Task";
 
 @Entity()
 export class TaskDetail {
   @PrimaryGeneratedColumn()
   id?: number;
-
-  @Column({
-    update: false,
-  })
-  task_id: number;
-
-  @Column({
-    update: false,
-  })
-  user_id: number;
 
   @Column({
     nullable: true,
@@ -27,31 +18,30 @@ export class TaskDetail {
   })
   custom_reward: number;
 
+  @Column()
+  userId!: number;
+  @ManyToOne(() => User, (user) => user.taskDetails)
+  readonly user!: User;
+
+  @Column()
+  taskId!: number;
   @ManyToOne(() => Task, (task) => task.taskDetails)
-  task?: Task;
+  readonly task!: Task;
 
   constructor(
-    task_id: number,
-    user_id: number,
     custom_description: string,
-    custom_reward: number
+    custom_reward: number,
+    userId: number,
+    taskId: number,
   ) {
-    this.task_id = task_id;
-    this.user_id = user_id;
     this.custom_description = custom_description;
     this.custom_reward = custom_reward;
+    this.userId = userId;
+    this.taskId = taskId;
   }
 
   getId(): number | undefined {
     return this.id;
-  }
-
-  getTaskId(): number {
-    return this.task_id;
-  }
-
-  getUserId(): number {
-    return this.user_id;
   }
 
   getCustomDescription(): string {
@@ -62,16 +52,16 @@ export class TaskDetail {
     return this.custom_reward;
   }
 
+  getUserId(): number {
+    return this.userId;
+  }
+
+  getTaskId(): number {
+    return this.taskId;
+  }
+
   setId(id: number): void {
     this.id = id;
-  }
-
-  setTaskId(task_id: number): void {
-    this.task_id = task_id;
-  }
-
-  setUserId(user_id: number): void {
-    this.user_id = user_id;
   }
 
   setCustomDescription(custom_description: string): void {
@@ -80,5 +70,13 @@ export class TaskDetail {
 
   setCustomReward(custom_reward: number): void {
     this.custom_reward = custom_reward;
+  }
+
+  setUserId(userId: number): void {
+    this.userId = userId;
+  }
+
+  setTaskId(taskId: number): void {
+    this.taskId = taskId;
   }
 }

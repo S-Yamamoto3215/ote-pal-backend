@@ -14,23 +14,7 @@ import { Payment } from "@/domain/entities/Payment";
 @Entity()
 export class Work {
   @PrimaryGeneratedColumn()
-  id: number | undefined;
-
-  @Column({
-    update: false,
-    unique: true,
-  })
-  payment_id: number;
-
-  @Column({
-    update: false,
-  })
-  task_id: number;
-
-  @Column({
-    update: false,
-  })
-  user_id: number;
+  id?: number;
 
   @Column({
     type: "enum",
@@ -38,67 +22,65 @@ export class Work {
   })
   status: "InProgress" | "Completed" | "Approved" | "Rejected";
 
+  @Column({
+    update: false,
+  })
+  taskId: number;
+  @ManyToOne(() => Task, (task) => task.works)
+  readonly task!: Task;
+
+  @Column({
+    update: false,
+  })
+  userId: number;
+  @ManyToOne(() => User, (user) => user.works)
+  readonly user!: User;
+
   @OneToOne(() => Payment)
   @JoinColumn()
-  payment?: Payment;
-
-  @ManyToOne(() => User, (user) => user.works)
-  user?: User;
-
-  @ManyToOne(() => Task, (task) => task.works)
-  task?: Task;
+  payment!: Payment;
 
   constructor(
-    payment_id: number,
-    task_id: number,
-    user_id: number,
-    status: "InProgress" | "Completed" | "Approved" | "Rejected"
+    status: "InProgress" | "Completed" | "Approved" | "Rejected",
+    taskId: number,
+    userId: number,
   ) {
-    this.payment_id = payment_id;
-    this.task_id = task_id;
-    this.user_id = user_id;
     this.status = status;
+    this.taskId = taskId;
+    this.userId = userId;
   }
 
   getId(): number | undefined {
     return this.id;
   }
 
-  getPaymentId(): number {
-    return this.payment_id;
+  getStatus(): "InProgress" | "Completed" | "Approved" | "Rejected" {
+    return this.status;
   }
 
   getTaskId(): number {
-    return this.task_id;
+    return this.taskId;
   }
 
   getUserId(): number {
-    return this.user_id;
-  }
-
-  getStatus(): "InProgress" | "Completed" | "Approved" | "Rejected" {
-    return this.status;
+    return this.userId;
   }
 
   setId(id: number): void {
     this.id = id;
   }
 
-  setPaymentId(payment_id: number): void {
-    this.payment_id = payment_id;
-  }
-
-  setTaskId(task_id: number): void {
-    this.task_id = task_id;
-  }
-
-  setUserId(user_id: number): void {
-    this.user_id = user_id;
-  }
-
   setStatus(
     status: "InProgress" | "Completed" | "Approved" | "Rejected"
   ): void {
     this.status = status;
+  }
+
+  setTaskId(taskId: number): void {
+    this.taskId = taskId;
+  }
+
+  setUserId(userId: number): void {
+    this.userId = userId;
   }
 }
