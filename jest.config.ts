@@ -18,6 +18,7 @@ const config: Config.InitialOptions = {
     "src/**/*.ts",
     "!src/**/index.ts",
     "!src/**/I*.ts",
+    "!src/*/factories/*/*Factory.ts",
   ],
   coverageProvider: "v8",
 };
