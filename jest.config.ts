@@ -18,7 +18,11 @@ const config: Config.InitialOptions = {
     "src/**/*.ts",
     "!src/**/index.ts",
     "!src/**/I*.ts",
-    "!src/*/factories/*/*Factory.ts",
+    "!src/application/factories/*/*Factory.ts",
+    // 以下はE2Eテストでカバーするため除外している
+    "!src/main.ts",
+    "!src/infrastructure/http/**/*.ts",
+    "!src/infrastructure/database/**/*.ts",
   ],
   coverageProvider: "v8",
 };
