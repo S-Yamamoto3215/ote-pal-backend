@@ -6,7 +6,6 @@ import { IUserUseCase } from "@/application/usecases/UserUseCase";
 
 import { userSeeds } from "@tests/resources/User/UserSeeds";
 
-// モック用の `userUseCase` を作成
 const mockUserUseCase: IUserUseCase = {
   findAllByFamilyId: jest.fn(),
   getUserById: jest.fn(),
@@ -15,12 +14,10 @@ const mockUserUseCase: IUserUseCase = {
   deleteUser: jest.fn(),
 };
 
-// Expressアプリのセットアップ
 const app = express();
 app.use(express.json());
 const userController = new UserController(mockUserUseCase);
 
-// ルーティング
 app.get("/users", (req, res, next) =>
   userController.getAllUsers(req, res, next)
 );
@@ -39,7 +36,7 @@ app.delete("/users", (req, res, next) =>
 
 describe("UserController", () => {
   beforeEach(() => {
-    jest.clearAllMocks(); // モックをクリア
+    jest.clearAllMocks();
   });
 
   it("should get all users by familyId", async () => {
