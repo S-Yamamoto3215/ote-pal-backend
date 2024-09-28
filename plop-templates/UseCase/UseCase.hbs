@@ -1,84 +1,64 @@
-{{!-- TODO: FIX file --}}
-import { User } from "@/domain/entities/User";
+import { {{ pascalCase name }} } from "@/domain/entities/{{ pascalCase name }}";
 
-import { IUserRepository } from "@/domain/repositories/UserRepository";
+import { I{{ pascalCase name }}Repository } from "@/domain/repositories/{{ pascalCase name }}Repository";
 
-import { IUserUseCase } from "@/application/usecases/UserUseCase";
+import { I{{ pascalCase name }}UseCase } from "@/application/usecases/{{ pascalCase name }}UseCase";
 
 import { AppError } from "@/infrastructure/errors/AppError";
 
-interface CreateUserInput {
-name: string;
-email: string;
-password: string;
-role: "Parent" | "Child";
-familyId: number;
-}
+export class {{ pascalCase name }}UseCase implements I{{ pascalCase name }}UseCase {
+  constructor(private {{ camelCase name }}Repository: I{{ pascalCase name }}Repository) {}
 
-export class UserUseCase implements IUserUseCase {
-constructor(private userRepository: IUserRepository) {}
-
-async getUserById(userId: number): Promise<User | null> {
-  try {
-  const user = await this.userRepository.findById(userId);
-  if (!user) {
-  throw new AppError("NotFound", "User not found");
-  }
-  return user;
-  } catch (error) {
-  throw error;
-  }
-  }
-
-  async findAllByFamilyId(familyId: number): Promise<User[]> {
+  async get{{ pascalCase name }}ById({{ camelCase name }}Id: number): Promise<{{ pascalCase name }} | null> {
     try {
-    return this.userRepository.findAllByFamilyId(familyId);
+      const {{ camelCase name }} = await this.{{ camelCase name }}Repository.findById({{ camelCase name }}Id);
+      if (!{{ camelCase name }}) {
+        throw new AppError("NotFound", "{{ pascalCase name }} not found");
+      }
+      return {{ camelCase name }};
     } catch (error) {
-    throw error;
-    }
-    }
-
-    async createUser(input: CreateUserInput): Promise<User> {
-      try {
-      const user = new User(
-      input.name,
-      input.email,
-      input.password,
-      input.role,
-      input.familyId
-      );
-
-      return this.userRepository.save(user);
-      } catch (error) {
       throw error;
+    }
+  }
+
+  async findAllByFamilyId(familyId: number): Promise<{{ pascalCase name }}[]> {
+    try {
+      return this.{{ camelCase name }}Repository.findAllByFamilyId(familyId);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async create{{ pascalCase name }}(input: Create{{ pascalCase name }}Input): Promise<{{ pascalCase name }}> {
+    try {
+      const {{ camelCase name }} = new {{ pascalCase name }}(input);
+
+      return this.{{ camelCase name }}Repository.save({{ camelCase name }});
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update{{ pascalCase name }}({{ camelCase name }}Id: number, input: Create{{ pascalCase name }}Input): Promise<{{ pascalCase name }}> {
+    try {
+      const {{ camelCase name }} = await this.{{ camelCase name }}Repository.findById({{ camelCase name }}Id);
+      if (!{{ camelCase name }}) {
+        throw new AppError("NotFound", "{{ pascalCase name }} not found");
       }
-      }
 
-      async updateUser(userId: number, input: CreateUserInput): Promise<User> {
-        try {
-        const user = await this.userRepository.findById(userId);
+      // update process here
 
-        if (!user) {
-        throw new AppError("NotFound", "User not found");
-        }
+      return this.{{ camelCase name }}Repository.save({{ camelCase name }});
+    } catch (error) {
+      throw error;
+    }
+  }
 
-        user.setName(input.name);
-        user.setEmail(input.email);
-        user.setPassword(input.password);
-        user.setRole(input.role);
-        user.setFamilyId(input.familyId);
-
-        return this.userRepository.save(user);
-        } catch (error) {
-        throw error;
-        }
-        }
-
-        async deleteUser(userId: number): Promise<void> {
-          try {
-          await this.userRepository.delete(userId);
-          } catch (error) {
-          throw error;
-          }
-          }
-          }
+  async delete{{ pascalCase name }}({{ camelCase name }}Id: number): Promise<void> {
+    try {
+      await this.{{ camelCase name }}Repository.delete({{ camelCase name }}Id);
+    } catch (error) {
+      throw error;
+    }
+  }
+}

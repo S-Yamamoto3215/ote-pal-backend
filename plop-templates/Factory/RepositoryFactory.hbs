@@ -1,9 +1,8 @@
-{{!-- TODO: FIX file --}}
-import { UserRepository } from "@/domain/repositories/UserRepository";
+import { {{ pascalCase name }}Repository } from "@/domain/repositories/{{ pascalCase name }}Repository";
 import { AppDataSource } from "@/infrastructure/database/dataSource";
 
-export class UserRepositoryFactory {
-static create(): UserRepository {
-return new UserRepository(AppDataSource);
-}
+export class {{ pascalCase name }}RepositoryFactory {
+  static create(): {{ pascalCase name }}Repository {
+    return new {{ pascalCase name }}Repository(AppDataSource);
+  }
 }

@@ -1,14 +1,3 @@
-// camelCase: changeFormatToThis
-// snakeCase: change_format_to_this
-// dashCase/kebabCase: change-format-to-this
-// dotCase: change.format.to.this
-// pathCase: change/format/to/this
-// properCase/pascalCase: ChangeFormatToThis
-// lowerCase: change format to this
-// sentenceCase: Change format to this,
-// constantCase: CHANGE_FORMAT_TO_THIS
-// titleCase: Change Format To This
-
 module.exports = function (plop) {
   plop.setGenerator('Factory', {
     description: 'Generate factory files',
@@ -139,12 +128,12 @@ module.exports = function (plop) {
     actions: [
       {
         type: 'add',
-        path: 'src/infrastructure/http/routes/userRoutes.ts',
+        path: 'src/infrastructure/http/routes/{{ camelCase name }}Routes.ts',
         templateFile: 'plop-templates/Router/Routes.hbs'
       },
       {
         type: 'add',
-        path: 'tests/infrastructure/http/routes/userRoutes.test.ts',
+        path: 'tests/infrastructure/http/routes/{{ camelCase name }}Routes.test.ts',
         templateFile: 'plop-templates/Router/RoutesTest.hbs'
       }
     ]

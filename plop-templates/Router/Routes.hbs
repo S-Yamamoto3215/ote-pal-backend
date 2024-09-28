@@ -1,27 +1,14 @@
-{{!-- TODO: FIX file --}}
 import { Router } from "express";
 
-import { UserControllerFactory } from "@/application/factories/User/UserControllerFactory";
+import { {{ pascalCase name }}ControllerFactory } from "@/application/factories/{{ pascalCase name }}/{{ pascalCase name }}ControllerFactory";
 
-export const userRouter = Router();
-const userController = UserControllerFactory.create();
+export const {{ camelCase name }}Router = Router();
+const {{ camelCase name }}Controller = {{ pascalCase name }}ControllerFactory.create();
 
-userRouter.get("/", (req, res, next) => {
-userController.getAllUsers(req, res, next);
-});
+// After setting up, add the following to src/infrastructure/http/routes/setRoutes.ts
+// app.use("/{{ camelCase name }}s", {{ camelCase name }}Router);
 
-userRouter.get("/:userId", (req, res, next) => {
-userController.getUserById(req, res, next);
-});
-
-userRouter.post("/", (req, res, next) => {
-userController.createUser(req, res, next);
-});
-
-userRouter.put("/", (req, res, next) => {
-userController.updateUser(req, res, next);
-});
-
-userRouter.delete("/", (req, res, next) => {
-userController.deleteUser(req, res, next);
-});
+// Add routing here e.x) get
+// {{ camelCase name }}Router.get("/", (req, res, next) => {
+//   {{ camelCase name }}Controller.getAll{{ pascalCase name }}s(req, res, next);
+// });

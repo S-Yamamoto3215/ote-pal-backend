@@ -1,10 +1,9 @@
-{{!-- TODO: FIX file --}}
-import { UserUseCase } from "@/application/usecases/UserUseCase";
-import { UserRepositoryFactory } from "@/application/factories/User/UserRepositoryFactory";
+import { {{ pascalCase name }}UseCase } from "@/application/usecases/{{ pascalCase name }}UseCase";
+import { {{ pascalCase name }}RepositoryFactory } from "@/application/factories/{{ pascalCase name }}/{{ pascalCase name }}RepositoryFactory";
 
-export class UserUseCaseFactory {
-static create(): UserUseCase {
-const userRepository = UserRepositoryFactory.create();
-return new UserUseCase(userRepository);
-}
+export class {{ pascalCase name }}UseCaseFactory {
+  static create(): {{ pascalCase name }}UseCase {
+    const {{ camelCase name }}Repository = {{ pascalCase name }}RepositoryFactory.create();
+    return new {{ pascalCase name }}UseCase({{ camelCase name }}Repository);
+  }
 }

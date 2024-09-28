@@ -1,10 +1,9 @@
-{{!-- TODO: FIX file --}}
-import { UserController } from "@/interface/controllers/UserController";
-import { UserUseCaseFactory } from "@/application/factories/User/UserUseCaseFactory";
+import { {{ pascalCase name }}Controller } from "@/interface/controllers/{{ pascalCase name }}Controller";
+import { {{ pascalCase name }}UseCaseFactory } from "@/application/factories/{{ pascalCase name }}/{{ pascalCase name }}UseCaseFactory";
 
-export class UserControllerFactory {
-static create(): UserController {
-const userUseCase = UserUseCaseFactory.create();
-return new UserController(userUseCase);
-}
+export class {{ pascalCase name }}ControllerFactory {
+  static create(): {{ pascalCase name }}Controller {
+    const {{ camelCase name }}UseCase = {{ pascalCase name }}UseCaseFactory.create();
+    return new {{ pascalCase name }}Controller({{ camelCase name }}UseCase);
+  }
 }

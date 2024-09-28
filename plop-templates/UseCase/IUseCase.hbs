@@ -1,19 +1,8 @@
-{{!-- TODO: FIX file --}}
-import { User } from "@/domain/entities/User";
+import { {{ pascalCase name }} } from "@/domain/entities/{{ pascalCase name }}";
 
-// FIXME: CreateUserInput
-interface CreateUserInput {
-name: string;
-email: string;
-password: string;
-role: "Parent" | "Child";
-familyId: number;
+export interface I{{ pascalCase name }}UseCase {
+  get{{ pascalCase name }}ById({{ camelCase name }}Id: number): Promise<{{ pascalCase name }} | null>;
+  create{{ pascalCase name }}(input: Create{{ pascalCase name }}Input): Promise<{{ pascalCase name }}>;
+  update{{ pascalCase name }}({{ camelCase name }}Id: number, input: Create{{ pascalCase name }}Input): Promise<{{ pascalCase name }}>;
+  delete{{ pascalCase name }}({{ camelCase name }}Id: number): Promise<void>;
 }
-
-export interface IUserUseCase {
-getUserById(userId: number): Promise<User | null>;
-  findAllByFamilyId(familyId: number): Promise<User[]>;
-    createUser(input: CreateUserInput): Promise<User>;
-      updateUser(userId: number, input: CreateUserInput): Promise<User>;
-        deleteUser(userId: number): Promise<void>;
-          }

@@ -1,10 +1,9 @@
-{{!-- TODO: FIX file --}}
-import { User } from "@/domain/entities/User";
+import { {{ pascalCase name }} } from "@/domain/entities/{{ pascalCase name }}";
 
-export interface IUserRepository {
-save(user: User): Promise<User>;
-  findById(id: number): Promise<User | null>;
-    findByEmail(email: string): Promise<User | null>;
-      findAllByFamilyId(familyId: number): Promise<User[]>;
-        delete(userId: number): Promise<void>;
-          }
+export interface I{{ pascalCase name }}Repository {
+  // Repository methods
+  // save({{ camelCase name }}: {{ pascalCase name }}): Promise<{{ pascalCase name }}>;
+  // findById(id: number): Promise<{{ pascalCase name }} | null>;
+  // findByEmail(email: string): Promise<{{ pascalCase name }} | null>;
+  // delete({{ camelCase name }}Id: number): Promise<void>;
+}

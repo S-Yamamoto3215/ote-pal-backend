@@ -1,55 +1,23 @@
-{{!-- TODO: FIX file --}}
 import { Repository, DataSource } from "typeorm";
 
-import { User } from "@/domain/entities/User";
-import { IUserRepository } from "@/domain/repositories/UserRepository";
+import { {{ pascalCase name }} } from "@/domain/entities/{{ pascalCase name }}";
+import { I{{ pascalCase name }}Repository } from "@/domain/repositories/{{ pascalCase name }}Repository";
 import { AppError } from "@/infrastructure/errors/AppError";
 
-export class UserRepository implements IUserRepository {
-private repo: Repository<User>;
+export class {{ pascalCase name }}Repository implements I{{ pascalCase name }}Repository {
+  private repo: Repository<{{ pascalCase name }}>;
 
   constructor(dataSource: DataSource) {
-  this.repo = dataSource.getRepository(User);
+    this.repo = dataSource.getRepository({{ pascalCase name }});
   }
 
-  async save(user: User): Promise<User> {
-    try {
-    user.validate();
-    return this.repo.save(user);
-    } catch (error) {
-    throw new AppError("DatabaseError", "Failed to save user");
-    }
-    }
-
-    async findById(id: number): Promise<User | null> {
-      try {
-      return this.repo.findOneBy({ id });
-      } catch (error) {
-      throw new AppError("DatabaseError", "Failed to find user");
-      }
-      }
-
-      async findByEmail(email: string): Promise<User | null> {
-        try {
-        return this.repo.findOneBy({ email });
-        } catch (error) {
-        throw new AppError("DatabaseError", "Failed to find user");
-        }
-        }
-
-        async findAllByFamilyId(familyId: number): Promise<User[]> {
-          try {
-          return this.repo.find({ where: { familyId } });
-          } catch (error) {
-          throw new AppError("DatabaseError", "failed to find users");
-          }
-          }
-
-          async delete(userId: number): Promise<void> {
-            try {
-            await this.repo.delete(userId);
-            } catch (error) {
-            throw new AppError("DatabaseError", "failed to delete user");
-            }
-            }
-            }
+  // Implement the methods from IRepository here. e.x) save method
+  // async save({{ camelCase name }}: {{ pascalCase name }}): Promise<{{ pascalCase name }}> {
+  //   try {
+  //     {{ camelCase name }}.validate();
+  //     return this.repo.save({{ camelCase name }});
+  //   } catch (error) {
+  //     throw new AppError("DatabaseError", "Failed to save {{ camelCase name }}");
+  //   }
+  // }
+}
