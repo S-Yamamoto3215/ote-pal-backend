@@ -1,5 +1,7 @@
-import { Password } from "@/domain/valueObjects/Password";
 import bcrypt from "bcrypt";
+
+import { Password } from "@/domain/valueObjects/Password";
+
 import { AppError } from "@/infrastructure/errors/AppError";
 
 describe("Password Value Object", () => {

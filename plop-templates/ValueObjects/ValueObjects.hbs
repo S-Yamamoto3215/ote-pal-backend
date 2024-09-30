@@ -1,0 +1,19 @@
+import { validateSync } from "class-validator";
+
+import { AppError } from "@/infrastructure/errors/AppError";
+
+export class {{ pascalCase name }} {
+  // Value Object properties
+
+  constructor() {}
+
+  private validate(): void {
+    const errors = validateSync(this);
+    if (errors.length > 0) {
+      const validationMessages = errors
+        .map((err) => Object.values(err.constraints!))
+        .flat();
+      throw new AppError("ValidationError", validationMessages.join(", "));
+    }
+  }
+}

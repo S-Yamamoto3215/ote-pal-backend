@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { IsNotEmpty, Length, validateSync } from "class-validator";
+
 import { AppError } from "@/infrastructure/errors/AppError";
 
 export class Password {

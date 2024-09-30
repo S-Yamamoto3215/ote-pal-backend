@@ -166,4 +166,27 @@ module.exports = function (plop) {
       }
     ]
   });
+
+  plop.setGenerator('Value Object', {
+    description: 'Generate Value Object files',
+    prompts: [
+      {
+        type: 'input',
+        name: 'name',
+        message: 'What is your resource name? e.x) user, shop, product'
+      }
+    ],
+    actions: [
+      {
+        type: 'add',
+        path: 'src/domain/valueObjects/{{ pascalCase name }}.ts',
+        templateFile: 'plop-templates/ValueObjects/ValueObjects.hbs'
+      },
+      {
+        type: 'add',
+        path: 'tests/domain/valueObjects/{{ pascalCase name }}.test.ts',
+        templateFile: 'plop-templates/ValueObjects/ValueObjectsTest.hbs'
+      }
+    ]
+  });
 };
