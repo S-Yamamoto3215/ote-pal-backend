@@ -23,36 +23,4 @@ export class Payment {
     this.pay_date = pay_date;
     this.approved = approved;
   }
-
-  getId(): number | undefined {
-    return this.id;
-  }
-
-  getAmount(): number {
-    return this.amount;
-  }
-
-  getPayDate(): Date {
-    return this.pay_date;
-  }
-
-  getApproved(): boolean {
-    return this.approved;
-  }
-
-  setId(id: number): void {
-    this.id = id;
-  }
-
-  setAmount(amount: number): void {
-    this.amount = amount;
-  }
-
-  setPayDate(pay_date: Date): void {
-    this.pay_date = pay_date;
-  }
-
-  setApproved(approved: boolean): void {
-    this.approved = approved;
-  }
 }

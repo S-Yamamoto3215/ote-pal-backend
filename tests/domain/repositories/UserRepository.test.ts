@@ -73,9 +73,13 @@ describe("UserRepository", () => {
     it("should delete a user successfully", async () => {
       const savedUser = await userRepository.save(childUser2);
 
-      await userRepository.delete(savedUser.getId());
+      if (!savedUser.id) {
+        throw new Error("User id is undefined");
+      }
 
-      const result = await userRepository.findById(savedUser.getId());
+      await userRepository.delete(savedUser.id);
+
+      const result = await userRepository.findById(savedUser.id);
       expect(result).toBeNull();
     });
   });

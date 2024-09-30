@@ -61,11 +61,11 @@ export class UserUseCase implements IUserUseCase {
         throw new AppError("NotFound", "User not found");
       }
 
-      user.setName(input.name);
-      user.setEmail(input.email);
-      user.setPassword(input.password);
-      user.setRole(input.role);
-      user.setFamilyId(input.familyId);
+      user.name = input.name;
+      user.email = input.email;
+      user.password = input.password;
+      user.role = input.role;
+      user.familyId = input.familyId;
 
       return this.userRepository.save(user);
     } catch (error) {

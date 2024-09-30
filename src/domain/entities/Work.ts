@@ -49,38 +49,4 @@ export class Work {
     this.taskId = taskId;
     this.userId = userId;
   }
-
-  getId(): number | undefined {
-    return this.id;
-  }
-
-  getStatus(): "InProgress" | "Completed" | "Approved" | "Rejected" {
-    return this.status;
-  }
-
-  getTaskId(): number {
-    return this.taskId;
-  }
-
-  getUserId(): number {
-    return this.userId;
-  }
-
-  setId(id: number): void {
-    this.id = id;
-  }
-
-  setStatus(
-    status: "InProgress" | "Completed" | "Approved" | "Rejected"
-  ): void {
-    this.status = status;
-  }
-
-  setTaskId(taskId: number): void {
-    this.taskId = taskId;
-  }
-
-  setUserId(userId: number): void {
-    this.userId = userId;
-  }
 }

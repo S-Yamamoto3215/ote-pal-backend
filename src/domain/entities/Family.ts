@@ -30,28 +30,4 @@ export class Family {
     this.name = name;
     this.payment_schedule = payment_schedule;
   }
-
-  getId(): number | undefined {
-    return this.id;
-  }
-
-  getName(): string {
-    return this.name;
-  }
-
-  getPaymentSchedule(): string {
-    return this.payment_schedule;
-  }
-
-  setId(id: number): void {
-    this.id = id;
-  }
-
-  setName(name: string): void {
-    this.name = name;
-  }
-
-  setPaymentSchedule(payment_schedule: string): void {
-    this.payment_schedule = payment_schedule;
-  }
 }

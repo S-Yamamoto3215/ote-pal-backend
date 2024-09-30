@@ -39,44 +39,4 @@ export class TaskDetail {
     this.userId = userId;
     this.taskId = taskId;
   }
-
-  getId(): number | undefined {
-    return this.id;
-  }
-
-  getCustomDescription(): string {
-    return this.custom_description;
-  }
-
-  getCustomReward(): number {
-    return this.custom_reward;
-  }
-
-  getUserId(): number {
-    return this.userId;
-  }
-
-  getTaskId(): number {
-    return this.taskId;
-  }
-
-  setId(id: number): void {
-    this.id = id;
-  }
-
-  setCustomDescription(custom_description: string): void {
-    this.custom_description = custom_description;
-  }
-
-  setCustomReward(custom_reward: number): void {
-    this.custom_reward = custom_reward;
-  }
-
-  setUserId(userId: number): void {
-    this.userId = userId;
-  }
-
-  setTaskId(taskId: number): void {
-    this.taskId = taskId;
-  }
 }

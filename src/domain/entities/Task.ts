@@ -52,44 +52,4 @@ export class Task {
     this.reward = reward;
     this.familyId = familyId;
   }
-
-  getId(): number | undefined {
-    return this.id;
-  }
-
-  getName(): string {
-    return this.name;
-  }
-
-  getDescription(): string {
-    return this.description;
-  }
-
-  getReward(): number {
-    return this.reward;
-  }
-
-  getFamilyId(): number {
-    return this.familyId;
-  }
-
-  setId(id: number): void {
-    this.id = id;
-  }
-
-  setName(name: string): void {
-    this.name = name;
-  }
-
-  setDescription(description: string): void {
-    this.description = description;
-  }
-
-  setReward(reward: number): void {
-    this.reward = reward;
-  }
-
-  setFamilyId(familyId: number): void {
-    this.familyId = familyId;
-  }
 }
