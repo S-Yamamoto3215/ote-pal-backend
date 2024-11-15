@@ -13,7 +13,6 @@ const config: Config.InitialOptions = {
   }),
   moduleFileExtensions: ["ts", "js", "json", "node"],
   testMatch: ["**/tests/**/*.test.ts"],
-  collectCoverage: true,
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/index.ts",
