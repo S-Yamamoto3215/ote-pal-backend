@@ -6,8 +6,6 @@ import { Task } from "@/domain/entities/Task";
 import { TaskDetail } from "@/domain/entities/TaskDetail";
 import { Payment } from "@/domain/entities/Payment";
 
-let dataSource: DataSource | null = null;
-
 export async function createTestDatabase(): Promise<DataSource> {
   const dataSource = new DataSource({
     type: process.env.DB_TYPE as "postgres",
@@ -25,9 +23,8 @@ export async function createTestDatabase(): Promise<DataSource> {
   return dataSource;
 }
 
-export const closeTestDataSource = async (): Promise<void> => {
-  if (dataSource) {
+export const closeTestDataSource = async (dataSource: DataSource): Promise<void> => {
+  if (dataSource.isInitialized) {
     await dataSource.destroy();
-    dataSource = null;
   }
 };

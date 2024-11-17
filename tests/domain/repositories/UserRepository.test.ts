@@ -3,11 +3,17 @@ import { DataSource } from "typeorm";
 import { UserRepository } from "@/domain/repositories/UserRepository/UserRepository";
 import { AppError } from "@/infrastructure/errors/AppError";
 
-import { createTestDatabase, closeTestDataSource } from "@tests/utils/database/setupTestDatabase";
+import {
+  createTestDatabase,
+  closeTestDataSource,
+} from "@tests/utils/database/setupTestDatabase";
 import { seedDatabase } from "@tests/utils/database/seedDatabase";
-import { parentUser, childUser1, childUser2 } from "@tests/resources/User/UserEntitys";
+import {
+  parentUser,
+  childUser1,
+  childUser2,
+} from "@tests/resources/User/UserEntitys";
 import { userSeeds } from "@tests/resources/User/UserSeeds";
-
 
 describe("UserRepository", () => {
   let dataSource: DataSource;
@@ -20,7 +26,7 @@ describe("UserRepository", () => {
   });
 
   afterAll(async () => {
-    await closeTestDataSource();
+    await closeTestDataSource(dataSource);
   });
 
   describe("save", () => {
