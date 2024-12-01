@@ -16,7 +16,6 @@ import {
 import { Family } from "@/domain/entities/Family";
 import { Work } from "@/domain/entities/Work";
 import { TaskDetail } from "@/domain/entities/TaskDetail";
-import { Password } from "@/domain/valueObjects/Password";
 
 import { AppError } from "@/infrastructure/errors/AppError";
 
@@ -36,8 +35,10 @@ export class User {
   @IsEmail({}, { message: "Invalid email" })
   email: string;
 
-  @Column(() => Password)
-  password: Password;
+  @Column()
+  @IsNotEmpty({ message: "Password is required" })
+  @Length(6, 20, { message: "Password must be between 6 and 20 characters" })
+  password: string;
 
   @Column({
     type: "enum",
@@ -69,11 +70,11 @@ export class User {
     email: string,
     password: string,
     role: "Parent" | "Child",
-    familyId: number
+    familyId: number,
   ) {
     this.name = name;
     this.email = email;
-    this.password = new Password(password);
+    this.password = password;
     this.role = role;
     this.familyId = familyId;
   }

@@ -13,7 +13,7 @@ export async function createTestDatabase(): Promise<DataSource> {
     port: parseInt(process.env.DB_PORT || "5432"),
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || "test_otepal_db",
+    database: process.env.TEST_DB_NAME || "test_otepal_db",
     synchronize: true,
     dropSchema: true,
     entities: [User, Family, Work, Task, TaskDetail, Payment],
@@ -23,7 +23,9 @@ export async function createTestDatabase(): Promise<DataSource> {
   return dataSource;
 }
 
-export const closeTestDataSource = async (dataSource: DataSource): Promise<void> => {
+export const closeTestDataSource = async (
+  dataSource: DataSource,
+): Promise<void> => {
   if (dataSource) {
     await dataSource.destroy();
   }

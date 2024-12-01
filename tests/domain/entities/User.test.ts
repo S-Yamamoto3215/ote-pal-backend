@@ -9,7 +9,7 @@ describe("User Entity", () => {
     const user = new User(name, email, password, role as "Parent", familyId);
     expect(user.name).toBe(name);
     expect(user.email).toBe(email);
-    expect(user.password.getValue()).not.toBe(password); // Password should be hashed
+    expect(user.password).toBe(password);
     expect(user.role).toBe(role);
     expect(user.familyId).toBe(familyId);
   });
@@ -21,7 +21,7 @@ describe("User Entity", () => {
       "invalid-email",
       password,
       role as "Parent",
-      familyId
+      familyId,
     );
     expect(() => user.validate()).toThrow(AppError);
   });
@@ -39,7 +39,7 @@ describe("User Entity", () => {
       email,
       password,
       "InvalidRole" as "Parent",
-      familyId
+      familyId,
     );
     expect(() => user.validate()).toThrow(AppError);
   });
