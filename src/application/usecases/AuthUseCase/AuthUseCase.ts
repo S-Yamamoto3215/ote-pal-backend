@@ -19,7 +19,8 @@ export class AuthUseCase implements IAuthUseCase {
       throw new AppError("NotFound", "User not found");
     }
 
-    if (user.password !== password) {
+    const isPasswordValid = await user.password.comparePassword(password);
+    if (!isPasswordValid) {
       throw new AppError("Unauthorized", "Invalid email or password");
     }
 

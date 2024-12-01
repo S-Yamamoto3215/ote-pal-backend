@@ -24,7 +24,7 @@ export async function createTestDatabase(): Promise<DataSource> {
 }
 
 export const closeTestDataSource = async (dataSource: DataSource): Promise<void> => {
-  if (dataSource.isInitialized) {
+  if (dataSource) {
     await dataSource.destroy();
   }
 };

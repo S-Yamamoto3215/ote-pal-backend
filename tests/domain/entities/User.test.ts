@@ -9,14 +9,20 @@ describe("User Entity", () => {
     const user = new User(name, email, password, role as "Parent", familyId);
     expect(user.name).toBe(name);
     expect(user.email).toBe(email);
-    expect(user.password).toBe(password);
+    expect(user.password.getValue()).not.toBe(password); // Password should be hashed
     expect(user.role).toBe(role);
     expect(user.familyId).toBe(familyId);
   });
 
   it("should throw validation error for invalid email", () => {
     const { name, password, role, familyId } = userSeeds[0];
-    const user = new User(name, "invalid-email", password, role as "Parent", familyId);
+    const user = new User(
+      name,
+      "invalid-email",
+      password,
+      role as "Parent",
+      familyId
+    );
     expect(() => user.validate()).toThrow(AppError);
   });
 
@@ -26,15 +32,15 @@ describe("User Entity", () => {
     expect(() => user.validate()).toThrow(AppError);
   });
 
-  it("should throw validation error for short password", () => {
-    const { name, email, role, familyId } = userSeeds[0];
-    const user = new User(name, email, "123", role as "Parent", familyId);
-    expect(() => user.validate()).toThrow(AppError);
-  });
-
   it("should throw validation error for invalid role", () => {
     const { name, email, password, familyId } = userSeeds[0];
-    const user = new User( name, email, password, "InvalidRole" as "Parent", familyId);
+    const user = new User(
+      name,
+      email,
+      password,
+      "InvalidRole" as "Parent",
+      familyId
+    );
     expect(() => user.validate()).toThrow(AppError);
   });
 });

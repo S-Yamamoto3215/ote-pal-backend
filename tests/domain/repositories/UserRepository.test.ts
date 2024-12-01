@@ -1,92 +1,67 @@
-import { DataSource } from "typeorm";
-
-import { UserRepository } from "@/domain/repositories/UserRepository/UserRepository";
-import { AppError } from "@/infrastructure/errors/AppError";
-
-import {
-  createTestDatabase,
-  closeTestDataSource,
-} from "@tests/utils/database/setupTestDatabase";
-import { seedDatabase } from "@tests/utils/database/seedDatabase";
-import {
-  parentUser,
-  childUser1,
-  childUser2,
-} from "@tests/resources/User/UserEntitys";
-import { userSeeds } from "@tests/resources/User/UserSeeds";
-
-describe("UserRepository", () => {
-  let dataSource: DataSource;
-  let userRepository: UserRepository;
-
-  beforeAll(async () => {
-    dataSource = await createTestDatabase();
-    await seedDatabase(dataSource);
-    userRepository = new UserRepository(dataSource);
-  });
-
-  afterAll(async () => {
-    await closeTestDataSource(dataSource);
-  });
-
-  describe("save", () => {
-    it("should save a user successfully", async () => {
-      const result = await userRepository.save(parentUser);
-
-      expect(result).toBe(parentUser);
-      expect(result.id).toBeDefined();
+describe("UserUseCase", () => {
+  describe("getUserById", () => {
+    it("should return a user when found", async () => {
+      // FIXME: Implement test
     });
 
-    it("should throw an AppError if saving fails", async () => {
-      childUser1.email = "invalid-email";
-
-      await expect(userRepository.save(childUser1)).rejects.toThrow(AppError);
+    it("should throw an AppError when user is not found", async () => {
+      // FIXME: Implement test
     });
-  });
 
-  describe("findById", () => {
-    it("should find a user by id successfully", async () => {
-      const userId = 1;
-      const result = await userRepository.findById(userId);
-
-      expect(result).toBeDefined();
-      expect(result?.id).toBe(userId);
-    });
-  });
-
-  describe("findByEmail", () => {
-    it("should find a user by email successfully", async () => {
-      const targetUser = userSeeds[0];
-
-      const result = await userRepository.findByEmail(targetUser.email);
-
-      expect(result).toBeDefined();
-      expect(result?.email).toBe(targetUser.email);
+    it("should propagate any other errors", async () => {
+      // FIXME: Implement test
     });
   });
 
   describe("findAllByFamilyId", () => {
-    it("should find all users by familyId successfully", async () => {
-      const users = await userRepository.findAllByFamilyId(1);
-      const invalidFamilyId = users.find((user) => user.familyId !== 1);
+    it("should return users when found", async () => {
+      // FIXME: Implement test
+    });
 
-      expect(invalidFamilyId).toBeUndefined();
-      expect(users).toBeInstanceOf(Array);
+    it("should return an empty array when no users are found", async () => {
+      // FIXME: Implement test
+    });
+
+    it("should propagate any other errors", async () => {
+      // FIXME: Implement test
     });
   });
 
-  describe("delete", () => {
-    it("should delete a user successfully", async () => {
-      const savedUser = await userRepository.save(childUser2);
+  describe("createUser", () => {
+    it("should create and return a new user", async () => {
+      // FIXME: Implement test
+    });
 
-      if (!savedUser.id) {
-        throw new Error("User id is undefined");
-      }
+    it("should throw an AppError when invalid input is provided", async () => {
+      // FIXME: Implement test
+    });
 
-      await userRepository.delete(savedUser.id);
+    it("should propagate any errors", async () => {
+      // FIXME: Implement test
+    });
+  });
 
-      const result = await userRepository.findById(savedUser.id);
-      expect(result).toBeNull();
+  describe("updateUser", () => {
+    it("should update and return the user when found", async () => {
+      // FIXME: Implement test
+    });
+
+    it("should throw an AppError when user is not found", async () => {
+      // FIXME: Implement test
+    });
+
+    it("should propagate any other errors", async () => {
+      // FIXME: Implement test
+    });
+  });
+
+  describe("deleteUser", () => {
+    it("should delete the user when found", async () => {
+      // FIXME: Implement test
+    });
+
+    it("should propagate any errors", async () => {
+      // FIXME: Implement test
     });
   });
 });

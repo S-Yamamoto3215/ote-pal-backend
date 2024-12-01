@@ -1,4 +1,5 @@
 import { User } from "@/domain/entities/User";
+import { Password } from "@/domain/valueObjects/Password";
 
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 
@@ -63,7 +64,7 @@ export class UserUseCase implements IUserUseCase {
 
       user.name = input.name;
       user.email = input.email;
-      user.password = input.password;
+      user.password = new Password(input.password);
       user.role = input.role;
       user.familyId = input.familyId;
 
