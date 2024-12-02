@@ -1,47 +1,33 @@
-import bcrypt from "bcrypt";
-
 import { Password } from "@/domain/valueObjects/Password";
 
-import { AppError } from "@/infrastructure/errors/AppError";
-
-describe("Password Value Object", () => {
-  it("should create a valid Password object and hash the password", () => {
-    const plainPassword = "validPassword123";
-    const password = new Password(plainPassword);
-
-    expect(password).toBeInstanceOf(Password);
-    expect(password.getValue()).not.toBe(plainPassword);
-    expect(bcrypt.compareSync(plainPassword, password.getValue())).toBe(true);
+describe("Password", () => {
+  it("should hash a password correctly", async () => {
+    const password = new Password("password");
+    await password.hash();
+    expect(password.getIsHashed()).toBe(true);
   });
 
-  it("should throw an error if the password is empty", () => {
-    expect(() => new Password("")).toThrow(AppError);
+  it("should throw an error when comparing non-hashed passwords", async () => {
+    const password = new Password("password");
+    await expect(password.compare("password")).rejects.toThrow(
+      "Cannot compare a non-hashed password",
+    );
   });
 
-  it("should throw an error if the password is too short", () => {
-    expect(() => new Password("short")).toThrow(AppError);
+  it("should correctly compare a hashed password with a plain one", async () => {
+    const password = new Password("password");
+    await password.hash();
+    expect(await password.compare("password")).toBe(true);
   });
 
-  it("should throw an error if the password is too long", () => {
-    expect(() => new Password("thispasswordiswaytoolongtobevalid")).toThrow(AppError);
+  it("should return false when comparing a hashed password with an incorrect plain one", async () => {
+    const password = new Password("password");
+    await password.hash();
+    expect(await password.compare("test")).toBe(false);
   });
 
-  it("should create a Password object with a pre-hashed password", () => {
-    const hashedPassword = bcrypt.hashSync("validPassword123", 10);
-    const password = new Password(hashedPassword, true);
-
-    expect(password).toBeInstanceOf(Password);
-    expect(password.getValue()).toBe(hashedPassword);
-  });
-
-  it("should compare a plain password with the hashed password correctly", async () => {
-    const plainPassword = "validPassword123";
-    const password = new Password(plainPassword);
-
-    const isMatch = await password.comparePassword(plainPassword);
-    expect(isMatch).toBe(true);
-
-    const isNotMatch = await password.comparePassword("invalidPassword");
-    expect(isNotMatch).toBe(false);
+  it("should return true when Password is fromHashed", () => {
+    const password = Password.fromHashed("hashedPassword");
+    expect(password.getIsHashed()).toBe(true);
   });
 });
