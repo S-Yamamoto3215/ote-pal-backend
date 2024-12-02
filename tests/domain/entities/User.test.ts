@@ -9,7 +9,7 @@ describe("User Entity", () => {
     const user = new User(name, email, password, role as "Parent", familyId);
     expect(user.name).toBe(name);
     expect(user.email).toBe(email);
-    expect(user.password).toBe(password);
+    expect(user.password).not.toBe(password);
     expect(user.role).toBe(role);
     expect(user.familyId).toBe(familyId);
   });
