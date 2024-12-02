@@ -145,4 +145,6 @@ dist
 # OpenAPI Generate Source Directory
 generated-server
 
+todo.md
+
 # End of https://www.toptal.com/developers/gitignore/api/node
