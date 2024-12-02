@@ -7,6 +7,22 @@ describe("Password", () => {
     expect(password.getIsHashed()).toBe(true);
   });
 
+  it("should throw an error when creating a password with an empty value", () => {
+    expect(() => new Password("")).toThrow("Password is required");
+  });
+
+  it("should throw an error when creating a password with less than 6 characters", () => {
+    expect(() => new Password("12345")).toThrow(
+      "Password must be between 6 and 20",
+    );
+  });
+
+  it("should throw an error when creating a password with more than 20 characters", () => {
+    expect(() => new Password("abcdefghijklmnopqrstuvwxyz")).toThrow(
+      "Password must be between 6 and 20",
+    );
+  });
+
   it("should throw an error when comparing non-hashed passwords", async () => {
     const password = new Password("password");
     await expect(password.compare("password")).rejects.toThrow(

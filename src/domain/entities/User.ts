@@ -16,7 +16,7 @@ import {
 import { Family } from "@/domain/entities/Family";
 import { Work } from "@/domain/entities/Work";
 import { TaskDetail } from "@/domain/entities/TaskDetail";
-import { Password } from "@/domain/valueObjects/Password";
+import { Password, PasswordTransformer } from "@/domain/valueObjects/Password";
 
 import { AppError } from "@/infrastructure/errors/AppError";
 
@@ -36,8 +36,12 @@ export class User {
   @IsEmail({}, { message: "Invalid email" })
   email: string;
 
-  @Column()
-  password!: string;
+  @Column({
+    type: "varchar",
+    length: 255,
+    transformer: new PasswordTransformer(),
+  })
+  password: Password;
 
   @Column({
     type: "enum",
@@ -67,13 +71,13 @@ export class User {
   constructor(
     name: string,
     email: string,
-    password: string,
+    password: Password,
     role: "Parent" | "Child",
     familyId: number,
   ) {
     this.name = name;
     this.email = email;
-    this.password = new Password(password).getValue();
+    this.password = password;
     this.role = role;
     this.familyId = familyId;
   }
