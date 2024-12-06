@@ -1,4 +1,4 @@
-import { AuthService } from "@/infrastructure/services/AuthService";
+import { AuthService } from "@/application/services/AuthService";
 import { User } from "@/domain/entities/User";
 import { Password } from "@/domain/valueObjects/Password";
 
