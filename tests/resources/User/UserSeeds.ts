@@ -1,8 +1,10 @@
+import { Password } from "@/domain/valueObjects/Password";
+
 const parentUser1 = {
   id: 1,
   name: "Test Parent User1",
   email: "user1@example.com",
-  password: "validPassword123",
+  password: new Password("validPassword123"),
   role: "Parent",
   familyId: 1,
 };
@@ -11,7 +13,7 @@ const childUser1 = {
   id: 2,
   name: "Test Child User1",
   email: "user2@example.com",
-  password: "validPassword456",
+  password: new Password("validPassword456"),
   role: "Child",
   familyId: 1,
 };
@@ -20,7 +22,7 @@ const childUser2 = {
   id: 3,
   name: "Test Child User2",
   email: "user3@example.com",
-  password: "validPassword789",
+  password: new Password("validPassword789"),
   role: "Child",
   familyId: 1,
 };
@@ -29,7 +31,7 @@ const otherFamilyUser = {
   id: 4,
   name: "Test Other Family User",
   email: "user4@example.com",
-  password: "validPassword012",
+  password: new Password("validPassword012"),
   role: "Parent",
   familyId: 2,
 };
