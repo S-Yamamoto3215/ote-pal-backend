@@ -19,4 +19,13 @@ export class UserRepository implements IUserRepository {
       throw new AppError("DatabaseError", "Database error");
     }
   }
+
+  async save(user: User): Promise<User> {
+    try {
+      const savedUser = await this.repo.save(user);
+      return savedUser;
+    } catch (error) {
+      throw new AppError("DatabaseError", "Database error");
+    }
+  }
 }
