@@ -7,20 +7,20 @@ export class Password {
   private value: string;
   private isHashed: boolean;
 
-  constructor(value: string, isHashed = false) {
-    this.value = value;
+  constructor(password: string, isHashed: boolean = false) {
+    this.value = password;
     this.isHashed = isHashed;
 
-    if (!isHashed) {
+    if (!this.isHashed) {
       this.validate();
+      this.value = this.hashPassword(password);
+      this.isHashed = true;
     }
   }
 
-  async hash(): Promise<void> {
-    if (!this.isHashed) {
-      this.value = await bcrypt.hash(this.value, 10);
-      this.isHashed = true;
-    }
+  private hashPassword(plainPassword: string): string {
+    const saltRounds = 10;
+    return bcrypt.hashSync(plainPassword, saltRounds);
   }
 
   async compare(plainPassword: string): Promise<boolean> {

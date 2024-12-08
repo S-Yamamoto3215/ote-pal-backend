@@ -52,7 +52,7 @@ export class User {
   role: "Parent" | "Child";
 
   @Column()
-  familyId!: number;
+  familyId!: number | null;
   @ManyToOne(() => Family, (family) => family.users)
   readonly family!: Family;
 
@@ -73,7 +73,7 @@ export class User {
     email: string,
     password: Password,
     role: "Parent" | "Child",
-    familyId: number,
+    familyId: number | null,
   ) {
     this.name = name;
     this.email = email;
