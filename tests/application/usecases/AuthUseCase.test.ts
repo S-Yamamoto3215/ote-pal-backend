@@ -2,16 +2,7 @@ import { AuthUseCase } from "@/application/usecases/AuthUseCase";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { AuthService } from "@/application/services/AuthService";
 import { AppError } from "@/infrastructure/errors/AppError";
-import { User } from "@/domain/entities/User";
-import { Password } from "@/domain/valueObjects/Password";
-
-import { userSeeds } from "@tests/resources/User/UserSeeds";
-import {
-  parentUser,
-  childUser1,
-  childUser2,
-  otherFamilyUser,
-} from "@tests/resources/User/UserEntitys";
+import { parentUser } from "@tests/resources/User/UserEntitys";
 
 describe("AuthUseCase", () => {
   let authUseCase: AuthUseCase;
