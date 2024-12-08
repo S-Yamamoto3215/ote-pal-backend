@@ -159,6 +159,11 @@ module.exports = function (plop) {
         path: "src/interface/controllers/{{ pascalCase name }}Controller/{{ pascalCase name }}Controller.ts",
         templateFile: "plop-templates/Controller/Controller.hbs",
       },
+      {
+        type: "add",
+        path: "tests/interface/controllers/{{ pascalCase name }}Controller.test.ts",
+        templateFile: "plop-templates/Controller/ControllerTest.hbs",
+      },
     ],
   });
 
