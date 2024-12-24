@@ -19,7 +19,7 @@
     "rootDir": "./",
     "typeRoots": [
       "./node_modules/@types",
-      "./src/types"
+      "./types"
     ]
   },
   "include": [
