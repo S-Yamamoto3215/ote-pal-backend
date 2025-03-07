@@ -22,14 +22,6 @@ export class TaskUseCase implements ITaskUseCase {
     }
   }
 
-  async findAllByFamilyId(familyId: number): Promise<Task[]> {
-    try {
-      return this.taskRepository.findAllByFamilyId(familyId);
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async createTask(input: CreateTaskInput): Promise<Task> {
     try {
       const task = new Task(
