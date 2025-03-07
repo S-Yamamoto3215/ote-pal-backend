@@ -13,6 +13,10 @@ taskRouter.get("/:id", (req, res, next) => {
   taskController.getTaskById(req, res, next);
 });
 
+taskRouter.patch("/:id", (req, res, next) => {
+  taskController.updateTaskById(req, res, next);
+});
+
 taskRouter.delete("/:id", (req, res, next) => {
   taskController.deleteTaskById(req, res, next);
 });
