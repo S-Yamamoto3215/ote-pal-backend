@@ -1,4 +1,4 @@
-export interface CreateUserInput {
+export type CreateUserInput = {
   name: string;
   email: string;
   password: string;
