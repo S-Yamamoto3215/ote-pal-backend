@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 
-import { UserRepository } from "@/domain/repositories/UserRepository/UserRepository";
+import { UserRepository } from "@/domain/repositories/UserRepository";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 import { parentUser } from "@tests/resources/User/UserEntitys";

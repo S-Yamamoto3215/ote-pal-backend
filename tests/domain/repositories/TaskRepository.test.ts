@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 
-import { TaskRepository } from "@/domain/repositories/TaskRepository/TaskRepository";
+import { TaskRepository } from "@/domain/repositories/TaskRepository";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 import { taskSeeds } from "@tests/resources/Task/TaskSeeds";

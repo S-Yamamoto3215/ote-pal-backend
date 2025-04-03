@@ -11,13 +11,29 @@ export class FamilyRepository implements IFamilyRepository {
     this.repo = dataSource.getRepository(Family);
   }
 
-  // Implement the methods from IRepository here. e.x) save method
-  // async save(family: Family): Promise<Family> {
-  //   try {
-  //     family.validate();
-  //     return this.repo.save(family);
-  //   } catch (error) {
-  //     throw new AppError("DatabaseError", "Failed to save family");
-  //   }
-  // }
+  async save(family: Family): Promise<Family> {
+    try {
+      const savedFamily = await this.repo.save(family);
+      return savedFamily;
+    } catch (error) {
+      throw new AppError("DatabaseError", "Database error");
+    }
+  }
+
+  async findById(id: number): Promise<Family | null> {
+    try {
+      const family = await this.repo.findOneBy({ id });
+      return family;
+    } catch (error) {
+      throw new AppError("DatabaseError", "Database error");
+    }
+  }
+
+  async delete(id: number): Promise<void> {
+    try {
+      await this.repo.delete(id);
+    } catch (error) {
+      throw new AppError("DatabaseError", "Database error");
+    }
+  }
 }
