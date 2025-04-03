@@ -11,8 +11,11 @@ export class Family {
   @Column()
   name: string;
 
-  @Column()
-  payment_schedule: string;
+  @Column({
+    type: "smallint",
+    default: 1,
+  })
+  payment_schedule: number;
 
   @OneToMany(() => User, (user) => user.family, {
     createForeignKeyConstraints: false,
@@ -26,7 +29,7 @@ export class Family {
   })
   readonly tasks?: Task[];
 
-  constructor(name: string, payment_schedule: string) {
+  constructor(name: string, payment_schedule: number) {
     this.name = name;
     this.payment_schedule = payment_schedule;
   }

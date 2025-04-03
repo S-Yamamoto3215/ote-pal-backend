@@ -11,7 +11,7 @@ class User {
 class Family {
   id: int
   name: string
-  payment_schedule: date
+  payment_schedule: int
 }
 
 class Task {
