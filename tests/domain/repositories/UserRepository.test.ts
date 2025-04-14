@@ -5,6 +5,7 @@ import { AppError } from "@/infrastructure/errors/AppError";
 
 import { parentUser } from "@tests/resources/User/UserEntitys";
 import { userSeeds } from "@tests/resources/User/UserSeeds";
+import { testFamily1 } from "@tests/resources/Family/FamilyEntitys";
 
 import {
   createTestDatabase,
@@ -41,7 +42,7 @@ describe("UserRepository", () => {
 
     it("should throw AppError when database query fails", async () => {
       jest
-        .spyOn(userRepository["repo"], "findOne")
+        .spyOn(userRepository["userRepo"], "findOne")
         .mockRejectedValue(new Error("Mock Database Error"));
 
       await expect(
@@ -66,13 +67,54 @@ describe("UserRepository", () => {
 
     it("should throw AppError when database save fails", async () => {
       jest
-        .spyOn(userRepository["repo"], "save")
+        .spyOn(userRepository["userRepo"], "save")
         .mockRejectedValue(new Error("Mock Database Error"));
 
       await expect(userRepository.save(parentUser)).rejects.toThrow(AppError);
       await expect(userRepository.save(parentUser)).rejects.toThrow(
         "Database error",
       );
+
+      jest.restoreAllMocks();
+    });
+  });
+
+  describe("saveWithFamily", () => {
+    it("should save user and family successfully", async () => {
+      const newUser = parentUser;
+      const newFamily = testFamily1;
+
+      const savedUser = await userRepository.saveWithFamily(newUser, newFamily);
+      expect(savedUser.id).not.toBeNull();
+      expect(savedUser.name).toBe(newUser.name);
+      expect(savedUser.email).toBe(newUser.email);
+    });
+
+    it("should throw AppError when database save fails", async () => {
+      const mockQueryRunner = {
+        connect: jest.fn(),
+        startTransaction: jest.fn(),
+        manager: {
+          save: jest.fn().mockRejectedValue(new Error("Mock Database Error")),
+        },
+        rollbackTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        release: jest.fn(),
+      };
+
+      jest
+        .spyOn(dataSource, "createQueryRunner")
+        .mockReturnValue(mockQueryRunner as any);
+
+      await expect(
+        userRepository.saveWithFamily(parentUser, testFamily1)
+      ).rejects.toThrow(AppError);
+      await expect(
+        userRepository.saveWithFamily(parentUser, testFamily1)
+      ).rejects.toThrow("Failed to save user with family");
+
+      expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
+      expect(mockQueryRunner.release).toHaveBeenCalled();
 
       jest.restoreAllMocks();
     });

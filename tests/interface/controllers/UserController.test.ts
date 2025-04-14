@@ -18,6 +18,7 @@ describe("UserController", () => {
   beforeEach(() => {
     userUseCase = {
       createUser: jest.fn(),
+      createUserWithFamily: jest.fn(),
     };
 
     userController = new UserController(userUseCase);

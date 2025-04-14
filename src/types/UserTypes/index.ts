@@ -5,3 +5,10 @@ export type CreateUserInput = {
   role: "Parent" | "Child";
   familyId: number | null;
 }
+
+export type CreateUserWithFamilyInput = {
+  name: string;
+  email: string;
+  password: string;
+  familyName: string;
+}
