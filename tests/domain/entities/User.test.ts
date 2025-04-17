@@ -6,8 +6,15 @@ import { userSeeds } from "@tests/resources/User/UserSeeds";
 
 describe("User Entity", () => {
   it("should create a valid User", () => {
-    const { name, email, password, role, familyId } = userSeeds[0];
-    const user = new User(name, email, password, role as "Parent", familyId);
+    const { name, email, password, role, isVerified, familyId } = userSeeds[0];
+    const user = new User(
+      name,
+      email,
+      password,
+      role as "Parent",
+      isVerified,
+      familyId
+    );
     expect(user.name).toBe(name);
     expect(user.email).toBe(email);
     expect(user.password).toBe(password);
@@ -16,31 +23,40 @@ describe("User Entity", () => {
   });
 
   it("should throw validation error for invalid email", () => {
-    const { name, password, role, familyId } = userSeeds[0];
+    const { name, password, role, isVerified, familyId } = userSeeds[0];
     const user = new User(
       name,
       "invalid-email",
       password,
       role as "Parent",
-      familyId,
+      isVerified,
+      familyId
     );
     expect(() => user.validate()).toThrow(AppError);
   });
 
   it("should throw validation error for empty name", () => {
-    const { email, password, role, familyId } = userSeeds[0];
-    const user = new User("", email, password, role as "Parent", familyId);
+    const { email, password, role, isVerified, familyId } = userSeeds[0];
+    const user = new User(
+      "",
+      email,
+      password,
+      role as "Parent",
+      isVerified,
+      familyId
+    );
     expect(() => user.validate()).toThrow(AppError);
   });
 
   it("should throw validation error for invalid role", () => {
-    const { name, email, password, familyId } = userSeeds[0];
+    const { name, email, password, isVerified, familyId } = userSeeds[0];
     const user = new User(
       name,
       email,
       password,
       "InvalidRole" as "Parent",
-      familyId,
+      isVerified,
+      familyId
     );
     expect(() => user.validate()).toThrow(AppError);
   });

@@ -26,6 +26,7 @@ describe("AuthService", () => {
         "john.doe@example.com",
         new Password("hashed_password"),
         "Parent",
+        false,
         1,
       );
 
@@ -43,6 +44,7 @@ describe("AuthService", () => {
         "john.doe@example.com",
         new Password("hashed_password"),
         "Parent",
+        false,
         1,
       );
 
@@ -70,6 +72,7 @@ describe("AuthService", () => {
         "john.doe@example.com",
         new Password("hashed_password"),
         "Parent",
+        false,
         1,
       );
 

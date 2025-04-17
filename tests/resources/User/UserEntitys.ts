@@ -6,6 +6,7 @@ export const parentUser = new User(
   "parent@example.com",
   new Password("validPassword123"),
   "Parent",
+  false,
   1,
 );
 
@@ -14,7 +15,8 @@ export const childUser1 = new User(
   "child1@example.com",
   new Password("validPassword456"),
   "Child",
-  1,
+  false,
+  1
 );
 
 export const childUser2 = new User(
@@ -22,7 +24,8 @@ export const childUser2 = new User(
   "child2@example.com",
   new Password("validPassword789"),
   "Child",
-  1,
+  false,
+  1
 );
 
 export const otherFamilyUser = new User(
@@ -30,5 +33,6 @@ export const otherFamilyUser = new User(
   "other@example.com",
   new Password("validPassword012"),
   "Parent",
-  2,
+  false,
+  2
 );

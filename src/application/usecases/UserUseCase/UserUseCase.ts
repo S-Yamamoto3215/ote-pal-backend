@@ -24,6 +24,7 @@ export class UserUseCase implements IUserUseCase {
         input.email,
         new Password(input.password),
         input.role,
+        false,
         input.familyId
       );
 
@@ -47,6 +48,7 @@ export class UserUseCase implements IUserUseCase {
         input.email,
         new Password(input.password),
         "Parent",
+        false,
         null
       );
 

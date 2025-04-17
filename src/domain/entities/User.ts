@@ -51,6 +51,11 @@ export class User {
   @IsEnum(["Parent", "Child"], { message: "Role must be 'Parent' or 'Child'" })
   role: "Parent" | "Child";
 
+  @Column({
+    default: false,
+  })
+  isVerified: boolean;
+
   @Column()
   familyId!: number | null;
   @ManyToOne(() => Family, (family) => family.users)
@@ -73,12 +78,14 @@ export class User {
     email: string,
     password: Password,
     role: "Parent" | "Child",
-    familyId: number | null,
+    isVerified: boolean,
+    familyId: number | null
   ) {
     this.name = name;
     this.email = email;
     this.password = password;
     this.role = role;
+    this.isVerified = isVerified;
     this.familyId = familyId;
   }
 

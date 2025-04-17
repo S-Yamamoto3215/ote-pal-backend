@@ -25,6 +25,7 @@ describe("UserUseCase", () => {
         email: "test@example.com",
         password: "password123",
         role: "Parent" as "Parent" | "Child",
+        isVerified: false,
         familyId: 1,
       };
 
@@ -34,6 +35,7 @@ describe("UserUseCase", () => {
         input.email,
         new Password(input.password),
         input.role,
+        input.isVerified,
         input.familyId,
       );
       userRepository.save.mockResolvedValue(mockUser);
@@ -58,6 +60,7 @@ describe("UserUseCase", () => {
         email: "test@example.com",
         password: "password123",
         role: "Parent" as "Parent" | "Child",
+        isVerified: false,
         familyId: 1,
       };
 
@@ -67,6 +70,7 @@ describe("UserUseCase", () => {
           input.email,
           new Password(input.password),
           input.role,
+          input.isVerified,
           input.familyId,
         ),
       );
@@ -86,6 +90,7 @@ describe("UserUseCase", () => {
         email: "test@example.com",
         password: "password123",
         role: "Parent" as "Parent" | "Child",
+        isVerified: false,
         familyId: 1,
       };
 
@@ -117,6 +122,7 @@ describe("UserUseCase", () => {
         input.email,
         new Password(input.password),
         "Parent",
+        false,
         null
       );
 
@@ -142,10 +148,10 @@ describe("UserUseCase", () => {
 
     it("should throw a ValidationError if the email is already in use", async () => {
       const input = {
-      name: "Test User",
-      email: "test@example.com",
-      password: "password123",
-      familyName: "Test Family",
+        name: "Test User",
+        email: "test@example.com",
+        password: "password123",
+        familyName: "Test Family",
       };
 
       userRepository.findByEmail.mockResolvedValue(
@@ -154,6 +160,7 @@ describe("UserUseCase", () => {
           input.email,
           new Password(input.password),
           "Parent",
+          false,
           null,
         ),
       );

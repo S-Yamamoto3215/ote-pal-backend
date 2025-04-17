@@ -6,6 +6,7 @@ const parentUser1 = {
   email: "user1@example.com",
   password: new Password("validPassword123"),
   role: "Parent",
+  isVerified: false,
   familyId: 1,
 };
 
@@ -15,6 +16,7 @@ const childUser1 = {
   email: "user2@example.com",
   password: new Password("validPassword456"),
   role: "Child",
+  isVerified: false,
   familyId: 1,
 };
 
@@ -24,6 +26,7 @@ const childUser2 = {
   email: "user3@example.com",
   password: new Password("validPassword789"),
   role: "Child",
+  isVerified: false,
   familyId: 1,
 };
 
@@ -33,6 +36,7 @@ const otherFamilyUser = {
   email: "user4@example.com",
   password: new Password("validPassword012"),
   role: "Parent",
+  isVerified: false,
   familyId: 2,
 };
 
