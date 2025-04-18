@@ -5,6 +5,7 @@ import { Work } from "@/domain/entities/Work";
 import { Task } from "@/domain/entities/Task";
 import { TaskDetail } from "@/domain/entities/TaskDetail";
 import { Payment } from "@/domain/entities/Payment";
+import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
 
 export async function createTestDatabase(): Promise<DataSource> {
   const dataSource = new DataSource({
@@ -16,7 +17,15 @@ export async function createTestDatabase(): Promise<DataSource> {
     database: process.env.TEST_DB_NAME || "test_otepal_db",
     synchronize: true,
     dropSchema: true,
-    entities: [User, Family, Work, Task, TaskDetail, Payment],
+    entities: [
+      User,
+      Family,
+      Work,
+      Task,
+      TaskDetail,
+      Payment,
+      EmailVerificationToken,
+    ],
   });
 
   await dataSource.initialize();

@@ -23,6 +23,15 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async findById(id: number): Promise<User | null> {
+    try {
+      const user = await this.userRepo.findOne({ where: { id } });
+      return user;
+    } catch (error) {
+      throw new AppError("DatabaseError", "Database error");
+    }
+  }
+
   async save(user: User): Promise<User> {
     try {
       const savedUser = await this.userRepo.save(user);
@@ -50,6 +59,19 @@ export class UserRepository implements IUserRepository {
       throw new AppError("DatabaseError", "Failed to save user with family");
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async updateVerificationStatus(userId: number, isVerified: boolean): Promise<User> {
+    try {
+      const user = await this.findById(userId)
+      if (!user) {
+        throw new AppError("NotFound", "User not found");
+      }
+      user.isVerified = isVerified;
+      return await this.userRepo.save(user);
+    } catch (error) {
+      throw new AppError("DatabaseError", "Failed to update verification status");
     }
   }
 }

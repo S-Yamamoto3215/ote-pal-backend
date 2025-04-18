@@ -7,8 +7,8 @@ describe("Work Entity", () => {
     const { status, taskId, userId } = workSeeds[0];
     const work = new Work(status, taskId, userId);
 
-    expect(work.status).toBe("InProgress");
-    expect(work.taskId).toBe(1);
-    expect(work.userId).toBe(1);
+    expect(work.status).toBe(status);
+    expect(work.taskId).toBe(taskId);
+    expect(work.userId).toBe(userId);
   });
 });

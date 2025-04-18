@@ -11,8 +11,10 @@ describe("UserUseCase", () => {
   beforeEach(() => {
     userRepository = {
       findByEmail: jest.fn(),
+      findById: jest.fn(),
       save: jest.fn(),
       saveWithFamily: jest.fn(),
+      updateVerificationStatus: jest.fn(),
     };
 
     userUseCase = new UserUseCase(userRepository);
