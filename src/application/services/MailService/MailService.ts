@@ -1,14 +1,14 @@
-import { config } from "@/config";
 import { IMailService } from "@/application/services/MailService";
 import { AppError } from "@/infrastructure/errors/AppError";
 import sgMail from "@sendgrid/mail";
 
 export class MailService implements IMailService {
   constructor(
+    private apiKey: string,
     private fromEmail: string,
     private baseUrl: string
   ) {
-    sgMail.setApiKey(config.sendgrid.apiKey as string);
+    sgMail.setApiKey(this.apiKey);
   }
 
   async sendVerificationEmail(

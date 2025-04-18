@@ -18,8 +18,8 @@ export const config = {
     name: process.env.DB_NAME,
   },
   sendgrid: {
-    apiKey: process.env.SENDGRID_API_KEY,
-    fromEmail: process.env.FROM_EMAIL,
+    apiKey: process.env.SENDGRID_API_KEY as string,
+    fromEmail: process.env.FROM_EMAIL as string,
   },
   token: {
     verificationExpiryHours: 1, // メール認証トークンの有効期限（時間）
