@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { config } from "@/config";
 import { User } from "@/domain/entities/User";
 
 export class AuthService {
@@ -6,8 +7,8 @@ export class AuthService {
   private jwtExpiresIn: string;
 
   constructor() {
-    this.jwtSecret = process.env.JWT_SECRET || "your_secret_key";
-    this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || "1h";
+    this.jwtSecret = config.jwt.secret;
+    this.jwtExpiresIn = config.jwt.expiresIn;
   }
 
   generateToken(user: User): string {

@@ -1,17 +1,15 @@
 import "reflect-metadata";
-import "dotenv/config";
 import app from "@/infrastructure/http/express";
+import { config } from "@/config";
 import { AppDataSource } from "@/infrastructure/database/dataSource";
-
-const PORT = process.env.PORT || 3000;
 
 AppDataSource.initialize()
   .then(() => {
     console.log("Connected to the database");
 
     // サーバーの起動
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+    app.listen(config.app.port, () => {
+      console.log(`Server is running on port ${config.app.port}`);
     });
   })
   .catch((error) => console.log("Database connection error: ", error));
