@@ -29,7 +29,7 @@ describe("TaskRepository", () => {
   describe("findById", () => {
     it("should return task when task exists", async () => {
       const targetTask = taskSeeds[0];
-      const task = await taskRepository.findById(targetTask.id);
+      const task = await taskRepository.findById(1);
       expect(task).not.toBeNull();
       expect(task?.name).toBe(targetTask.name);
     });

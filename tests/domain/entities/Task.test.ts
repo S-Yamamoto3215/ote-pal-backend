@@ -1,16 +1,15 @@
 import { Task } from "@/domain/entities/Task";
 
+import { taskSeeds } from "@tests/resources/Task/TaskSeeds";
+
 describe("Task Entity", () => {
-  let task: Task;
-
-  beforeEach(() => {
-    task = new Task("Test Task", "This is a test task", 100, 1);
-  });
-
   it("should create a task with the correct properties", () => {
-    expect(task.name).toBe("Test Task");
-    expect(task.description).toBe("This is a test task");
-    expect(task.reward).toBe(100);
-    expect(task.familyId).toBe(1);
+    const { name, description, reward, familyId } = taskSeeds[0];
+    const task = new Task(name, description, reward, familyId);
+
+    expect(task.name).toBe(name);
+    expect(task.description).toBe(description);
+    expect(task.reward).toBe(reward);
+    expect(task.familyId).toBe(familyId);
   });
 });

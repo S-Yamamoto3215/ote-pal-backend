@@ -1,5 +1,4 @@
 const testTask1 = {
-  id: 1,
   name: 'テストタスク1',
   description: 'これはテストタスク1の説明です',
   reward: 1000,
