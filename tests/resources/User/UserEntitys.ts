@@ -6,7 +6,7 @@ export const parentUser = new User(
   "parent@example.com",
   new Password("validPassword123"),
   "Parent",
-  false,
+  true,
   1,
 );
 

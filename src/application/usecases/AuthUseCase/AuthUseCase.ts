@@ -17,6 +17,13 @@ export class AuthUseCase implements IAuthUseCase {
       throw new AppError("NotFound", "User not found");
     }
 
+    if (!user.isVerified) {
+      throw new AppError(
+        "ValidationError",
+        "Email not verified. Please check your email to verify your account."
+      );
+    }
+
     const isSuccess = await user.password.compare(plainPassword);
     if (!isSuccess) {
       throw new AppError("ValidationError", "Invalid password");
