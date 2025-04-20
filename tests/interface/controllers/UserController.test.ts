@@ -19,6 +19,9 @@ describe("UserController", () => {
     userUseCase = {
       createUser: jest.fn(),
       createUserWithFamily: jest.fn(),
+      registerUser: jest.fn(),
+      verifyEmail: jest.fn(),
+      resendVerificationEmail: jest.fn(),
     };
 
     userController = new UserController(userUseCase);

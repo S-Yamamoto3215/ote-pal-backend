@@ -1,11 +1,15 @@
 import { UserUseCase } from "@/application/usecases/UserUseCase/UserUseCase";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
+import { IEmailVerificationTokenRepository } from "@/domain/repositories/EmailVerificationTokenRepository";
+import { IMailService } from "@/application/services/MailService";
 import { User } from "@/domain/entities/User";
 import { Password } from "@/domain/valueObjects/Password";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 describe("UserUseCase", () => {
   let userRepository: jest.Mocked<IUserRepository>;
+  let emailVerificationTokenRepository: jest.Mocked<IEmailVerificationTokenRepository>;
+  let mailService: jest.Mocked<IMailService>;
   let userUseCase: UserUseCase;
 
   beforeEach(() => {
@@ -17,7 +21,21 @@ describe("UserUseCase", () => {
       updateVerificationStatus: jest.fn(),
     };
 
-    userUseCase = new UserUseCase(userRepository);
+    emailVerificationTokenRepository = {
+      save: jest.fn(),
+      findByToken: jest.fn(),
+      deleteByUserId: jest.fn(),
+    };
+
+    mailService = {
+      sendVerificationEmail: jest.fn(),
+    };
+
+    userUseCase = new UserUseCase(
+      userRepository,
+      emailVerificationTokenRepository,
+      mailService,
+    );
   });
 
   describe("createUser", () => {
