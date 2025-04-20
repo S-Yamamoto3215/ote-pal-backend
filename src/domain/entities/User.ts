@@ -56,8 +56,11 @@ export class User {
   })
   isVerified: boolean;
 
-  @Column()
-  familyId!: number | null;
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  familyId: number | null;
   @ManyToOne(() => Family, (family) => family.users)
   readonly family!: Family;
 

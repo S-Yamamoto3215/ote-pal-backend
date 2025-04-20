@@ -16,7 +16,7 @@ export class MailService implements IMailService {
     name: string,
     token: string
   ): Promise<void> {
-    const verificationUrl = `${this.baseUrl}/api/verify-email?token=${token}`;
+    const verificationUrl = `${this.baseUrl}/users/verify-email?token=${token}`;
 
     const msg = {
       to: email,

@@ -70,7 +70,7 @@ export class UserController implements IUserController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const { token } = req.body;
+    const { token } = req.query;
 
     if (!token || typeof token !== "string") {
       return next(new AppError("ValidationError", "Token is required"));
