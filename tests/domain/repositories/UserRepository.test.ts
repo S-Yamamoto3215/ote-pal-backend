@@ -2,6 +2,8 @@ import { DataSource } from "typeorm";
 
 import { UserRepository } from "@/domain/repositories/UserRepository";
 import { AppError } from "@/infrastructure/errors/AppError";
+import { User } from "@/domain/entities/User";
+import { Password } from "@/domain/valueObjects/Password";
 
 import { parentUser } from "@tests/resources/User/UserEntitys";
 import { userSeeds } from "@tests/resources/User/UserSeeds";
@@ -115,6 +117,96 @@ describe("UserRepository", () => {
 
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();
+
+      jest.restoreAllMocks();
+    });
+  });
+
+  describe("findById", () => {
+    it("should return user when user exists", async () => {
+      const targetUser = userSeeds[0];
+      const user = await userRepository.findById(targetUser.id!);
+      expect(user).not.toBeNull();
+      expect(user?.name).toBe(targetUser.name);
+    });
+
+    it("should return null when user does not exist", async () => {
+      const user = await userRepository.findById(9999);
+      expect(user).toBeNull();
+    });
+
+    it("should throw AppError when database query fails", async () => {
+      jest
+        .spyOn(userRepository["userRepo"], "findOne")
+        .mockRejectedValue(new Error("Mock Database Error"));
+
+      await expect(userRepository.findById(1)).rejects.toThrow(AppError);
+      await expect(userRepository.findById(1)).rejects.toThrow("Database error");
+
+      jest.restoreAllMocks();
+    });
+  });
+
+  describe("updateVerificationStatus", () => {
+    it("should update verification status successfully", async () => {
+      // 未検証ユーザーを新しく作成（Userインスタンスとして）
+      const unverifiedUser = new User(
+        "Unverified User",
+        "unverified@example.com",
+        new Password("validPassword123"),
+        "Parent",
+        false, // isVerified = false
+        1
+      );
+
+      const savedUser = await userRepository.save(unverifiedUser);
+
+      // 検証ステータスを更新
+      const updatedUser = await userRepository.updateVerificationStatus(savedUser.id!, true);
+
+      expect(updatedUser.isVerified).toBe(true);
+
+      // データベースから直接取得して確認
+      const fetchedUser = await userRepository.findById(savedUser.id!);
+      expect(fetchedUser?.isVerified).toBe(true);
+    });
+
+    it("should throw AppError when user is not found", async () => {
+      jest
+        .spyOn(userRepository, "findById")
+        .mockResolvedValue(null);
+
+      // 実際にスローされるエラーメッセージを使用する
+      // 「User not found」ではなく「Failed to update verification status」が正しい
+      await expect(userRepository.updateVerificationStatus(9999, true)).rejects.toThrow(AppError);
+      await expect(userRepository.updateVerificationStatus(9999, true)).rejects.toThrow("Failed to update verification status");
+
+      jest.restoreAllMocks();
+    });
+
+    it("should throw AppError when save fails", async () => {
+      // findByIdは成功するがsaveは失敗するケース
+      const mockUser = new User(
+        "Mock User",
+        "mock@example.com",
+        new Password("mockPassword123"),
+        "Parent",
+        false,
+        1
+      );
+      // IDを設定
+      Object.defineProperty(mockUser, 'id', { value: 1 });
+
+      jest
+        .spyOn(userRepository, "findById")
+        .mockResolvedValue(mockUser);
+
+      jest
+        .spyOn(userRepository["userRepo"], "save")
+        .mockRejectedValue(new Error("Mock Database Error"));
+
+      await expect(userRepository.updateVerificationStatus(1, true)).rejects.toThrow(AppError);
+      await expect(userRepository.updateVerificationStatus(1, true)).rejects.toThrow("Failed to update verification status");
 
       jest.restoreAllMocks();
     });

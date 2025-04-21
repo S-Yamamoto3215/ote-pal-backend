@@ -1,4 +1,6 @@
 import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
+import { AppError } from "@/infrastructure/errors/AppError";
+import * as classValidator from "class-validator";
 
 // import { emailVerificationTokenSeeds } from "@tests/resources/EmailVerificationToken/EmailVerificationTokenSeeds";
 
@@ -37,16 +39,46 @@ describe("EmailVerificationToken Entity", () => {
     });
   });
 
-  // MEMO: バリデーションのテストは、未実装なので一旦コメントアウト
-  // describe("validate", () => {
-  //   it("should not throw an error for valid token", () => {
-  //     const verificationToken = new EmailVerificationToken(
-  //       "valid-token",
-  //       new Date(Date.now() + 3600000), // 1時間後
-  //       1
-  //     );
+  describe("validate", () => {
+    it("should not throw an error for valid token", () => {
+      const verificationToken = new EmailVerificationToken(
+        "valid-token",
+        new Date(Date.now() + 3600000), // 1時間後
+        1
+      );
 
-  //     expect(() => verificationToken.validate()).not.toThrow();
-  //   });
-  // });
+      expect(() => verificationToken.validate()).not.toThrow();
+    });
+
+    it("should throw AppError for invalid token", () => {
+      const verificationToken = new EmailVerificationToken(
+        "", // 空のトークン
+        new Date(Date.now() + 3600000),
+        1
+      );
+
+      // validateSyncが検証エラーを返すようにモック
+      // ValidationErrorの型に合わせてpropertyプロパティを追加
+      const validateSyncSpy = jest
+        .spyOn(classValidator, "validateSync")
+        .mockReturnValue([
+          {
+            property: "token", // プロパティ名を追加
+            constraints: {
+              isNotEmpty: "Token cannot be empty",
+            },
+            children: [],
+            target: verificationToken,
+            value: "",
+          },
+        ]);
+
+      const validateFunc = () => verificationToken.validate();
+      expect(validateFunc).toThrow(AppError);
+      expect(validateFunc).toThrow("Token cannot be empty");
+
+      // スパイをリストア
+      validateSyncSpy.mockRestore();
+    });
+  });
 });
