@@ -51,7 +51,7 @@ describe("AuthService", () => {
       const invalidToken = "invalid_token";
 
       expect(() => authService.verifyToken(invalidToken)).toThrow(
-        "Invalid or expired token",
+        "Invalid token"
       );
     });
   });
