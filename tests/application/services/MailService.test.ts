@@ -13,10 +13,17 @@ describe("MailService", () => {
   const mockApiKey = "mock-api-key";
   const mockFromEmail = "from@example.com";
   const mockBaseUrl = "http://localhost:3000";
+  let originalConsoleError: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mailService = new MailService(mockApiKey, mockFromEmail, mockBaseUrl);
+    originalConsoleError = console.error;
+    console.error = jest.fn();
+  });
+
+  afterEach(() => {
+    console.error = originalConsoleError;
   });
 
   describe("constructor", () => {
