@@ -23,6 +23,8 @@ const config: Config.InitialOptions = {
     "!src/main.ts",
     "!src/infrastructure/http/**/*.ts",
     "!src/infrastructure/database/**/*.ts",
+    // configも除外
+    "!src/config.ts",
   ],
   coverageProvider: "v8",
 };
