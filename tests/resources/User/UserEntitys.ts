@@ -10,6 +10,15 @@ export const parentUser = new User(
   1,
 );
 
+export const parentUser2 = new User(
+  "Parent User2",
+  "parent2@example.com",
+  new Password("validPassword123"),
+  "Parent",
+  true,
+  null
+);
+
 export const childUser1 = new User(
   "Child User1",
   "child1@example.com",
@@ -35,4 +44,13 @@ export const otherFamilyUser = new User(
   "Parent",
   false,
   2
+);
+
+export const user5 = new User(
+  "User5",
+  "child2@example.com",
+  new Password("validPassword789"),
+  "Parent",
+  false,
+  null
 );
