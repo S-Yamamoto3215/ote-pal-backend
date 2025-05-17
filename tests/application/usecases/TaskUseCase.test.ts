@@ -3,6 +3,7 @@ import { ITaskRepository } from "@/domain/repositories/TaskRepository";
 import { Task } from "@/domain/entities/Task";
 import { CreateTaskInput } from "@/types/TaskTypes";
 import { AppError } from "@/infrastructure/errors/AppError";
+import { createMockTask } from "@tests/helpers/factories";
 
 describe("TaskUseCase", () => {
   let taskRepository: jest.Mocked<ITaskRepository>;
@@ -20,7 +21,12 @@ describe("TaskUseCase", () => {
 
   describe("getTaskById", () => {
     it("should return the correct task when found", async () => {
-      const mockTask: Task = new Task("掃除", "リビングの掃除", 500, 1);
+      const mockTask = createMockTask({
+        name: "掃除",
+        description: "リビングの掃除",
+        reward: 500,
+        familyId: 1
+      });
       taskRepository.findById.mockResolvedValue(mockTask);
 
       const result = await taskUseCase.getTaskById(1);
@@ -57,7 +63,12 @@ describe("TaskUseCase", () => {
         familyId: 1,
       };
 
-      const mockTask = new Task(input.name, input.description, input.reward, input.familyId);
+      const mockTask = createMockTask({
+        name: input.name,
+        description: input.description,
+        reward: input.reward,
+        familyId: input.familyId
+      });
       taskRepository.save.mockResolvedValue(mockTask);
 
       const result = await taskUseCase.createTask(input);
@@ -91,7 +102,12 @@ describe("TaskUseCase", () => {
       };
 
       // Taskクラスのモックインスタンスを作成
-      const mockTask = new Task("", "家族の洗濯物をたたむ", 300, 1);
+      const mockTask = createMockTask({
+        name: "",
+        description: "家族の洗濯物をたたむ",
+        reward: 300,
+        familyId: 1
+      });
 
       // saveの前に呼び出されるvalidateメソッドがエラーをスローするように設定
       jest.spyOn(Task.prototype, 'validate').mockImplementation(() => {
@@ -116,7 +132,12 @@ describe("TaskUseCase", () => {
 
   describe("updateTask", () => {
     it("should update the task successfully", async () => {
-      const existingTask = new Task("掃除", "リビングの掃除", 500, 1);
+      const existingTask = createMockTask({
+        name: "掃除",
+        description: "リビングの掃除",
+        reward: 500,
+        familyId: 1
+      });
       taskRepository.findById.mockResolvedValue(existingTask);
 
       const updatedInput: CreateTaskInput = {
@@ -126,12 +147,12 @@ describe("TaskUseCase", () => {
         familyId: 1,
       };
 
-      const updatedTask = new Task(
-        updatedInput.name,
-        updatedInput.description,
-        updatedInput.reward,
-        updatedInput.familyId
-      );
+      const updatedTask = createMockTask({
+        name: updatedInput.name,
+        description: updatedInput.description,
+        reward: updatedInput.reward,
+        familyId: updatedInput.familyId
+      });
 
       taskRepository.save.mockResolvedValue(updatedTask);
 

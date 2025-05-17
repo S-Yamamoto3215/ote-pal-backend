@@ -3,10 +3,11 @@ import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { IEmailVerificationTokenRepository } from "@/domain/repositories/EmailVerificationTokenRepository";
 import { IMailService } from "@/application/services/MailService";
 import { User } from "@/domain/entities/User";
-import { Family } from "@/domain/entities/Family";
 import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
 import { AppError } from "@/infrastructure/errors/AppError";
-import { config } from "@/config";
+
+// テストヘルパーのインポート
+import { createMockUser, createMockEmailVerificationToken } from "@tests/helpers/factories";
 
 // Password クラスをモック化
 jest.mock("@/domain/valueObjects/Password/Password", () => {
@@ -72,14 +73,13 @@ describe("UserUseCase", () => {
       };
 
       userRepository.findByEmail.mockResolvedValue(null);
-      const mockUser = {
-        id: 1,
+      const mockUser = createMockUser({
         name: input.name,
         email: input.email,
         role: input.role,
         isVerified: input.isVerified,
-        familyId: input.familyId,
-      } as User;
+        familyId: input.familyId
+      });
       userRepository.save.mockResolvedValue(mockUser);
 
       const result = await userUseCase.createUser(input);
@@ -99,14 +99,13 @@ describe("UserUseCase", () => {
         familyId: 1,
       };
 
-      userRepository.findByEmail.mockResolvedValue({
-        id: 1,
+      userRepository.findByEmail.mockResolvedValue(createMockUser({
         name: input.name,
         email: input.email,
         role: input.role,
         isVerified: input.isVerified,
-        familyId: input.familyId,
-      } as User);
+        familyId: input.familyId
+      }));
 
       await expect(userUseCase.createUser(input)).rejects.toThrow(AppError);
       await expect(userUseCase.createUser(input)).rejects.toThrow(
@@ -229,13 +228,13 @@ describe("UserUseCase", () => {
       } as User;
 
       userRepository.save.mockResolvedValue(mockUser);
-      emailVerificationTokenRepository.save.mockResolvedValue({
-        id: 1,
-        token: "mock-token",
-        expiresAt: new Date(),
-        userId: 1,
-        isExpired: jest.fn().mockReturnValue(false),
-      } as unknown as EmailVerificationToken);
+      emailVerificationTokenRepository.save.mockResolvedValue(
+        createMockEmailVerificationToken({
+          token: "mock-token",
+          userId: 1,
+          isExpired: () => false
+        })
+      );
       mailService.sendVerificationEmail.mockResolvedValue();
 
       const result = await userUseCase.registerUser(input);
@@ -303,22 +302,21 @@ describe("UserUseCase", () => {
       const mockExpiresAt = new Date();
       mockExpiresAt.setHours(mockExpiresAt.getHours() + 1); // 1時間後
 
-      const mockVerificationToken = {
-        id: 1,
+      const mockVerificationToken = createMockEmailVerificationToken({
         token: mockToken,
         expiresAt: mockExpiresAt,
         userId: mockUserId,
-        isExpired: jest.fn().mockReturnValue(false),
-      } as unknown as EmailVerificationToken;
+        isExpired: () => false
+      });
 
-      const mockUser = {
+      const mockUser = createMockUser({
         id: mockUserId,
         name: "Test User",
         email: "test@example.com",
         role: "Parent",
         isVerified: true, // 検証後はtrueになる
-        familyId: null,
-      } as User;
+        familyId: null
+      });
 
       emailVerificationTokenRepository.findByToken.mockResolvedValue(mockVerificationToken);
       userRepository.updateVerificationStatus.mockResolvedValue(mockUser);
@@ -375,24 +373,24 @@ describe("UserUseCase", () => {
   describe("resendVerificationEmail", () => {
     it("should resend verification email to an unverified user", async () => {
       const mockEmail = "test@example.com";
-      const mockUser = {
+      const mockUser = createMockUser({
         id: 1,
         name: "Test User",
         email: mockEmail,
         role: "Parent",
         isVerified: false, // 未検証
-        familyId: null,
-      } as User;
+        familyId: null
+      });
 
       userRepository.findByEmail.mockResolvedValue(mockUser);
       emailVerificationTokenRepository.deleteByUserId.mockResolvedValue();
-      emailVerificationTokenRepository.save.mockResolvedValue({
-        id: 1,
-        token: "mock-token",
-        expiresAt: new Date(),
-        userId: mockUser.id,
-        isExpired: jest.fn().mockReturnValue(false),
-      } as unknown as EmailVerificationToken);
+      emailVerificationTokenRepository.save.mockResolvedValue(
+        createMockEmailVerificationToken({
+          token: "mock-token",
+          userId: mockUser.id,
+          isExpired: () => false
+        })
+      );
       mailService.sendVerificationEmail.mockResolvedValue();
 
       await userUseCase.resendVerificationEmail(mockEmail);
@@ -423,14 +421,14 @@ describe("UserUseCase", () => {
 
     it("should throw a ValidationError when the user is already verified", async () => {
       const mockEmail = "verified@example.com";
-      const mockUser = {
+      const mockUser = createMockUser({
         id: 1,
         name: "Verified User",
         email: mockEmail,
         role: "Parent",
         isVerified: true, // 既に検証済み
-        familyId: null,
-      } as User;
+        familyId: null
+      });
 
       userRepository.findByEmail.mockResolvedValue(mockUser);
 
