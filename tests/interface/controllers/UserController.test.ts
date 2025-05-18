@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
 import { UserController } from "@/interface/controllers/UserController";
-
 import { IUserUseCase } from "@/application/usecases/UserUseCase";
-
 import { AppError } from "@/infrastructure/errors/AppError";
-
 import { createMockUser } from "@tests/helpers/factories";
 import { User } from "@/domain/entities/User";
 import { Password } from "@/domain/valueObjects/Password";
+import {
+  createMockRequest,
+  createMockResponse,
+  createMockNext,
+  expectMissingFieldsErrorToBeCalled,
+  expectErrorToBeCalled,
+  expectErrorWithMessageToBeCalled
+} from "@tests/helpers/controllers";
 
 describe("UserController", () => {
   let userUseCase: jest.Mocked<IUserUseCase>;
@@ -28,17 +33,9 @@ describe("UserController", () => {
 
     userController = new UserController(userUseCase);
 
-    req = {
-      body: {},
-      query: {},
-    };
-
-    res = {
-      json: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-    };
-
-    next = jest.fn();
+    req = createMockRequest();
+    res = createMockResponse();
+    next = createMockNext();
   });
 
   describe("createUser", () => {
@@ -89,12 +86,7 @@ describe("UserController", () => {
 
       await userController.createUser(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: expect.stringContaining("Missing required fields"),
-        })
-      );
+      expectErrorWithMessageToBeCalled(next, "Missing required fields");
       expect(userUseCase.createUser).not.toHaveBeenCalled();
     });
   });
@@ -146,16 +138,11 @@ describe("UserController", () => {
     });
 
     it("should call next with a validation error if required fields are missing", async () => {
-      req.body = { name: "Test User" }; // メールとパスワードがない
+      req.body = { name: "Test User" };
 
       await userController.registerUser(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: expect.stringContaining("Missing required fields"),
-        })
-      );
+      expectErrorWithMessageToBeCalled(next, "Missing required fields");
       expect(userUseCase.registerUser).not.toHaveBeenCalled();
     });
   });
@@ -201,12 +188,7 @@ describe("UserController", () => {
 
       await userController.verifyEmail(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Token is required",
-        })
-      );
+      expectErrorToBeCalled(next, "ValidationError", "Token is required");
       expect(userUseCase.verifyEmail).not.toHaveBeenCalled();
     });
 
@@ -215,12 +197,7 @@ describe("UserController", () => {
 
       await userController.verifyEmail(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Token is required",
-        })
-      );
+      expectErrorToBeCalled(next, "ValidationError", "Token is required");
       expect(userUseCase.verifyEmail).not.toHaveBeenCalled();
     });
   });
@@ -256,12 +233,7 @@ describe("UserController", () => {
 
       await userController.resendVerificationEmail(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Missing required field: email",
-        })
-      );
+      expectMissingFieldsErrorToBeCalled(next, "email");
       expect(userUseCase.resendVerificationEmail).not.toHaveBeenCalled();
     });
   });
