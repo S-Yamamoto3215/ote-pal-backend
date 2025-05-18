@@ -93,15 +93,13 @@ describe("TaskUseCase", () => {
     });
 
     it("should throw an AppError for invalid input data", async () => {
-      // 無効なタスク入力データ（例：空の名前）
       const invalidInput: CreateTaskInput = {
-        name: "", // 空の名前は無効
+        name: "",
         description: "家族の洗濯物をたたむ",
         reward: 300,
         familyId: 1,
       };
 
-      // Taskクラスのモックインスタンスを作成
       const mockTask = createMockTask({
         name: "",
         description: "家族の洗濯物をたたむ",
@@ -109,23 +107,18 @@ describe("TaskUseCase", () => {
         familyId: 1
       });
 
-      // saveの前に呼び出されるvalidateメソッドがエラーをスローするように設定
       jest.spyOn(Task.prototype, 'validate').mockImplementation(() => {
         throw new AppError("ValidationError", "Name is required");
       });
 
-      // saveメソッドをモックして、taskRepositoryがvalidateメソッドを呼ぶ前にMockTaskを返すようにする
       taskRepository.save.mockImplementation((task: Task) => {
-        // saveの前にvalidateが呼ばれる
         task.validate();
         return Promise.resolve(task);
       });
 
-      // エラーがスローされることを確認
       await expect(taskUseCase.createTask(invalidInput)).rejects.toThrow(AppError);
       await expect(taskUseCase.createTask(invalidInput)).rejects.toThrow("Name is required");
 
-      // モックをリストア
       jest.restoreAllMocks();
     });
   });

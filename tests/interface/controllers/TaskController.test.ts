@@ -1,11 +1,10 @@
+// filepath: /Users/yamamon/mygit/ote-pal/ote-pal-backend/tests/interface/controllers/TaskController.test.ts
 import { Request, Response, NextFunction } from "express";
 import { TaskController } from "@/interface/controllers/TaskController";
 
 import { ITaskUseCase } from "@/application/usecases/TaskUseCase";
 
-import { AppError } from "@/infrastructure/errors/AppError";
-
-import { sampleTask, sampleTask2 } from "@tests/resources/Task/TaskEntitys";
+import { createMockTask } from "@tests/helpers/factories";
 
 describe("TaskController", () => {
   let taskUseCase: jest.Mocked<ITaskUseCase>;
@@ -41,14 +40,24 @@ describe("TaskController", () => {
 
   describe("createTask", () => {
     it("should create a new task and return status 201", async () => {
-      const mockTask = sampleTask;
+      const mockTask = createMockTask({
+        name: "サンプルタスク1",
+        description: "これはサンプルタスク1の説明です。",
+        reward: 1000,
+        familyId: 1
+      });
       req.body = mockTask;
 
       taskUseCase.createTask.mockResolvedValue(mockTask);
 
       await taskController.createTask(req as Request, res as Response, next);
 
-      expect(taskUseCase.createTask).toHaveBeenCalledWith(mockTask);
+      expect(taskUseCase.createTask).toHaveBeenCalledWith(expect.objectContaining({
+        name: mockTask.name,
+        description: mockTask.description,
+        reward: mockTask.reward,
+        familyId: mockTask.familyId
+      }));
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(mockTask);
     });
@@ -68,7 +77,13 @@ describe("TaskController", () => {
 
   describe("getTaskById", () => {
     it("should return a task when it exists", async () => {
-      const mockTask = sampleTask2;
+      const mockTask = createMockTask({
+        id: 2,
+        name: "サンプルタスク2",
+        description: "これはサンプルタスク2の説明です。",
+        reward: 2000,
+        familyId: 1
+      });
       req.params = { id: String(mockTask.id) };
 
       taskUseCase.getTaskById.mockResolvedValue(mockTask);
@@ -93,7 +108,12 @@ describe("TaskController", () => {
 
   describe("updateTaskById", () => {
     it("should update a task successfully", async () => {
-      const updatedTask = sampleTask;
+      const updatedTask = createMockTask({
+        name: "サンプルタスク1",
+        description: "これはサンプルタスク1の説明です。",
+        reward: 1000,
+        familyId: 1
+      });
       req.params = { id: "1" };
       req.body = updatedTask;
 
@@ -101,7 +121,12 @@ describe("TaskController", () => {
 
       await taskController.updateTaskById(req as Request, res as Response, next);
 
-      expect(taskUseCase.updateTask).toHaveBeenCalledWith(1, updatedTask);
+      expect(taskUseCase.updateTask).toHaveBeenCalledWith(1, expect.objectContaining({
+        name: updatedTask.name,
+        description: updatedTask.description,
+        reward: updatedTask.reward,
+        familyId: updatedTask.familyId
+      }));
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(updatedTask);
     });

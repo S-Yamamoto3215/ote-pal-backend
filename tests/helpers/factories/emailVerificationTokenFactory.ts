@@ -1,11 +1,5 @@
 import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
 
-/**
- * EmailVerificationToken エンティティのモックオブジェクトを生成するファクトリ関数
- *
- * @param override 基本値をオーバーライドするプロパティのオブジェクト
- * @returns EmailVerificationToken エンティティのモックオブジェクト
- */
 export const createMockEmailVerificationToken = (override: {
   id?: number;
   token?: string;
@@ -13,7 +7,6 @@ export const createMockEmailVerificationToken = (override: {
   userId?: number;
   isExpired?: boolean | (() => boolean);
 } = {}): EmailVerificationToken => {
-  // デフォルトの有効期限は現在から1時間後
   const defaultExpiresAt = new Date();
   defaultExpiresAt.setHours(defaultExpiresAt.getHours() + 1);
 
@@ -24,17 +17,14 @@ export const createMockEmailVerificationToken = (override: {
     userId: 1
   };
 
-  // オーバーライドプロパティを適用
   const mergedProps = { ...defaultProps, ...override };
 
-  // EmailVerificationToken オブジェクトを生成
   const token = new EmailVerificationToken(
     mergedProps.token,
     mergedProps.expiresAt,
     mergedProps.userId
   );
 
-  // IDを手動設定（コンストラクタでは設定されない）
   if (mergedProps.id !== undefined) {
     Object.defineProperty(token, 'id', {
       value: mergedProps.id,
@@ -43,7 +33,6 @@ export const createMockEmailVerificationToken = (override: {
     });
   }
 
-  // isExpired メソッドをモック化する必要がある場合のためのサポート
   if (override.isExpired !== undefined) {
     token.isExpired = typeof override.isExpired === 'function'
       ? override.isExpired

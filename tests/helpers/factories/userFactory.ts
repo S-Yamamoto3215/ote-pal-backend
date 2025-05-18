@@ -1,12 +1,6 @@
 import { User } from "@/domain/entities/User";
 import { Password } from "@/domain/valueObjects/Password";
 
-/**
- * User エンティティのモックオブジェクトを生成するファクトリ関数
- *
- * @param override 基本値をオーバーライドするプロパティのオブジェクト
- * @returns User エンティティのモックオブジェクト
- */
 export const createMockUser = (override: {
   id?: number;
   name?: string;
@@ -16,7 +10,6 @@ export const createMockUser = (override: {
   isVerified?: boolean;
   familyId?: number | null;
 } = {}): User => {
-  // パスワードはモックで代用
   const mockPassword = new Password("password123");
 
   const defaultProps = {
@@ -29,10 +22,8 @@ export const createMockUser = (override: {
     familyId: null,
   };
 
-  // オーバーライドプロパティを適用
   const mergedProps = { ...defaultProps, ...override };
 
-  // User オブジェクトを生成
   const user = new User(
     mergedProps.name,
     mergedProps.email,
@@ -42,7 +33,6 @@ export const createMockUser = (override: {
     mergedProps.familyId
   );
 
-  // IDを手動設定（コンストラクタでは設定されない）
   if (mergedProps.id !== undefined) {
     Object.defineProperty(user, 'id', {
       value: mergedProps.id,

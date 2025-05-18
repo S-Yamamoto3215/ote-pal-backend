@@ -1,5 +1,4 @@
 import { User } from "@/domain/entities/User";
-import { Password } from "@/domain/valueObjects/Password";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 import { userSeeds } from "@tests/resources/User/UserSeeds";

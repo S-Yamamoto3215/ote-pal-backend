@@ -6,10 +6,8 @@ import { User } from "@/domain/entities/User";
 import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
 import { AppError } from "@/infrastructure/errors/AppError";
 
-// テストヘルパーのインポート
 import { createMockUser, createMockEmailVerificationToken } from "@tests/helpers/factories";
 
-// Password クラスをモック化
 jest.mock("@/domain/valueObjects/Password/Password", () => {
   return {
     Password: jest.fn().mockImplementation(() => {
@@ -22,7 +20,6 @@ jest.mock("@/domain/valueObjects/Password/Password", () => {
   };
 });
 
-// crypto をモック化してランダムトークン生成を制御
 jest.mock("crypto", () => ({
   randomBytes: jest.fn().mockReturnValue({
     toString: jest.fn().mockReturnValue("mock-token"),
@@ -426,7 +423,7 @@ describe("UserUseCase", () => {
         name: "Verified User",
         email: mockEmail,
         role: "Parent",
-        isVerified: true, // 既に検証済み
+        isVerified: true,
         familyId: null
       });
 
