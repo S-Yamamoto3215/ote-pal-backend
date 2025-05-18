@@ -2,7 +2,7 @@ import { Work } from "@/domain/entities/Work";
 import { CreateWorkInput } from "@/types/WorkTypes";
 import { IWorkRepository } from "@/domain/repositories/WorkRepository";
 import { WorkUseCase } from "@/application/usecases/WorkUseCase/WorkUseCase";
-import { AppError } from "@/infrastructure/errors/AppError";
+import { createMockWork } from "@tests/helpers/factories";
 
 describe("WorkUseCase", () => {
   let workRepository: jest.Mocked<IWorkRepository>;
@@ -20,12 +20,16 @@ describe("WorkUseCase", () => {
   describe("createWork", () => {
     it("should create a new Work", async () => {
       const input: CreateWorkInput = {
-        status: "InProgress" as const,
+        status: "InProgress",
         taskId: 1,
         userId: 2,
       };
 
-      const mockWork = new Work(input.status, input.taskId, input.userId);
+      const mockWork = createMockWork({
+        status: input.status,
+        taskId: input.taskId,
+        userId: input.userId
+      });
       workRepository.save.mockResolvedValue(mockWork);
 
       const result = await workUseCase.createWork(input);

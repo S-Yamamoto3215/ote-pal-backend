@@ -3,11 +3,7 @@ import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { FamilyUseCase } from "@/application/usecases/FamilyUseCase/FamilyUseCase";
 import { AppError } from "@/infrastructure/errors/AppError";
-
-// import { familySeeds } from "@tests/resources/Family/FamilySeeds";
-// import { parentFamily, childFamily1, childFamily2 } from "@tests/resources/Family/FamilyEntitys";
-
-import { parentUser, parentUser2, user5 } from "@tests/resources/User/UserEntitys";
+import { createMockFamily, createMockUser } from "@tests/helpers/factories";
 
 describe("FamilyUseCase", () => {
   let familyRepository: jest.Mocked<IFamilyRepository>;
@@ -50,7 +46,7 @@ describe("FamilyUseCase", () => {
         paymentSchedule: 1,
       };
 
-      const user = user5;
+      const user = createMockUser({ isVerified: false });
       userRepository.findById.mockResolvedValue(user);
 
       await expect(familyUseCase.createFamily(input)).rejects.toThrow(
@@ -65,7 +61,10 @@ describe("FamilyUseCase", () => {
         paymentSchedule: 1,
       };
 
-      const user = parentUser;
+      const user = createMockUser({
+        isVerified: true,
+        familyId: 1
+      });
       userRepository.findById.mockResolvedValue(user);
 
       await expect(familyUseCase.createFamily(input)).rejects.toThrow(
@@ -80,7 +79,10 @@ describe("FamilyUseCase", () => {
         paymentSchedule: 1,
       };
 
-      const user = parentUser2;
+      const user = createMockUser({
+        isVerified: true,
+        familyId: null
+      });
       userRepository.findById.mockResolvedValue(user);
 
       const error = new Error("Save failed");
@@ -96,16 +98,29 @@ describe("FamilyUseCase", () => {
         paymentSchedule: 1,
       };
 
-      const user = parentUser2;
+      const user = createMockUser({
+        isVerified: true,
+        familyId: null
+      });
       userRepository.findById.mockResolvedValue(user);
 
-      const family = new Family(input.name, input.paymentSchedule);
+      const family = createMockFamily({
+        name: input.name,
+        payment_schedule: input.paymentSchedule
+      });
       familyRepository.save.mockResolvedValue(family);
 
       const result = await familyUseCase.createFamily(input);
 
       expect(result).toEqual(family);
-      expect(familyRepository.save).toHaveBeenCalledWith(family, user);
+
+      expect(familyRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: family.name,
+          payment_schedule: family.payment_schedule
+        }),
+        user
+      );
     });
   });
 });

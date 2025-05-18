@@ -2,8 +2,6 @@ import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken
 import { AppError } from "@/infrastructure/errors/AppError";
 import * as classValidator from "class-validator";
 
-// import { emailVerificationTokenSeeds } from "@tests/resources/EmailVerificationToken/EmailVerificationTokenSeeds";
-
 describe("EmailVerificationToken Entity", () => {
   describe("constructor", () => {
     it("should create a token with the correct properties", () => {
@@ -52,18 +50,16 @@ describe("EmailVerificationToken Entity", () => {
 
     it("should throw AppError for invalid token", () => {
       const verificationToken = new EmailVerificationToken(
-        "", // 空のトークン
+        "",
         new Date(Date.now() + 3600000),
         1
       );
 
-      // validateSyncが検証エラーを返すようにモック
-      // ValidationErrorの型に合わせてpropertyプロパティを追加
       const validateSyncSpy = jest
         .spyOn(classValidator, "validateSync")
         .mockReturnValue([
           {
-            property: "token", // プロパティ名を追加
+            property: "token",
             constraints: {
               isNotEmpty: "Token cannot be empty",
             },
@@ -77,7 +73,6 @@ describe("EmailVerificationToken Entity", () => {
       expect(validateFunc).toThrow(AppError);
       expect(validateFunc).toThrow("Token cannot be empty");
 
-      // スパイをリストア
       validateSyncSpy.mockRestore();
     });
   });

@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { UserController } from "@/interface/controllers/UserController";
 
 import { IUserUseCase } from "@/application/usecases/UserUseCase";
 
 import { AppError } from "@/infrastructure/errors/AppError";
 
-import { parentUser, childUser1 } from "@tests/resources/User/UserEntitys";
+import { createMockUser } from "@tests/helpers/factories";
 import { User } from "@/domain/entities/User";
 import { Password } from "@/domain/valueObjects/Password";
 
@@ -43,7 +43,13 @@ describe("UserController", () => {
 
   describe("createUser", () => {
     it("should create a new user and return status 201", async () => {
-      const mockUser = parentUser;
+      const mockUser = createMockUser({
+        name: "Parent User",
+        email: "parent@example.com",
+        role: "Parent",
+        isVerified: true,
+        familyId: 1
+      });
       req.body = mockUser;
 
       userUseCase.createUser.mockResolvedValue(mockUser);
@@ -101,7 +107,6 @@ describe("UserController", () => {
         password: "password123",
       };
 
-      // 登録されたユーザーを作成
       const mockUser = new User(
         req.body.name,
         req.body.email,
@@ -159,14 +164,13 @@ describe("UserController", () => {
     it("should verify email successfully and return status 200", async () => {
       req.query = { token: "valid-token" };
 
-      // 検証済みのユーザーを作成
       const verifiedUser = new User(
         "Test User",
         "test@example.com",
         new Password("password123"),
         "Parent",
-        true, // 検証済み
-        null
+        true,
+        null,
       );
       verifiedUser.id = 1;
 
@@ -193,7 +197,7 @@ describe("UserController", () => {
     });
 
     it("should call next with a validation error if token is missing", async () => {
-      req.query = {}; // トークンがない
+      req.query = {};
 
       await userController.verifyEmail(req as Request, res as Response, next);
 
@@ -248,7 +252,7 @@ describe("UserController", () => {
     });
 
     it("should call next with a validation error if email is missing", async () => {
-      req.body = {}; // メールがない
+      req.body = {};
 
       await userController.resendVerificationEmail(req as Request, res as Response, next);
 
