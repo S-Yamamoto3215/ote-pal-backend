@@ -1,14 +1,17 @@
-// filepath: /Users/yamamon/mygit/ote-pal/ote-pal-backend/tests/interface/controllers/TaskController.test.ts
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { TaskController } from "@/interface/controllers/TaskController";
-
 import { ITaskUseCase } from "@/application/usecases/TaskUseCase";
-
 import { createMockTask } from "@tests/helpers/factories";
+import {
+  createMockRequest,
+  createMockResponse,
+  createMockNext,
+  expectMissingFieldsErrorToBeCalled,
+  expectErrorWithMessageToBeCalled
+} from "@tests/helpers/controllers";
 
 describe("TaskController", () => {
   let taskUseCase: jest.Mocked<ITaskUseCase>;
-
   let taskController: TaskController;
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -24,18 +27,9 @@ describe("TaskController", () => {
 
     taskController = new TaskController(taskUseCase);
 
-    req = {
-      body: {},
-      params: {},
-    };
-
-    res = {
-      json: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-      send: jest.fn(),
-    };
-
-    next = jest.fn();
+    req = createMockRequest();
+    res = createMockResponse();
+    next = createMockNext();
   });
 
   describe("createTask", () => {
@@ -67,11 +61,7 @@ describe("TaskController", () => {
 
       await taskController.createTask(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Missing required fields: name, description, reward, familyId",
-        })
-      );
+      expectMissingFieldsErrorToBeCalled(next, "name", "description", "reward", "familyId");
     });
   });
 
@@ -100,9 +90,7 @@ describe("TaskController", () => {
 
       await taskController.getTaskById(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({ message: "Missing required fields: id" })
-      );
+      expectErrorWithMessageToBeCalled(next, "Missing required fields: id");
     });
   });
 
@@ -136,11 +124,7 @@ describe("TaskController", () => {
 
       await taskController.updateTaskById(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Missing required fields: id, name, description, reward, familyId",
-        })
-      );
+      expectMissingFieldsErrorToBeCalled(next, "id", "name", "description", "reward", "familyId");
     });
   });
 
@@ -160,11 +144,7 @@ describe("TaskController", () => {
 
       await taskController.deleteTaskById(req as Request, res as Response, next);
 
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Missing required fields: id",
-        })
-      );
+      expectErrorWithMessageToBeCalled(next, "Missing required fields: id");
     });
   });
 });

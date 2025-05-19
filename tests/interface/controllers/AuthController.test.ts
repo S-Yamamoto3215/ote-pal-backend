@@ -1,6 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { AuthController } from "@/interface/controllers/AuthController";
 import { IAuthUseCase } from "@/application/usecases/AuthUseCase";
+import {
+  createMockRequest,
+  createMockResponse,
+  createMockNext,
+  expectErrorToBeCalled
+} from "@tests/helpers/controllers";
 
 describe("AuthController", () => {
   let authUseCase: jest.Mocked<IAuthUseCase>;
@@ -16,16 +22,9 @@ describe("AuthController", () => {
 
     authController = new AuthController(authUseCase);
 
-    req = {
-      body: {},
-    };
-
-    res = {
-      json: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-    };
-
-    next = jest.fn();
+    req = createMockRequest();
+    res = createMockResponse();
+    next = createMockNext();
   });
 
   it("should return a token for valid credentials", async () => {
@@ -57,11 +56,6 @@ describe("AuthController", () => {
     await authController.login(req as Request, res as Response, next);
 
     expect(authUseCase.login).not.toHaveBeenCalled();
-    expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({
-        errorType: "ValidationError",
-        message: "Email and password are required",
-      }),
-    );
+    expectErrorToBeCalled(next, "ValidationError", "Email and password are required");
   });
 });
