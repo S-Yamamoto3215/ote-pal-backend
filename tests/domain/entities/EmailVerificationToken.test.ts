@@ -3,17 +3,23 @@ import { AppError } from "@/infrastructure/errors/AppError";
 import * as classValidator from "class-validator";
 
 describe("EmailVerificationToken Entity", () => {
+  const validParams = {
+    token: "test-token-123",
+    expiresAt: new Date(Date.now() + 3600000), // 1 hour later
+    userId: 1,
+  };
+
   describe("constructor", () => {
     it("should create a token with the correct properties", () => {
-      const token = "test-token-123";
-      const userId = 1;
-      const expiresAt = new Date();
+      const verificationToken = new EmailVerificationToken(
+        validParams.token,
+        validParams.expiresAt,
+        validParams.userId
+      );
 
-      const verificationToken = new EmailVerificationToken(token, expiresAt, userId);
-
-      expect(verificationToken.token).toBe(token);
-      expect(verificationToken.userId).toBe(userId);
-      expect(verificationToken.expiresAt).toBe(expiresAt);
+      expect(verificationToken.token).toBe(validParams.token);
+      expect(verificationToken.expiresAt).toEqual(validParams.expiresAt);
+      expect(verificationToken.userId).toBe(validParams.userId);
     });
   });
 
@@ -22,7 +28,11 @@ describe("EmailVerificationToken Entity", () => {
       const pastDate = new Date();
       pastDate.setHours(pastDate.getHours() - 2);
 
-      const verificationToken = new EmailVerificationToken("token", pastDate, 1);
+      const verificationToken = new EmailVerificationToken(
+        validParams.token,
+        pastDate,
+        validParams.userId
+      );
 
       expect(verificationToken.isExpired()).toBe(true);
     });
@@ -31,7 +41,11 @@ describe("EmailVerificationToken Entity", () => {
       const futureDate = new Date();
       futureDate.setHours(futureDate.getHours() + 2);
 
-      const verificationToken = new EmailVerificationToken("token", futureDate, 1);
+      const verificationToken = new EmailVerificationToken(
+        validParams.token,
+        futureDate,
+        validParams.userId
+      );
 
       expect(verificationToken.isExpired()).toBe(false);
     });
@@ -40,19 +54,21 @@ describe("EmailVerificationToken Entity", () => {
   describe("validate", () => {
     it("should not throw an error for valid token", () => {
       const verificationToken = new EmailVerificationToken(
-        "valid-token",
-        new Date(Date.now() + 3600000), // 1時間後
-        1
+        validParams.token,
+        validParams.expiresAt,
+        validParams.userId
       );
 
       expect(() => verificationToken.validate()).not.toThrow();
     });
 
     it("should throw AppError for invalid token", () => {
+      const invalidToken = "";
+
       const verificationToken = new EmailVerificationToken(
-        "",
-        new Date(Date.now() + 3600000),
-        1
+        invalidToken,
+        validParams.expiresAt,
+        validParams.userId
       );
 
       const validateSyncSpy = jest
