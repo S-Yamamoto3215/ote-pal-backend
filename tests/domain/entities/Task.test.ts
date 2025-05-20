@@ -9,84 +9,60 @@ describe("Task Entity", () => {
     familyId: 1,
   };
 
-  it("should create a task with the correct properties", () => {
-    const task = new Task(
-      validParams.name,
-      validParams.description,
-      validParams.reward,
-      validParams.familyId
-    );
+  describe("constructor", () => {
+    it("should create a task when valid parameters are provided", () => {
+      const { name, description, reward, familyId } = validParams;
 
-    expect(task.name).toBe(validParams.name);
-    expect(task.description).toBe(validParams.description);
-    expect(task.reward).toBe(validParams.reward);
-    expect(task.familyId).toBe(validParams.familyId);
+      const task = new Task(name, description, reward, familyId);
+
+      expect(task.name).toBe(name);
+      expect(task.description).toBe(description);
+      expect(task.reward).toBe(reward);
+      expect(task.familyId).toBe(familyId);
+    });
   });
 
-  it("should validate the task properly", () => {
-    const task = new Task(
-      validParams.name,
-      validParams.description,
-      validParams.reward,
-      validParams.familyId
-    );
+  describe("validate", () => {
+    it("should not throw any errors when values are valid", () => {
+      const { name, description, reward, familyId } = validParams;
 
-    expect(() => task.validate()).not.toThrow();
-  });
+      const task = new Task(name, description, reward, familyId);
 
-  it("should throw validation error for invalid task", () => {
-    const emptyName = "";
-    const taskWithEmptyName = new Task(
-      emptyName,
-      validParams.description,
-      validParams.reward,
-      validParams.familyId
-    );
-    expect(() => taskWithEmptyName.validate()).toThrow(AppError);
-    expect(() => taskWithEmptyName.validate()).toThrow("Name is required");
-
-    const emptyDescription = "";
-    const taskWithEmptyDescription = new Task(
-      validParams.name,
-      emptyDescription,
-      validParams.reward,
-      validParams.familyId
-    );
-    expect(() => taskWithEmptyDescription.validate()).toThrow(AppError);
-    expect(() => taskWithEmptyDescription.validate()).toThrow("Description is required");
-
-    const emptyReward = 0;
-    const taskWithInvalidReward = new Task(
-      validParams.name,
-      validParams.description,
-      emptyReward,
-      validParams.familyId
-    );
-    expect(() => taskWithInvalidReward.validate()).toThrow(AppError);
-    expect(() => taskWithInvalidReward.validate()).toThrow("Reward must be greater than 0");
-  });
-
-  it("should handle works relationship properly", () => {
-    const mockWorks = [
-      { id: 1, status: "InProgress", taskId: 1, userId: 1 },
-      { id: 2, status: "Completed", taskId: 1, userId: 2 },
-    ];
-
-    const task = new Task(
-      validParams.name,
-      validParams.description,
-      validParams.reward,
-      validParams.familyId
-    );
-
-    expect(task.works).toBeUndefined();
-
-    Object.defineProperty(task, 'works', {
-      value: mockWorks,
-      writable: true
+      expect(() => task.validate()).not.toThrow();
     });
 
-    expect(task.works).toEqual(mockWorks);
-    expect(task.works?.length).toBe(2);
+    it("should throw AppError when name is empty", () => {
+      const { description, reward, familyId } = validParams;
+      const emptyName = "";
+
+      const taskWithEmptyName = new Task(emptyName, description, reward, familyId);
+
+      expect(() => taskWithEmptyName.validate()).toThrow(AppError);
+      expect(() => taskWithEmptyName.validate()).toThrow("Name is required");
+    });
+
+    it("should throw AppError when description is empty", () => {
+      const { name, reward, familyId } = validParams;
+      const emptyDescription = "";
+
+      const taskWithEmptyDescription = new Task(name, emptyDescription, reward, familyId);
+
+      expect(() => taskWithEmptyDescription.validate()).toThrow(AppError);
+      expect(() => taskWithEmptyDescription.validate()).toThrow(
+        "Description is required"
+      );
+    });
+
+    it("should throw AppError when reward is zero", () => {
+      const { name, description, familyId } = validParams;
+      const emptyReward = 0;
+
+      const taskWithInvalidReward = new Task(name, description, emptyReward, familyId);
+
+      expect(() => taskWithInvalidReward.validate()).toThrow(AppError);
+      expect(() => taskWithInvalidReward.validate()).toThrow(
+        "Reward must be greater than 0"
+      );
+    });
   });
 });

@@ -1,20 +1,24 @@
 import { Family } from "@/domain/entities/Family";
 
-import { familySeeds } from "@tests/resources/Family/FamilySeeds";
-
 describe("Family Entity", () => {
   const validParams = {
     name: "Test Family 1",
     payment_schedule: 1,
   };
 
-  it("should create a Family instance with the given name and payment schedule", () => {
-    const family = new Family(
-      validParams.name,
-      validParams.payment_schedule
-    );
+  describe("constructor", () => {
+    it("should create a Family when valid parameters are provided", () => {
+      const { name, payment_schedule } = validParams;
 
-    expect(family.name).toBe(validParams.name);
-    expect(family.payment_schedule).toBe(validParams.payment_schedule);
+      const family = new Family(name, payment_schedule);
+
+      expect(family.name).toBe(name);
+      expect(family.payment_schedule).toBe(payment_schedule);
+    });
   });
+
+  // describe("validate", () => {
+    // it("should {$expectedValue} when {$conditions}", () => {});
+    // it("should throw {$ErrorType} when {$conditions}", () => {});
+  // });
 });

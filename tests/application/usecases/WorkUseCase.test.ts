@@ -18,56 +18,61 @@ describe("WorkUseCase", () => {
   });
 
   describe("createWork", () => {
-    it("should create a new Work", async () => {
-      const input: CreateWorkInput = {
-        status: "InProgress",
-        taskId: 1,
-        userId: 2,
-      };
+    const validInput: CreateWorkInput = {
+      status: "InProgress",
+      taskId: 1,
+      userId: 2,
+    };
 
+    it("should create and return a new Work when valid input is provided", async () => {
+      // Arrange
       const mockWork = createMockWork({
-        status: input.status,
-        taskId: input.taskId,
-        userId: input.userId
+        status: validInput.status,
+        taskId: validInput.taskId,
+        userId: validInput.userId
       });
       workRepository.save.mockResolvedValue(mockWork);
 
-      const result = await workUseCase.createWork(input);
+      // Act
+      const result = await workUseCase.createWork(validInput);
 
-      expect(workRepository.save).toHaveBeenCalledWith(expect.objectContaining(input));
+      // Assert
+      expect(workRepository.save).toHaveBeenCalledWith(expect.objectContaining(validInput));
       expect(result).toEqual(mockWork);
     });
 
-    it("should throw an error if the repository encounters an error", async () => {
-      const input: CreateWorkInput = {
-        status: "InProgress",
-        taskId: 1,
-        userId: 2,
-      };
-
+    it("should propagate repository errors when save operation fails", async () => {
+      // Arrange
       const mockError = new Error("Database error");
       workRepository.save.mockRejectedValue(mockError);
 
-      await expect(workUseCase.createWork(input)).rejects.toThrow(mockError);
+      // Act & Assert
+      await expect(workUseCase.createWork(validInput)).rejects.toThrow(mockError);
       expect(workRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining(input)
+        expect.objectContaining(validInput)
       );
     });
   });
 
   describe("deleteWork", () => {
-    it("should delete the Work with the specified ID", async () => {
+    it("should successfully delete the work when valid id is provided", async () => {
+      // Arrange
       const workId = 1;
+
+      // Act
       await workUseCase.deleteWork(workId);
 
+      // Assert
       expect(workRepository.delete).toHaveBeenCalledWith(workId);
     });
 
-    it("should throw an error if the repository encounters an error during deletion", async () => {
+    it("should propagate repository errors when delete operation fails", async () => {
+      // Arrange
       const workId = 10;
       const mockError = new Error("Deletion error");
       workRepository.delete.mockRejectedValue(mockError);
 
+      // Act & Assert
       await expect(workUseCase.deleteWork(workId)).rejects.toThrow(mockError);
       expect(workRepository.delete).toHaveBeenCalledWith(workId);
     });

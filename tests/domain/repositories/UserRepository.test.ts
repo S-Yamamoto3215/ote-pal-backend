@@ -30,23 +30,36 @@ describe("UserRepository", () => {
   });
 
   describe("findByEmail", () => {
-    it("should return user when user exists", async () => {
+    it("should return correct user when user with given email exists", async () => {
+      // Arrange
       const targetUser = userSeeds[0];
+
+      // Act
       const user = await userRepository.findByEmail(targetUser.email);
+
+      // Assert
       expect(user).not.toBeNull();
       expect(user?.name).toBe(targetUser.name);
     });
 
-    it("should return null when user does not exist", async () => {
-      const user = await userRepository.findByEmail("notFound@exsample.com");
+    it("should return null when user with given email does not exist", async () => {
+      // Arrange
+      const nonExistentEmail = "notFound@exsample.com";
+
+      // Act
+      const user = await userRepository.findByEmail(nonExistentEmail);
+
+      // Assert
       expect(user).toBeNull();
     });
 
-    it("should throw AppError when database query fails", async () => {
+    it("should throw AppError with 'Database error' message when database query fails", async () => {
+      // Arrange
       jest
         .spyOn(userRepository["userRepo"], "findOne")
         .mockRejectedValue(new Error("Mock Database Error"));
 
+      // Act & Assert
       await expect(
         userRepository.findByEmail("error@exsample.com"),
       ).rejects.toThrow(AppError);
@@ -59,19 +72,26 @@ describe("UserRepository", () => {
   });
 
   describe("save", () => {
-    it("should save user successfully", async () => {
+    it("should save user and return user with id when valid user is provided", async () => {
+      // Arrange
       const newUser = parentUser;
+
+      // Act
       const savedUser = await userRepository.save(newUser);
+
+      // Assert
       expect(savedUser.id).not.toBeNull();
       expect(savedUser.name).toBe(newUser.name);
       expect(savedUser.email).toBe(newUser.email);
     });
 
-    it("should throw AppError when database save fails", async () => {
+    it("should throw AppError with 'Database error' message when database save fails", async () => {
+      // Arrange
       jest
         .spyOn(userRepository["userRepo"], "save")
         .mockRejectedValue(new Error("Mock Database Error"));
 
+      // Act & Assert
       await expect(userRepository.save(parentUser)).rejects.toThrow(AppError);
       await expect(userRepository.save(parentUser)).rejects.toThrow(
         "Database error",

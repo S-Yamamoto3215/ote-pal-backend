@@ -25,60 +25,52 @@ describe("FamilyUseCase", () => {
   });
 
   describe("createFamily", () => {
-    it("should throw NotFound error if user is not found", async () => {
-      const input = {
-        userId: 9999,
-        name: "Family Name",
-        paymentSchedule: 1,
-      };
+    const validInput = {
+      userId: 1,
+      name: "Family Name",
+      paymentSchedule: 1,
+    };
 
+    it("should throw AppError with 'User not found' message when user does not exist", async () => {
+      // Arrange
       userRepository.findById.mockResolvedValue(null);
 
-      await expect(familyUseCase.createFamily(input)).rejects.toThrow(
+      // Act & Assert
+      await expect(familyUseCase.createFamily({...validInput, userId: 9999})).rejects.toThrow(
         new AppError("NotFound", "User not found")
       );
+      expect(userRepository.findById).toHaveBeenCalledWith(9999);
     });
 
-    it("should throw Unauthorized error if user is not verified", async () => {
-      const input = {
-        userId: 1,
-        name: "Family Name",
-        paymentSchedule: 1,
-      };
-
+    it("should throw AppError with 'User is not verified' message when user is not verified", async () => {
+      // Arrange
       const user = createMockUser({ isVerified: false });
       userRepository.findById.mockResolvedValue(user);
 
-      await expect(familyUseCase.createFamily(input)).rejects.toThrow(
+      // Act & Assert
+      await expect(familyUseCase.createFamily(validInput)).rejects.toThrow(
         new AppError("Unauthorized", "User is not verified")
       );
+      expect(userRepository.findById).toHaveBeenCalledWith(validInput.userId);
     });
 
-    it("should throw ValidationError if user already belongs to a family", async () => {
-      const input = {
-        userId: 1,
-        name: "Family Name",
-        paymentSchedule: 1,
-      };
-
+    it("should throw AppError with 'User already belongs to a family' message when user already has a family", async () => {
+      // Arrange
       const user = createMockUser({
         isVerified: true,
         familyId: 1
       });
       userRepository.findById.mockResolvedValue(user);
 
-      await expect(familyUseCase.createFamily(input)).rejects.toThrow(
+      // Act & Assert
+      await expect(familyUseCase.createFamily(validInput)).rejects.toThrow(
         new AppError("ValidationError", "User already belongs to a family")
       );
+      expect(userRepository.findById).toHaveBeenCalledWith(validInput.userId);
     });
 
-    it("should throw the original error if family save fails", async () => {
-      const input = {
-        userId: 1,
-        name: "Family Name",
-        paymentSchedule: 1,
-      };
-
+    it("should propagate original error when family repository save operation fails", async () => {
+      // Arrange
       const user = createMockUser({
         isVerified: true,
         familyId: null
@@ -88,16 +80,14 @@ describe("FamilyUseCase", () => {
       const error = new Error("Save failed");
       familyRepository.save.mockRejectedValue(error);
 
-      await expect(familyUseCase.createFamily(input)).rejects.toThrow(error);
+      // Act & Assert
+      await expect(familyUseCase.createFamily(validInput)).rejects.toThrow(error);
+      expect(userRepository.findById).toHaveBeenCalledWith(validInput.userId);
+      expect(familyRepository.save).toHaveBeenCalled();
     });
 
-    it("should create a family successfully", async () => {
-      const input = {
-        userId: 1,
-        name: "Family Name",
-        paymentSchedule: 1,
-      };
-
+    it("should successfully create and return a family when valid input is provided", async () => {
+      // Arrange
       const user = createMockUser({
         isVerified: true,
         familyId: null
@@ -105,15 +95,17 @@ describe("FamilyUseCase", () => {
       userRepository.findById.mockResolvedValue(user);
 
       const family = createMockFamily({
-        name: input.name,
-        payment_schedule: input.paymentSchedule
+        name: validInput.name,
+        payment_schedule: validInput.paymentSchedule
       });
       familyRepository.save.mockResolvedValue(family);
 
-      const result = await familyUseCase.createFamily(input);
+      // Act
+      const result = await familyUseCase.createFamily(validInput);
 
+      // Assert
       expect(result).toEqual(family);
-
+      expect(userRepository.findById).toHaveBeenCalledWith(validInput.userId);
       expect(familyRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
           name: family.name,

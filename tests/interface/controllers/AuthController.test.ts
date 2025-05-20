@@ -27,35 +27,46 @@ describe("AuthController", () => {
     next = createMockNext();
   });
 
-  it("should return a token for valid credentials", async () => {
-    req.body = { email: "test@example.com", password: "password1234" };
-    authUseCase.login.mockResolvedValue("mock-token");
+  describe("login", () => {
+    it("should return token when valid credentials are provided", async () => {
+      // Arrange
+      req.body = { email: "test@example.com", password: "password1234" };
+      authUseCase.login.mockResolvedValue("mock-token");
 
-    await authController.login(req as Request, res as Response, next);
+      // Act
+      await authController.login(req as Request, res as Response, next);
 
-    expect(authUseCase.login).toHaveBeenCalledWith(
-      "test@example.com",
-      "password1234",
-    );
-    expect(res.json).toHaveBeenCalledWith({ token: "mock-token" });
-  });
+      // Assert
+      expect(authUseCase.login).toHaveBeenCalledWith(
+        "test@example.com",
+        "password1234",
+      );
+      expect(res.json).toHaveBeenCalledWith({ token: "mock-token" });
+    });
 
-  it("should call next with an error if authUseCase.login throws", async () => {
-    req.body = { email: "test@example.com", password: "password1234" };
-    const error = new Error("Login failed");
-    authUseCase.login.mockRejectedValue(error);
+    it("should call next with use case error when login fails", async () => {
+      // Arrange
+      req.body = { email: "test@example.com", password: "password1234" };
+      const error = new Error("Login failed");
+      authUseCase.login.mockRejectedValue(error);
 
-    await authController.login(req as Request, res as Response, next);
+      // Act
+      await authController.login(req as Request, res as Response, next);
 
-    expect(next).toHaveBeenCalledWith(error);
-  });
+      // Assert
+      expect(next).toHaveBeenCalledWith(error);
+    });
 
-  it("should call next with a validation error if email or password is missing", async () => {
-    req.body = {};
+    it("should call next with validation error when email or password is missing", async () => {
+      // Arrange
+      req.body = {};
 
-    await authController.login(req as Request, res as Response, next);
+      // Act
+      await authController.login(req as Request, res as Response, next);
 
-    expect(authUseCase.login).not.toHaveBeenCalled();
-    expectErrorToBeCalled(next, "ValidationError", "Email and password are required");
+      // Assert
+      expect(authUseCase.login).not.toHaveBeenCalled();
+      expectErrorToBeCalled(next, "ValidationError", "Email and password are required");
+    });
   });
 });

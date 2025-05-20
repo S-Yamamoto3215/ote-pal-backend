@@ -59,170 +59,155 @@ describe("UserUseCase", () => {
   });
 
   describe("createUser", () => {
-    it("should create a new user when the email is not already in use", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-        role: "Parent" as "Parent" | "Child",
-        isVerified: false,
-        familyId: 1,
-      };
+    const validInput = {
+      name: "Test User",
+      email: "test@example.com",
+      password: "password123",
+      role: "Parent" as "Parent" | "Child",
+      isVerified: false,
+      familyId: 1,
+    };
 
+    it("should create a new user when the email is not already in use", async () => {
+      // Arrange
       userRepository.findByEmail.mockResolvedValue(null);
       const mockUser = createMockUser({
-        name: input.name,
-        email: input.email,
-        role: input.role,
-        isVerified: input.isVerified,
-        familyId: input.familyId
+        name: validInput.name,
+        email: validInput.email,
+        role: validInput.role,
+        isVerified: validInput.isVerified,
+        familyId: validInput.familyId
       });
       userRepository.save.mockResolvedValue(mockUser);
 
-      const result = await userUseCase.createUser(input);
+      // Act
+      const result = await userUseCase.createUser(validInput);
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      // Assert
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.save).toHaveBeenCalled();
       expect(result).toEqual(mockUser);
     });
 
-    it("should throw a ValidationError if the email is already in use", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-        role: "Parent" as "Parent" | "Child",
-        isVerified: false,
-        familyId: 1,
-      };
-
+    it("should throw AppError with 'User already exists' message when email is already in use", async () => {
+      // Arrange
       userRepository.findByEmail.mockResolvedValue(createMockUser({
-        name: input.name,
-        email: input.email,
-        role: input.role,
-        isVerified: input.isVerified,
-        familyId: input.familyId
+        name: validInput.name,
+        email: validInput.email,
+        role: validInput.role,
+        isVerified: validInput.isVerified,
+        familyId: validInput.familyId
       }));
 
-      await expect(userUseCase.createUser(input)).rejects.toThrow(AppError);
-      await expect(userUseCase.createUser(input)).rejects.toThrow(
+      // Act & Assert
+      await expect(userUseCase.createUser(validInput)).rejects.toThrow(AppError);
+      await expect(userUseCase.createUser(validInput)).rejects.toThrow(
         "User already exists",
       );
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.save).not.toHaveBeenCalled();
     });
 
-    it("should propagate any unexpected errors", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-        role: "Parent" as "Parent" | "Child",
-        isVerified: false,
-        familyId: 1,
-      };
-
+    it("should propagate unexpected errors when database operation fails", async () => {
+      // Arrange
       const unexpectedError = new Error("Unexpected database error");
       userRepository.findByEmail.mockResolvedValue(null);
       userRepository.save.mockRejectedValue(unexpectedError);
 
-      await expect(userUseCase.createUser(input)).rejects.toThrow(
+      // Act & Assert
+      await expect(userUseCase.createUser(validInput)).rejects.toThrow(
         unexpectedError,
       );
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.save).toHaveBeenCalled();
     });
   });
 
   describe("createUserWithFamily", () => {
-    it("should create a new user with a family when the email is not already in use", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-        familyName: "Test Family",
-      };
+    const validInput = {
+      name: "Test User",
+      email: "test@example.com",
+      password: "password123",
+      familyName: "Test Family",
+    };
 
+    it("should create a new user with a family when the email is not already in use", async () => {
+      // Arrange
       userRepository.findByEmail.mockResolvedValue(null);
-      const mockUser = {
+      const mockUser = createMockUser({
         id: 1,
-        name: input.name,
-        email: input.email,
+        name: validInput.name,
+        email: validInput.email,
         role: "Parent",
         isVerified: false,
         familyId: 1,
-      } as User;
+      });
 
       userRepository.saveWithFamily.mockResolvedValue(mockUser);
-      const result = await userUseCase.createUserWithFamily(input);
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+
+      // Act
+      const result = await userUseCase.createUserWithFamily(validInput);
+
+      // Assert
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.saveWithFamily).toHaveBeenCalled();
       expect(result).toEqual(mockUser);
     });
 
-    it("should throw a ValidationError if the email is already in use", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-        familyName: "Test Family",
-      };
-
-      userRepository.findByEmail.mockResolvedValue({
+    it("should throw AppError with 'User already exists' message when email is already in use", async () => {
+      // Arrange
+      userRepository.findByEmail.mockResolvedValue(createMockUser({
         id: 1,
-        name: input.name,
-        email: input.email,
+        name: validInput.name,
+        email: validInput.email,
         role: "Parent",
         isVerified: false,
         familyId: null,
-      } as User);
+      }));
 
-      await expect(userUseCase.createUserWithFamily(input)).rejects.toThrow(AppError);
-      await expect(userUseCase.createUserWithFamily(input)).rejects.toThrow("User already exists");
+      // Act & Assert
+      await expect(userUseCase.createUserWithFamily(validInput)).rejects.toThrow(AppError);
+      await expect(userUseCase.createUserWithFamily(validInput)).rejects.toThrow("User already exists");
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.saveWithFamily).not.toHaveBeenCalled();
     });
 
-    it("should propagate any unexpected errors", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-        familyName: "Test Family",
-      };
-
+    it("should propagate unexpected errors when database operation fails", async () => {
+      // Arrange
       const unexpectedError = new Error("Unexpected database error");
       userRepository.findByEmail.mockResolvedValue(null);
       userRepository.saveWithFamily.mockRejectedValue(unexpectedError);
 
-      await expect(userUseCase.createUserWithFamily(input)).rejects.toThrow(unexpectedError);
+      // Act & Assert
+      await expect(userUseCase.createUserWithFamily(validInput)).rejects.toThrow(unexpectedError);
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.saveWithFamily).toHaveBeenCalled();
     });
   });
 
   describe("registerUser", () => {
-    it("should register a new user and send verification email", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-      };
+    const validInput = {
+      name: "Test User",
+      email: "test@example.com",
+      password: "password123",
+    };
 
+    it("should successfully register a new user and send verification email when valid input is provided", async () => {
+      // Arrange
       userRepository.findByEmail.mockResolvedValue(null);
 
-      const mockUser = {
+      const mockUser = createMockUser({
         id: 1,
-        name: input.name,
-        email: input.email,
+        name: validInput.name,
+        email: validInput.email,
         role: "Parent",
         isVerified: false,
         familyId: null,
-      } as User;
+      });
 
       userRepository.save.mockResolvedValue(mockUser);
       emailVerificationTokenRepository.save.mockResolvedValue(
@@ -234,58 +219,52 @@ describe("UserUseCase", () => {
       );
       mailService.sendVerificationEmail.mockResolvedValue();
 
-      const result = await userUseCase.registerUser(input);
+      // Act
+      const result = await userUseCase.registerUser(validInput);
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      // Assert
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.save).toHaveBeenCalled();
       expect(emailVerificationTokenRepository.save).toHaveBeenCalled();
       expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
-        input.email,
-        input.name,
+        validInput.email,
+        validInput.name,
         "mock-token"
       );
       expect(result).toEqual(mockUser);
     });
 
-    it("should throw a ValidationError if the email is already in use", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-      };
-
-      userRepository.findByEmail.mockResolvedValue({
+    it("should throw AppError with 'User already exists' message when email is already in use", async () => {
+      // Arrange
+      userRepository.findByEmail.mockResolvedValue(createMockUser({
         id: 1,
-        name: input.name,
-        email: input.email,
+        name: validInput.name,
+        email: validInput.email,
         role: "Parent",
         isVerified: false,
         familyId: null,
-      } as User);
+      }));
 
-      await expect(userUseCase.registerUser(input)).rejects.toThrow(AppError);
-      await expect(userUseCase.registerUser(input)).rejects.toThrow("User already exists");
+      // Act & Assert
+      await expect(userUseCase.registerUser(validInput)).rejects.toThrow(AppError);
+      await expect(userUseCase.registerUser(validInput)).rejects.toThrow("User already exists");
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.save).not.toHaveBeenCalled();
       expect(emailVerificationTokenRepository.save).not.toHaveBeenCalled();
       expect(mailService.sendVerificationEmail).not.toHaveBeenCalled();
     });
 
-    it("should propagate any unexpected errors during user creation", async () => {
-      const input = {
-        name: "Test User",
-        email: "test@example.com",
-        password: "password123",
-      };
-
+    it("should propagate unexpected errors when database operation fails during user creation", async () => {
+      // Arrange
       const unexpectedError = new Error("Unexpected database error");
       userRepository.findByEmail.mockResolvedValue(null);
       userRepository.save.mockRejectedValue(unexpectedError);
 
-      await expect(userUseCase.registerUser(input)).rejects.toThrow(unexpectedError);
+      // Act & Assert
+      await expect(userUseCase.registerUser(validInput)).rejects.toThrow(unexpectedError);
 
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(input.email);
+      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.save).toHaveBeenCalled();
       expect(emailVerificationTokenRepository.save).not.toHaveBeenCalled();
       expect(mailService.sendVerificationEmail).not.toHaveBeenCalled();
@@ -293,11 +272,12 @@ describe("UserUseCase", () => {
   });
 
   describe("verifyEmail", () => {
-    it("should verify the user email when a valid token is provided", async () => {
+    it("should successfully verify the user email when a valid and non-expired token is provided", async () => {
+      // Arrange
       const mockToken = "valid-token";
       const mockUserId = 1;
       const mockExpiresAt = new Date();
-      mockExpiresAt.setHours(mockExpiresAt.getHours() + 1); // 1時間後
+      mockExpiresAt.setHours(mockExpiresAt.getHours() + 1); // 1時間後（有効）
 
       const mockVerificationToken = createMockEmailVerificationToken({
         token: mockToken,
@@ -319,8 +299,10 @@ describe("UserUseCase", () => {
       userRepository.updateVerificationStatus.mockResolvedValue(mockUser);
       emailVerificationTokenRepository.deleteByUserId.mockResolvedValue();
 
+      // Act
       const result = await userUseCase.verifyEmail(mockToken);
 
+      // Assert
       expect(emailVerificationTokenRepository.findByToken).toHaveBeenCalledWith(mockToken);
       expect(userRepository.updateVerificationStatus).toHaveBeenCalledWith(mockUserId, true);
       expect(emailVerificationTokenRepository.deleteByUserId).toHaveBeenCalledWith(mockUserId);
@@ -328,11 +310,12 @@ describe("UserUseCase", () => {
       expect(result.isVerified).toBe(true);
     });
 
-    it("should throw a ValidationError when an invalid token is provided", async () => {
+    it("should throw AppError with 'Invalid verification token' message when token is not found", async () => {
+      // Arrange
       const mockToken = "invalid-token";
-
       emailVerificationTokenRepository.findByToken.mockResolvedValue(null);
 
+      // Act & Assert
       await expect(userUseCase.verifyEmail(mockToken)).rejects.toThrow(AppError);
       await expect(userUseCase.verifyEmail(mockToken)).rejects.toThrow("Invalid verification token");
 
@@ -341,23 +324,25 @@ describe("UserUseCase", () => {
       expect(emailVerificationTokenRepository.deleteByUserId).not.toHaveBeenCalled();
     });
 
-    it("should throw a ValidationError when the token has expired", async () => {
+    it("should throw AppError with 'Verification token has expired' message when token is expired", async () => {
+      // Arrange
       const mockToken = "expired-token";
       const mockUserId = 1;
       const mockExpiresAt = new Date();
       mockExpiresAt.setHours(mockExpiresAt.getHours() - 1); // 1時間前（期限切れ）
 
-      const mockVerificationToken = {
+      const mockVerificationToken = createMockEmailVerificationToken({
         id: 1,
         token: mockToken,
         expiresAt: mockExpiresAt,
         userId: mockUserId,
-        isExpired: jest.fn().mockReturnValue(true), // 期限切れ
-      } as unknown as EmailVerificationToken;
+        isExpired: () => true, // 期限切れ
+      });
 
       emailVerificationTokenRepository.findByToken.mockResolvedValue(mockVerificationToken);
       emailVerificationTokenRepository.deleteByUserId.mockResolvedValue();
 
+      // Act & Assert
       await expect(userUseCase.verifyEmail(mockToken)).rejects.toThrow(AppError);
       await expect(userUseCase.verifyEmail(mockToken)).rejects.toThrow("Verification token has expired");
 
@@ -368,14 +353,15 @@ describe("UserUseCase", () => {
   });
 
   describe("resendVerificationEmail", () => {
-    it("should resend verification email to an unverified user", async () => {
+    it("should successfully resend verification email when unverified user exists", async () => {
+      // Arrange
       const mockEmail = "test@example.com";
       const mockUser = createMockUser({
         id: 1,
         name: "Test User",
         email: mockEmail,
         role: "Parent",
-        isVerified: false, // 未検証
+        isVerified: false, // 未検証ユーザー
         familyId: null
       });
 
@@ -390,8 +376,10 @@ describe("UserUseCase", () => {
       );
       mailService.sendVerificationEmail.mockResolvedValue();
 
+      // Act
       await userUseCase.resendVerificationEmail(mockEmail);
 
+      // Assert
       expect(userRepository.findByEmail).toHaveBeenCalledWith(mockEmail);
       expect(emailVerificationTokenRepository.deleteByUserId).toHaveBeenCalledWith(mockUser.id);
       expect(emailVerificationTokenRepository.save).toHaveBeenCalled();
@@ -402,11 +390,12 @@ describe("UserUseCase", () => {
       );
     });
 
-    it("should throw a ValidationError when the user does not exist", async () => {
+    it("should throw AppError with 'User not found' message when user does not exist", async () => {
+      // Arrange
       const mockEmail = "nonexistent@example.com";
-
       userRepository.findByEmail.mockResolvedValue(null);
 
+      // Act & Assert
       await expect(userUseCase.resendVerificationEmail(mockEmail)).rejects.toThrow(AppError);
       await expect(userUseCase.resendVerificationEmail(mockEmail)).rejects.toThrow("User not found");
 
@@ -416,19 +405,21 @@ describe("UserUseCase", () => {
       expect(mailService.sendVerificationEmail).not.toHaveBeenCalled();
     });
 
-    it("should throw a ValidationError when the user is already verified", async () => {
+    it("should throw AppError with 'User is already verified' message when user is already verified", async () => {
+      // Arrange
       const mockEmail = "verified@example.com";
       const mockUser = createMockUser({
         id: 1,
         name: "Verified User",
         email: mockEmail,
         role: "Parent",
-        isVerified: true,
+        isVerified: true, // 既に検証済み
         familyId: null
       });
 
       userRepository.findByEmail.mockResolvedValue(mockUser);
 
+      // Act & Assert
       await expect(userUseCase.resendVerificationEmail(mockEmail)).rejects.toThrow(AppError);
       await expect(userUseCase.resendVerificationEmail(mockEmail)).rejects.toThrow("User is already verified");
 

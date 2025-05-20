@@ -12,65 +12,46 @@ describe("User Entity", () => {
     familyId: 1,
   };
 
-  it("should create a valid User", () => {
-    const user = new User(
-      validParams.name,
-      validParams.email,
-      validParams.password,
-      validParams.role,
-      validParams.isVerified,
-      validParams.familyId
-    );
+  describe("constructor", () => {
+    it("should create a User when valid parameters are provided", () => {
+      const { name, email, password, role, isVerified, familyId } = validParams;
 
-    expect(user.name).toBe(validParams.name);
-    expect(user.email).toBe(validParams.email);
-    expect(user.password).toBe(validParams.password);
-    expect(user.role).toBe(validParams.role);
-    expect(user.familyId).toBe(validParams.familyId);
+      const user = new User(name, email, password, role, isVerified, familyId);
+
+      expect(user.name).toBe(name);
+      expect(user.email).toBe(email);
+      expect(user.password).toBe(password);
+      expect(user.role).toBe(role);
+      expect(user.familyId).toBe(familyId);
+    });
   });
 
-  it("should throw validation error for invalid email", () => {
-    const invalidEmail = "invalid-email";
+  describe("validate", () => {
+    it("should throw validation error when invalid email", () => {
+      const { name, password, role, isVerified, familyId } = validParams;
+      const invalidEmail = "invalid-email";
 
-    const user = new User(
-      validParams.name,
-      invalidEmail,
-      validParams.password,
-      validParams.role,
-      validParams.isVerified,
-      validParams.familyId
-    );
+      const user = new User(name, invalidEmail, password, role, isVerified, familyId);
 
-    expect(() => user.validate()).toThrow(AppError);
-  });
+      expect(() => user.validate()).toThrow(AppError);
+    });
 
-  it("should throw validation error for empty name", () => {
-    const emptyName = "";
+    it("should throw validation error when empty name", () => {
+      const { email, password, role, isVerified, familyId } = validParams;
+      const emptyName = "";
 
-    const user = new User(
-      emptyName,
-      validParams.email,
-      validParams.password,
-      validParams.role,
-      validParams.isVerified,
-      validParams.familyId
-    );
+      const user = new User(emptyName, email, password, role, isVerified, familyId);
 
-    expect(() => user.validate()).toThrow(AppError);
-  });
+      expect(() => user.validate()).toThrow(AppError);
+    });
 
-  it("should throw validation error for invalid role", () => {
-    const invalidRole = "InvalidRole" as "Parent" | "Child";
+    it("should throw validation error when invalid role", () => {
+      const { name, email, password, isVerified, familyId } = validParams;
+      const invalidRole = "InvalidRole" as "Parent" | "Child";
 
-    const user = new User(
-      validParams.name,
-      validParams.email,
-      validParams.password,
-      invalidRole,
-      validParams.isVerified,
-      validParams.familyId
-    );
+      const user = new User(name, email, password, invalidRole, isVerified, familyId);
 
-    expect(() => user.validate()).toThrow(AppError);
+      expect(() => user.validate()).toThrow(AppError);
+    });
   });
 });

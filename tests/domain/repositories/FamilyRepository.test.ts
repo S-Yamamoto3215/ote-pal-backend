@@ -30,23 +30,36 @@ describe("FamilyRepository", () => {
   describe("save", () => {});
 
   describe("findById", () => {
-    it("should find a family by id and return it", async () => {
+    it("should return correct family when family with given id exists", async () => {
+      // Arrange
       const targetFamily = familySeeds[0];
+
+      // Act
       const family = await familyRepository.findById(targetFamily.id);
+
+      // Assert
       expect(family).not.toBeNull();
       expect(family?.name).toBe(targetFamily.name);
     });
 
-    it("should return null if no family is found", async () => {
-      const family = await familyRepository.findById(9999);
+    it("should return null when family with given id does not exist", async () => {
+      // Arrange
+      const nonExistentId = 9999;
+
+      // Act
+      const family = await familyRepository.findById(nonExistentId);
+
+      // Assert
       expect(family).toBeNull();
     });
 
-    it("should throw an AppError if finding fails", async () => {
+    it("should throw AppError with 'Database error' message when database query fails", async () => {
+      // Arrange
       jest
         .spyOn(familyRepository["familyRepo"], "findOneBy")
         .mockRejectedValue(new Error("Mock Database Error"));
 
+      // Act & Assert
       await expect(familyRepository.findById(1)).rejects.toThrow(AppError);
       await expect(familyRepository.findById(1)).rejects.toThrow(
         "Database error"
@@ -57,15 +70,21 @@ describe("FamilyRepository", () => {
   });
 
   describe("delete", () => {
-    it("should delete a family by id", async () => {
-      await expect(familyRepository.delete(3)).resolves.not.toThrow();
+    it("should successfully delete family when valid id is provided", async () => {
+      // Arrange
+      const validId = 3;
+
+      // Act & Assert
+      await expect(familyRepository.delete(validId)).resolves.not.toThrow();
     });
 
-    it("should throw an AppError if deletion fails", async () => {
+    it("should throw AppError with 'Database error' message when database delete fails", async () => {
+      // Arrange
       jest
         .spyOn(familyRepository["familyRepo"], "delete")
         .mockRejectedValue(new Error("Mock Database Error"));
 
+      // Act & Assert
       await expect(familyRepository.delete(1)).rejects.toThrow(AppError);
       await expect(familyRepository.delete(1)).rejects.toThrow(
         "Database error"

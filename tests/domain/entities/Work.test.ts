@@ -7,15 +7,20 @@ describe("Work Entity", () => {
     userId: 1,
   };
 
-  it("should create a Work instance with correct properties", () => {
-    const work = new Work(
-      validParams.status,
-      validParams.taskId,
-      validParams.userId
-    );
+  describe("constructor", () => {
+    it("should create a Work when valid parameters are provided", () => {
+      const { status, taskId, userId } = validParams;
 
-    expect(work.status).toBe(validParams.status);
-    expect(work.taskId).toBe(validParams.taskId);
-    expect(work.userId).toBe(validParams.userId);
+      const work = new Work(status, taskId, userId);
+
+      expect(work.status).toBe(validParams.status);
+      expect(work.taskId).toBe(validParams.taskId);
+      expect(work.userId).toBe(validParams.userId);
+    });
   });
+
+  // describe("validate", () => {
+  //   // it("should {$expectedValue} when {$conditions}", () => {});
+  //   // it("should throw {$ErrorType} when {$conditions}", () => {});
+  // });
 });

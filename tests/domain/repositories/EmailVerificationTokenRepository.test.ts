@@ -25,21 +25,22 @@ describe("EmailVerificationTokenRepository", () => {
   });
 
   describe("save", () => {
-    it("should save a token successfully", async () => {
-      // テスト用のトークンを作成
+    it("should save token and return saved token when valid token is provided", async () => {
+      // Arrange
       const expiresAt = new Date(Date.now() + 3600000); // 1時間後
       const token = new EmailVerificationToken("test-token-123", expiresAt, 1);
 
-      // トークンを保存
+      // Act
       const savedToken = await emailVerificationTokenRepository.save(token);
 
-      // 保存されたトークンを検証
+      // Assert
       expect(savedToken).toBeDefined();
       expect(savedToken.token).toBe("test-token-123");
       expect(savedToken.userId).toBe(1);
     });
 
-    it("should throw AppError if save fails", async () => {
+    it("should throw AppError with 'Failed to save verification token' message when database save fails", async () => {
+      // Arrange
       const expiresAt = new Date(Date.now() + 3600000);
       const token = new EmailVerificationToken(
         "test-token-error",
@@ -52,47 +53,54 @@ describe("EmailVerificationTokenRepository", () => {
         .fn()
         .mockRejectedValue(new Error("Database error"));
 
+      // Act & Assert
       const saveAction = () => emailVerificationTokenRepository.save(token);
       await expect(saveAction()).rejects.toThrow(AppError);
       await expect(saveAction()).rejects.toThrow(
         "Failed to save verification token"
       );
 
+      // Clean up
       emailVerificationTokenRepository["repo"].save = originalRepoSaveMethod;
     });
   });
 
   describe("findByToken", () => {
-    it("should find a token by token string", async () => {
-      // 事前にトークンを保存
+    it("should return correct token when token with given string exists", async () => {
+      // Arrange
       const expiresAt = new Date(Date.now() + 3600000); // 1時間後
       const token = new EmailVerificationToken("test-find-token", expiresAt, 1);
       await emailVerificationTokenRepository.save(token);
 
-      // トークンを検索
+      // Act
       const foundToken = await emailVerificationTokenRepository.findByToken("test-find-token");
 
-      // 検索結果を検証
+      // Assert
       expect(foundToken).toBeDefined();
       expect(foundToken?.token).toBe("test-find-token");
       expect(foundToken?.userId).toBe(1);
     });
 
-    it("should return null if token is not found", async () => {
-      // 存在しないトークンを検索
-      const foundToken = await emailVerificationTokenRepository.findByToken("non-existent-token");
+    it("should return null when token with given string does not exist", async () => {
+      // Arrange
+      const nonExistentToken = "non-existent-token";
 
-      // 検索結果がnullであることを検証
+      // Act
+      const foundToken = await emailVerificationTokenRepository.findByToken(nonExistentToken);
+
+      // Assert
       expect(foundToken).toBeNull();
     });
 
-    it("should throw AppError if findByToken fails", async () => {
+    it("should throw AppError with 'Failed to find verification token' message when database query fails", async () => {
+      // Arrange
       originalRepoFindOneMethod =
         emailVerificationTokenRepository["repo"].findOne;
       emailVerificationTokenRepository["repo"].findOne = jest
         .fn()
         .mockRejectedValue(new Error("Database error"));
 
+      // Act & Assert
       const findAction = () =>
         emailVerificationTokenRepository.findByToken("test-token");
       await expect(findAction()).rejects.toThrow(AppError);
@@ -100,33 +108,36 @@ describe("EmailVerificationTokenRepository", () => {
         "Failed to find verification token"
       );
 
+      // Clean up
       emailVerificationTokenRepository["repo"].findOne =
         originalRepoFindOneMethod;
     });
   });
 
   describe("deleteByUserId", () => {
-    it("should delete tokens for the specified user", async () => {
-      // 事前にトークンを保存
+    it("should successfully delete all tokens for specified user when valid user id is provided", async () => {
+      // Arrange
       const expiresAt = new Date(Date.now() + 3600000); // 1時間後
       const token = new EmailVerificationToken("test-delete-token", expiresAt, 2);
       await emailVerificationTokenRepository.save(token);
 
-      // トークンを削除
+      // Act
       await emailVerificationTokenRepository.deleteByUserId(2);
 
-      // 削除されたことを確認
+      // Assert
       const foundToken = await emailVerificationTokenRepository.findByToken("test-delete-token");
       expect(foundToken).toBeNull();
     });
 
-    it("should throw AppError if deleteByUserId fails", async () => {
+    it("should throw AppError with 'Failed to delete verification token' message when database delete fails", async () => {
+      // Arrange
       originalRepoDeleteMethod =
         emailVerificationTokenRepository["repo"].delete;
       emailVerificationTokenRepository["repo"].delete = jest
         .fn()
         .mockRejectedValue(new Error("Database error"));
 
+      // Act & Assert
       const deleteAction = () =>
         emailVerificationTokenRepository.deleteByUserId(1);
       await expect(deleteAction()).rejects.toThrow(AppError);
@@ -134,6 +145,7 @@ describe("EmailVerificationTokenRepository", () => {
         "Failed to delete verification token"
       );
 
+      // Clean up
       emailVerificationTokenRepository["repo"].delete =
         originalRepoDeleteMethod;
     });

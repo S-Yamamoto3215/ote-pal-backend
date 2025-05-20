@@ -7,15 +7,20 @@ describe('Payment Entity', () => {
     approved: true,
   };
 
-  it('should create a payment instance', () => {
-    const payment = new Payment(
-      validParams.amount,
-      validParams.pay_date,
-      validParams.approved
-    );
+  describe("constructor", () => {
+    it("should create a Payment when valid parameters are provided", () => {
+      const { amount, pay_date, approved } = validParams;
 
-    expect(payment.amount).toBe(validParams.amount);
-    expect(payment.pay_date).toEqual(validParams.pay_date);
-    expect(payment.approved).toBe(validParams.approved);
+      const payment = new Payment(amount, pay_date, approved);
+
+      expect(payment.amount).toBe(amount);
+      expect(payment.pay_date).toEqual(pay_date);
+      expect(payment.approved).toBe(approved);
+    });
   });
+
+  // describe("validate", () => {
+    // it("should {$expectedValue} when {$conditions}", () => {});
+    // it("should throw {$ErrorType} when {$conditions}", () => {});
+  // });
 });

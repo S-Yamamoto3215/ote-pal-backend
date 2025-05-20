@@ -27,7 +27,10 @@ describe("MailService", () => {
   });
 
   describe("constructor", () => {
-    it("should initialize with the provided parameters", () => {
+    it("should properly initialize SendGrid with API key when service is created", () => {
+      // Arrange & Act - constructor was called in beforeEach
+      
+      // Assert
       expect(sgMail.setApiKey).toHaveBeenCalledWith(mockApiKey);
       // プライベートプロパティは直接テストできないため、間接的に動作をテストします
     });
@@ -38,11 +41,14 @@ describe("MailService", () => {
     const mockName = "Test User";
     const mockToken = "verification-token";
 
-    it("should send an email with correct parameters", async () => {
+    it("should call SendGrid API with correct email parameters when verification email is sent", async () => {
+      // Arrange
       (sgMail.send as jest.Mock).mockResolvedValue({});
 
+      // Act
       await mailService.sendVerificationEmail(mockEmail, mockName, mockToken);
 
+      // Assert
       expect(sgMail.send).toHaveBeenCalledTimes(1);
       expect(sgMail.send).toHaveBeenCalledWith(expect.objectContaining({
         to: mockEmail,
@@ -52,21 +58,26 @@ describe("MailService", () => {
       }));
     });
 
-    it("should include verification URL in the email", async () => {
+    it("should include proper verification URL in email content when verification email is sent", async () => {
+      // Arrange
       (sgMail.send as jest.Mock).mockResolvedValue({});
 
+      // Act
       await mailService.sendVerificationEmail(mockEmail, mockName, mockToken);
 
+      // Assert
       const expectedUrl = `${mockBaseUrl}/users/verify-email?token=${mockToken}`;
       expect(sgMail.send).toHaveBeenCalledWith(expect.objectContaining({
         html: expect.stringContaining(expectedUrl),
       }));
     });
 
-    it("should throw AppError when sending email fails", async () => {
+    it("should throw AppError with 'メール送信に失敗しました' message when SendGrid API fails", async () => {
+      // Arrange
       const mockError = new Error("Sending failed");
       (sgMail.send as jest.Mock).mockRejectedValue(mockError);
 
+      // Act & Assert
       await expect(mailService.sendVerificationEmail(mockEmail, mockName, mockToken))
         .rejects.toThrow(AppError);
       await expect(mailService.sendVerificationEmail(mockEmail, mockName, mockToken))

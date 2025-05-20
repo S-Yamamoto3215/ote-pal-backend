@@ -39,7 +39,8 @@ describe("UserController", () => {
   });
 
   describe("createUser", () => {
-    it("should create a new user and return status 201", async () => {
+    it("should return status 201 with user data when valid input is provided", async () => {
+      // Arrange
       const mockUser = createMockUser({
         name: "Parent User",
         email: "parent@example.com",
@@ -48,11 +49,12 @@ describe("UserController", () => {
         familyId: 1
       });
       req.body = mockUser;
-
       userUseCase.createUser.mockResolvedValue(mockUser);
 
+      // Act
       await userController.createUser(req as Request, res as Response, next);
 
+      // Assert
       expect(userUseCase.createUser).toHaveBeenCalledWith({
         name: mockUser.name,
         email: mockUser.email,
@@ -64,7 +66,8 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith(mockUser);
     });
 
-    it("should call next with an error if user creation fails", async () => {
+    it("should call next with usecase error when user creation fails", async () => {
+      // Arrange
       req.body = {
         name: "Test User",
         email: "test@example.com",
@@ -72,27 +75,32 @@ describe("UserController", () => {
         role: "Parent",
         familyId: 1,
       };
-
       const error = new AppError("ValidationError", "User already exists");
       userUseCase.createUser.mockRejectedValue(error);
 
+      // Act
       await userController.createUser(req as Request, res as Response, next);
 
+      // Assert
       expect(next).toHaveBeenCalledWith(error);
     });
 
-    it("should call next with a validation error if required fields are missing", async () => {
+    it("should call next with validation error when required fields are missing", async () => {
+      // Arrange
       req.body = {};
 
+      // Act
       await userController.createUser(req as Request, res as Response, next);
 
+      // Assert
       expectErrorWithMessageToBeCalled(next, "Missing required fields");
       expect(userUseCase.createUser).not.toHaveBeenCalled();
     });
   });
 
   describe("registerUser", () => {
-    it("should register a new user and return status 201", async () => {
+    it("should return status 201 with user id when user registration succeeds", async () => {
+      // Arrange
       req.body = {
         name: "Test User",
         email: "test@example.com",
@@ -111,8 +119,10 @@ describe("UserController", () => {
 
       userUseCase.registerUser.mockResolvedValue(mockUser);
 
+      // Act
       await userController.registerUser(req as Request, res as Response, next);
 
+      // Assert
       expect(userUseCase.registerUser).toHaveBeenCalledWith({
         name: req.body.name,
         email: req.body.email,
@@ -122,7 +132,8 @@ describe("UserController", () => {
       expect(res.json).toHaveBeenCalledWith(mockUser.id);
     });
 
-    it("should call next with an error if user registration fails", async () => {
+    it("should call next with use case error when user registration fails", async () => {
+      // Arrange
       req.body = {
         name: "Test User",
         email: "test@example.com",
@@ -132,23 +143,29 @@ describe("UserController", () => {
       const error = new AppError("ValidationError", "User already exists");
       userUseCase.registerUser.mockRejectedValue(error);
 
+      // Act
       await userController.registerUser(req as Request, res as Response, next);
 
+      // Assert
       expect(next).toHaveBeenCalledWith(error);
     });
 
-    it("should call next with a validation error if required fields are missing", async () => {
+    it("should call next with validation error when required fields are missing", async () => {
+      // Arrange
       req.body = { name: "Test User" };
 
+      // Act
       await userController.registerUser(req as Request, res as Response, next);
 
+      // Assert
       expectErrorWithMessageToBeCalled(next, "Missing required fields");
       expect(userUseCase.registerUser).not.toHaveBeenCalled();
     });
   });
 
   describe("verifyEmail", () => {
-    it("should verify email successfully and return status 200", async () => {
+    it("should return status 200 with success message when email verification succeeds", async () => {
+      // Arrange
       req.query = { token: "valid-token" };
 
       const verifiedUser = new User(
@@ -163,8 +180,10 @@ describe("UserController", () => {
 
       userUseCase.verifyEmail.mockResolvedValue(verifiedUser);
 
+      // Act
       await userController.verifyEmail(req as Request, res as Response, next);
 
+      // Assert
       expect(userUseCase.verifyEmail).toHaveBeenCalledWith("valid-token");
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
@@ -172,14 +191,17 @@ describe("UserController", () => {
       });
     });
 
-    it("should call next with an error if email verification fails", async () => {
+    it("should call next with use case error when email verification fails", async () => {
+      // Arrange
       req.query = { token: "invalid-token" };
 
       const error = new AppError("ValidationError", "Invalid verification token");
       userUseCase.verifyEmail.mockRejectedValue(error);
 
+      // Act
       await userController.verifyEmail(req as Request, res as Response, next);
 
+      // Assert
       expect(next).toHaveBeenCalledWith(error);
     });
 

@@ -27,23 +27,36 @@ describe("TaskRepository", () => {
   });
 
   describe("findById", () => {
-    it("should return task when task exists", async () => {
+    it("should return correct task when task with given id exists", async () => {
+      // Arrange
       const targetTask = taskSeeds[0];
+
+      // Act
       const task = await taskRepository.findById(1);
+
+      // Assert
       expect(task).not.toBeNull();
       expect(task?.name).toBe(targetTask.name);
     });
 
-    it("should return null when task does not exist", async () => {
-      const task = await taskRepository.findById(9999);
+    it("should return null when task with given id does not exist", async () => {
+      // Arrange
+      const nonExistentId = 9999;
+
+      // Act
+      const task = await taskRepository.findById(nonExistentId);
+
+      // Assert
       expect(task).toBeNull();
     });
 
-    it("should throw AppError when database query fails", async () => {
+    it("should throw AppError with 'Failed to find task' message when database query fails", async () => {
+      // Arrange
       jest
         .spyOn(taskRepository["repo"], "findOneBy")
         .mockRejectedValue(new Error("Mock Database Error"));
 
+      // Act & Assert
       await expect(taskRepository.findById(1)).rejects.toThrow(AppError);
       await expect(taskRepository.findById(1)).rejects.toThrow("Failed to find task");
 
@@ -52,20 +65,26 @@ describe("TaskRepository", () => {
   });
 
   describe("save", () => {
-    it("should save task successfully", async () => {
+    it("should save task and return task with id when valid task is provided", async () => {
+      // Arrange
       const newTask = sampleTask;
+
+      // Act
       const savedTask = await taskRepository.save(newTask);
 
+      // Assert
       expect(savedTask.id).not.toBeNull();
       expect(savedTask.name).toBe(newTask.name);
       expect(savedTask.reward).toBe(newTask.reward);
     });
 
-    it("should throw AppError when database save fails", async () => {
+    it("should throw AppError with 'Database error' message when database save fails", async () => {
+      // Arrange
       jest
         .spyOn(taskRepository["repo"], "save")
         .mockRejectedValue(new Error("Mock Database Error"));
 
+      // Act & Assert
       await expect(taskRepository.save(sampleTask)).rejects.toThrow(AppError);
       await expect(taskRepository.save(sampleTask)).rejects.toThrow("Database error");
 
@@ -78,16 +97,18 @@ describe("TaskRepository", () => {
     // it("should delete task successfully", async () => {
     //   const taskToDelete = taskSeeds[0];
     //   await taskRepository.delete(taskToDelete.id);
-
+    //
     //   const deletedTask = await taskRepository.findById(taskToDelete.id);
     //   expect(deletedTask).toBeNull();
     // });
 
-    it("should throw AppError when database delete fails", async () => {
+    it("should throw AppError with 'Failed to delete task' message when database delete fails", async () => {
+      // Arrange
       jest
         .spyOn(taskRepository["repo"], "delete")
         .mockRejectedValue(new Error("Mock Database Error"));
 
+      // Act & Assert
       await expect(taskRepository.delete(1)).rejects.toThrow(AppError);
       await expect(taskRepository.delete(1)).rejects.toThrow("Failed to delete task");
 

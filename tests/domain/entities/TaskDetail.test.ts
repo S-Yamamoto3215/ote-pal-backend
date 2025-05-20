@@ -8,17 +8,21 @@ describe('TaskDetail Entity', () => {
     taskId: 1,
   };
 
-  it('should create an instance of TaskDetail', () => {
-    const taskDetail = new TaskDetail(
-      validParams.custom_description,
-      validParams.custom_reward,
-      validParams.userId,
-      validParams.taskId
-    );
+  describe("constructor", () => {
+    it("should create a TaskDetail when valid parameters are provided", () => {
+      const { custom_description, custom_reward, userId, taskId } = validParams;
 
-    expect(taskDetail.custom_description).toBe(validParams.custom_description);
-    expect(taskDetail.custom_reward).toBe(validParams.custom_reward);
-    expect(taskDetail.userId).toBe(validParams.userId);
-    expect(taskDetail.taskId).toBe(validParams.taskId);
+      const taskDetail = new TaskDetail(custom_description, custom_reward, userId, taskId);
+
+      expect(taskDetail.custom_description).toBe(custom_description);
+      expect(taskDetail.custom_reward).toBe(custom_reward);
+      expect(taskDetail.userId).toBe(userId);
+      expect(taskDetail.taskId).toBe(taskId);
+    });
   });
+
+  // describe("validate", () => {
+    // it("should {$expectedValue} when {$conditions}", () => {});
+    // it("should throw {$ErrorType} when {$conditions}", () => {});
+  // });
 });
