@@ -4,6 +4,7 @@ import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { FamilyUseCase } from "@/application/usecases/FamilyUseCase/FamilyUseCase";
 import { AppError } from "@/infrastructure/errors/AppError";
 import { createMockFamily, createMockUser } from "@tests/helpers/factories";
+import { createMockFamilyRepository, createMockUserRepository } from "@tests/helpers/mocks";
 
 describe("FamilyUseCase", () => {
   let familyRepository: jest.Mocked<IFamilyRepository>;
@@ -11,16 +12,8 @@ describe("FamilyUseCase", () => {
   let familyUseCase: FamilyUseCase;
 
   beforeEach(() => {
-    familyRepository = {
-      save: jest.fn(),
-      findById: jest.fn(),
-      delete: jest.fn(),
-    } as unknown as jest.Mocked<IFamilyRepository>;
-
-    userRepository = {
-      findById: jest.fn(),
-    } as unknown as jest.Mocked<IUserRepository>;
-
+    familyRepository = createMockFamilyRepository();
+    userRepository = createMockUserRepository();
     familyUseCase = new FamilyUseCase(familyRepository, userRepository);
   });
 

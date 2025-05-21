@@ -1,8 +1,9 @@
+import { IAuthService } from "@/application/services/AuthService";
 import jwt from "jsonwebtoken";
 import { config } from "@/config";
 import { User } from "@/domain/entities/User";
 
-export class AuthService {
+export class AuthService implements IAuthService {
   private jwtSecret: string;
   private jwtExpiresIn: string;
 
@@ -23,7 +24,7 @@ export class AuthService {
     });
   }
 
-  verifyToken(token: string) {
+  verifyToken(token: string): string | jwt.JwtPayload {
     try {
       return jwt.verify(token, this.jwtSecret);
     } catch (error) {

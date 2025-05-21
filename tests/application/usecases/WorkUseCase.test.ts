@@ -3,17 +3,14 @@ import { CreateWorkInput } from "@/types/WorkTypes";
 import { IWorkRepository } from "@/domain/repositories/WorkRepository";
 import { WorkUseCase } from "@/application/usecases/WorkUseCase/WorkUseCase";
 import { createMockWork } from "@tests/helpers/factories";
+import { createMockWorkRepository } from "@tests/helpers/mocks";
 
 describe("WorkUseCase", () => {
   let workRepository: jest.Mocked<IWorkRepository>;
   let workUseCase: WorkUseCase;
 
   beforeEach(() => {
-    workRepository = {
-      save: jest.fn(),
-      delete: jest.fn(),
-    } as unknown as jest.Mocked<IWorkRepository>;
-
+    workRepository = createMockWorkRepository();
     workUseCase = new WorkUseCase(workRepository);
   });
 

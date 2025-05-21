@@ -1,6 +1,6 @@
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 
-import { AuthService } from "@/application/services/AuthService";
+import { IAuthService } from "@/application/services/AuthService";
 import { IAuthUseCase } from "@/application/usecases/AuthUseCase";
 
 import { AppError } from "@/infrastructure/errors/AppError";
@@ -8,7 +8,7 @@ import { AppError } from "@/infrastructure/errors/AppError";
 export class AuthUseCase implements IAuthUseCase {
   constructor(
     private userRepository: IUserRepository,
-    private authService: AuthService,
+    private authService: IAuthService,
   ) {}
 
   async login(email: string, plainPassword: string): Promise<string> {

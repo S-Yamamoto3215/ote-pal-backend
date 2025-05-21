@@ -13,6 +13,7 @@ import {
   expectErrorToBeCalled,
   expectErrorWithMessageToBeCalled
 } from "@tests/helpers/controllers";
+import { createMockUserUseCase } from "@tests/helpers/mocks";
 
 describe("UserController", () => {
   let userUseCase: jest.Mocked<IUserUseCase>;
@@ -23,14 +24,7 @@ describe("UserController", () => {
   let next: jest.Mock;
 
   beforeEach(() => {
-    userUseCase = {
-      createUser: jest.fn(),
-      createUserWithFamily: jest.fn(),
-      registerUser: jest.fn(),
-      verifyEmail: jest.fn(),
-      resendVerificationEmail: jest.fn(),
-    };
-
+    userUseCase = createMockUserUseCase();
     userController = new UserController(userUseCase);
 
     req = createMockRequest();

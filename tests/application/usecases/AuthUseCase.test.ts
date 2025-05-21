@@ -1,23 +1,18 @@
 import { AuthUseCase } from "@/application/usecases/AuthUseCase";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
-import { AuthService } from "@/application/services/AuthService";
+import { AuthService, IAuthService } from "@/application/services/AuthService";
 import { AppError } from "@/infrastructure/errors/AppError";
 import { createMockUser } from "@tests/helpers/factories";
+import { createMockUserRepository, createMockAuthService } from "@tests/helpers/mocks";
 
 describe("AuthUseCase", () => {
   let authUseCase: AuthUseCase;
   let userRepository: jest.Mocked<IUserRepository>;
-  let authService: jest.Mocked<AuthService>;
+  let authService: jest.Mocked<IAuthService>;
 
   beforeEach(() => {
-    userRepository = {
-      findByEmail: jest.fn(),
-    } as unknown as jest.Mocked<IUserRepository>;
-
-    authService = {
-      generateToken: jest.fn(),
-    } as unknown as jest.Mocked<AuthService>;
-
+    userRepository = createMockUserRepository();
+    authService = createMockAuthService();
     authUseCase = new AuthUseCase(userRepository, authService);
   });
 

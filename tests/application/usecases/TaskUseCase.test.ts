@@ -4,18 +4,14 @@ import { Task } from "@/domain/entities/Task";
 import { CreateTaskInput } from "@/types/TaskTypes";
 import { AppError } from "@/infrastructure/errors/AppError";
 import { createMockTask } from "@tests/helpers/factories";
+import { createMockTaskRepository } from "@tests/helpers/mocks";
 
 describe("TaskUseCase", () => {
   let taskRepository: jest.Mocked<ITaskRepository>;
   let taskUseCase: TaskUseCase;
 
   beforeEach(() => {
-    taskRepository = {
-      findById: jest.fn(),
-      save: jest.fn(),
-      delete: jest.fn(),
-    } as unknown as jest.Mocked<ITaskRepository>;
-
+    taskRepository = createMockTaskRepository();
     taskUseCase = new TaskUseCase(taskRepository);
   });
 

@@ -7,6 +7,11 @@ import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken
 import { AppError } from "@/infrastructure/errors/AppError";
 
 import { createMockUser, createMockEmailVerificationToken } from "@tests/helpers/factories";
+import {
+  createMockUserRepository,
+  createMockEmailVerificationTokenRepository,
+  createMockMailService
+} from "@tests/helpers/mocks";
 
 jest.mock("@/domain/valueObjects/Password/Password", () => {
   return {
@@ -33,23 +38,9 @@ describe("UserUseCase", () => {
   let userUseCase: UserUseCase;
 
   beforeEach(() => {
-    userRepository = {
-      findByEmail: jest.fn(),
-      findById: jest.fn(),
-      save: jest.fn(),
-      saveWithFamily: jest.fn(),
-      updateVerificationStatus: jest.fn(),
-    };
-
-    emailVerificationTokenRepository = {
-      save: jest.fn(),
-      findByToken: jest.fn(),
-      deleteByUserId: jest.fn(),
-    };
-
-    mailService = {
-      sendVerificationEmail: jest.fn(),
-    };
+    userRepository = createMockUserRepository();
+    emailVerificationTokenRepository = createMockEmailVerificationTokenRepository();
+    mailService = createMockMailService();
 
     userUseCase = new UserUseCase(
       userRepository,

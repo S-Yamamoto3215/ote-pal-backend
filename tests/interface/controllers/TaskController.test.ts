@@ -9,6 +9,7 @@ import {
   expectMissingFieldsErrorToBeCalled,
   expectErrorWithMessageToBeCalled
 } from "@tests/helpers/controllers";
+import { createMockTaskUseCase } from "@tests/helpers/mocks";
 
 describe("TaskController", () => {
   let taskUseCase: jest.Mocked<ITaskUseCase>;
@@ -18,13 +19,7 @@ describe("TaskController", () => {
   let next: jest.Mock;
 
   beforeEach(() => {
-    taskUseCase = {
-      createTask: jest.fn(),
-      getTaskById: jest.fn(),
-      updateTask: jest.fn(),
-      deleteTask: jest.fn(),
-    };
-
+    taskUseCase = createMockTaskUseCase();
     taskController = new TaskController(taskUseCase);
 
     req = createMockRequest();

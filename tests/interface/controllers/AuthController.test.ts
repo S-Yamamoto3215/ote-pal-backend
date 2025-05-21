@@ -7,6 +7,7 @@ import {
   createMockNext,
   expectErrorToBeCalled
 } from "@tests/helpers/controllers";
+import { createMockAuthUseCase } from "@tests/helpers/mocks";
 
 describe("AuthController", () => {
   let authUseCase: jest.Mocked<IAuthUseCase>;
@@ -16,10 +17,7 @@ describe("AuthController", () => {
   let next: jest.Mock;
 
   beforeEach(() => {
-    authUseCase = {
-      login: jest.fn(),
-    };
-
+    authUseCase = createMockAuthUseCase();
     authController = new AuthController(authUseCase);
 
     req = createMockRequest();
