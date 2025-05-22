@@ -2,8 +2,6 @@ import { UserUseCase } from "@/application/usecases/UserUseCase/UserUseCase";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { IEmailVerificationTokenRepository } from "@/domain/repositories/EmailVerificationTokenRepository";
 import { IMailService } from "@/application/services/MailService";
-import { User } from "@/domain/entities/User";
-import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
 import { AppError } from "@/infrastructure/errors/AppError";
 
 import { createMockUser, createMockEmailVerificationToken } from "@tests/helpers/factories";
@@ -113,70 +111,6 @@ describe("UserUseCase", () => {
 
       expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
       expect(userRepository.save).toHaveBeenCalled();
-    });
-  });
-
-  describe("createUserWithFamily", () => {
-    const validInput = {
-      name: "Test User",
-      email: "test@example.com",
-      password: "password123",
-      familyName: "Test Family",
-    };
-
-    it("should create a new user with a family when the email is not already in use", async () => {
-      // Arrange
-      userRepository.findByEmail.mockResolvedValue(null);
-      const mockUser = createMockUser({
-        id: 1,
-        name: validInput.name,
-        email: validInput.email,
-        role: "Parent",
-        isVerified: false,
-        familyId: 1,
-      });
-
-      userRepository.saveWithFamily.mockResolvedValue(mockUser);
-
-      // Act
-      const result = await userUseCase.createUserWithFamily(validInput);
-
-      // Assert
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
-      expect(userRepository.saveWithFamily).toHaveBeenCalled();
-      expect(result).toEqual(mockUser);
-    });
-
-    it("should throw AppError with 'User already exists' message when email is already in use", async () => {
-      // Arrange
-      userRepository.findByEmail.mockResolvedValue(createMockUser({
-        id: 1,
-        name: validInput.name,
-        email: validInput.email,
-        role: "Parent",
-        isVerified: false,
-        familyId: null,
-      }));
-
-      // Act & Assert
-      await expect(userUseCase.createUserWithFamily(validInput)).rejects.toThrow(AppError);
-      await expect(userUseCase.createUserWithFamily(validInput)).rejects.toThrow("User already exists");
-
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
-      expect(userRepository.saveWithFamily).not.toHaveBeenCalled();
-    });
-
-    it("should propagate unexpected errors when database operation fails", async () => {
-      // Arrange
-      const unexpectedError = new Error("Unexpected database error");
-      userRepository.findByEmail.mockResolvedValue(null);
-      userRepository.saveWithFamily.mockRejectedValue(unexpectedError);
-
-      // Act & Assert
-      await expect(userUseCase.createUserWithFamily(validInput)).rejects.toThrow(unexpectedError);
-
-      expect(userRepository.findByEmail).toHaveBeenCalledWith(validInput.email);
-      expect(userRepository.saveWithFamily).toHaveBeenCalled();
     });
   });
 

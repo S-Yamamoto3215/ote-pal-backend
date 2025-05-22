@@ -6,7 +6,6 @@ import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken
 import { Password } from "@/domain/valueObjects/Password";
 import {
   CreateUserInput,
-  CreateUserWithFamilyInput,
   RegisterUserInput,
 } from "@/types/UserTypes";
 
@@ -43,33 +42,6 @@ export class UserUseCase implements IUserUseCase {
       );
 
       return this.userRepository.save(user);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async createUserWithFamily(input: CreateUserWithFamilyInput): Promise<User> {
-    try {
-      const userExists = await this.userRepository.findByEmail(input.email);
-      if (userExists) {
-        throw new AppError("ValidationError", "User already exists");
-      }
-
-      // MEMO: 支払日の初期値は一旦1日とする
-      const family = new Family(input.familyName, 1);
-      const user = new User(
-        input.name,
-        input.email,
-        new Password(input.password),
-        "Parent",
-        false,
-        null
-      );
-
-      // リポジトリにトランザクション処理を委譲
-      const result = await this.userRepository.saveWithFamily(user, family);
-
-      return result;
     } catch (error) {
       throw error;
     }

@@ -6,13 +6,6 @@ export type CreateUserInput = {
   familyId: number | null;
 }
 
-export type CreateUserWithFamilyInput = {
-  name: string;
-  email: string;
-  password: string;
-  familyName: string;
-}
-
 export type RegisterUserInput = {
   name: string;
   email: string;
