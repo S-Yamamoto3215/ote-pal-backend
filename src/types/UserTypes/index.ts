@@ -15,7 +15,6 @@ export type RegisterUserInput = {
 export type InviteFamilyMemberInput = {
   email: string;
   role: "Parent" | "Child";
-  familyId: number;
   inviterId: number;
 }
 

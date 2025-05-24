@@ -126,7 +126,9 @@ export class UserUseCase implements IUserUseCase {
     const token = crypto.randomBytes(32).toString("hex");
 
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + config.token.verificationExpiryHours);
+    expiresAt.setHours(
+      expiresAt.getHours() + config.token.verificationExpiryHours
+    );
 
     const verificationToken = new EmailVerificationToken(
       token,
@@ -143,35 +145,36 @@ export class UserUseCase implements IUserUseCase {
       // すでに登録済みのユーザーが存在するか確認
       const existingUser = await this.userRepository.findByEmail(input.email);
       if (existingUser) {
-        // すでにこの家族のメンバーの場合はエラー
-        if (existingUser.familyId === input.familyId) {
-          throw new AppError("ValidationError", "このユーザーはすでに家族のメンバーです");
-        }
-        // 他の家族のメンバーの場合はエラー
-        if (existingUser.familyId) {
-          throw new AppError("ValidationError", "このユーザーは他の家族に所属しています");
-        }
+        throw new AppError(
+          "ValidationError",
+          "このメールアドレスは既に登録されています"
+        );
       }
 
-      // 家族が存在するか確認
-      const family = await this.familyRepository.findById(input.familyId);
-      if (!family) {
-        throw new AppError("NotFound", "指定された家族が見つかりません");
-      }
-
-      // 招待者が存在するか確認
+      // 招待者のユーザーを取得
       const inviter = await this.userRepository.findById(input.inviterId);
-      if (!inviter) {
-        throw new AppError("NotFound", "招待者が見つかりません");
-      }
 
-      // 招待者が親ロールで、指定された家族のメンバーか確認
-      if (inviter.role !== "Parent" || inviter.familyId !== input.familyId) {
+      // 招待者が存在しており、親ロールであるか確認
+      if (!inviter || inviter.role !== "Parent") {
         throw new AppError("Unauthorized", "招待権限がありません");
       }
 
+      // 招待者の家族IDを使用
+      if (!inviter.familyId) {
+        throw new AppError("ValidationError", "招待者が家族に所属していません");
+      }
+
       // 同じメールアドレスへの既存の招待を削除
-      await this.invitationRepository.deleteByEmail(input.email, input.familyId);
+      await this.invitationRepository.deleteByEmail(
+        input.email,
+        inviter.familyId
+      );
+
+      // 招待先の家族名を取得するために家族エンティティを取得
+      const family = await this.familyRepository.findById(inviter.familyId);
+      if (!family) {
+        throw new AppError("NotFound", "指定された家族が見つかりません");
+      }
 
       // 招待トークンを生成
       const token = crypto.randomBytes(32).toString("hex");
@@ -186,8 +189,8 @@ export class UserUseCase implements IUserUseCase {
         expiresAt,
         input.email,
         input.role,
-        input.familyId,
-        input.inviterId
+        inviter.familyId, // 招待者の家族IDを使用
+        inviter.id!
       );
       await this.invitationRepository.save(invitationToken);
 
@@ -207,7 +210,9 @@ export class UserUseCase implements IUserUseCase {
   async acceptInvitation(input: AcceptInvitationInput): Promise<User> {
     try {
       // トークンが有効か確認
-      const invitationToken = await this.invitationRepository.findByToken(input.token);
+      const invitationToken = await this.invitationRepository.findByToken(
+        input.token
+      );
       if (!invitationToken) {
         throw new AppError("ValidationError", "無効な招待トークンです");
       }
@@ -219,20 +224,27 @@ export class UserUseCase implements IUserUseCase {
       }
 
       // 家族が存在するか確認
-      const family = await this.familyRepository.findById(invitationToken.familyId);
+      const family = await this.familyRepository.findById(
+        invitationToken.familyId
+      );
       if (!family) {
         throw new AppError("NotFound", "指定された家族が見つかりません");
       }
 
       // メールアドレスが既に登録されているか確認
-      const existingUser = await this.userRepository.findByEmail(invitationToken.email);
+      const existingUser = await this.userRepository.findByEmail(
+        invitationToken.email
+      );
 
       let user: User;
 
       if (existingUser) {
         // すでに登録済みのユーザーの場合
         if (existingUser.familyId) {
-          throw new AppError("ValidationError", "このユーザーはすでに家族に所属しています");
+          throw new AppError(
+            "ValidationError",
+            "このユーザーはすでに家族に所属しています"
+          );
         }
 
         // 家族IDを更新
@@ -264,13 +276,18 @@ export class UserUseCase implements IUserUseCase {
   async resendInvitation(email: string, familyId: number): Promise<void> {
     try {
       // 招待トークンを確認
-      const invitationToken = await this.invitationRepository.findByEmail(email, familyId);
+      const invitationToken = await this.invitationRepository.findByEmail(
+        email,
+        familyId
+      );
       if (!invitationToken) {
         throw new AppError("ValidationError", "招待が見つかりません");
       }
 
       // 招待者が存在するか確認
-      const inviter = await this.userRepository.findById(invitationToken.inviterId);
+      const inviter = await this.userRepository.findById(
+        invitationToken.inviterId
+      );
       if (!inviter) {
         throw new AppError("NotFound", "招待者が見つかりません");
       }
