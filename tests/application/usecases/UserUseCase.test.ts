@@ -1,5 +1,7 @@
 import { UserUseCase } from "@/application/usecases/UserUseCase/UserUseCase";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
+import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
+import { IFamilyInvitationTokenRepository } from "@/domain/repositories/FamilyInvitationTokenRepository";
 import { IEmailVerificationTokenRepository } from "@/domain/repositories/EmailVerificationTokenRepository";
 import { IMailService } from "@/application/services/MailService";
 import { AppError } from "@/infrastructure/errors/AppError";
@@ -8,6 +10,8 @@ import { createMockUser, createMockEmailVerificationToken } from "@tests/helpers
 import {
   createMockUserRepository,
   createMockEmailVerificationTokenRepository,
+  createMockFamilyRepository,
+  createMockFamilyInvitationTokenRepository,
   createMockMailService
 } from "@tests/helpers/mocks";
 
@@ -32,18 +36,25 @@ jest.mock("crypto", () => ({
 describe("UserUseCase", () => {
   let userRepository: jest.Mocked<IUserRepository>;
   let emailVerificationTokenRepository: jest.Mocked<IEmailVerificationTokenRepository>;
+  let invitationRepository: jest.Mocked<IFamilyInvitationTokenRepository>;
+  let familyRepository: jest.Mocked<IFamilyRepository>;
   let mailService: jest.Mocked<IMailService>;
   let userUseCase: UserUseCase;
 
   beforeEach(() => {
     userRepository = createMockUserRepository();
-    emailVerificationTokenRepository = createMockEmailVerificationTokenRepository();
+    emailVerificationTokenRepository =
+      createMockEmailVerificationTokenRepository();
+    invitationRepository = createMockFamilyInvitationTokenRepository();
+    familyRepository = createMockFamilyRepository();
     mailService = createMockMailService();
 
     userUseCase = new UserUseCase(
       userRepository,
       emailVerificationTokenRepository,
-      mailService,
+      invitationRepository,
+      familyRepository,
+      mailService
     );
   });
 

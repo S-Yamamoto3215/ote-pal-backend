@@ -4,6 +4,7 @@ import { authRouter } from "./authRoutes";
 import { userRouter } from "./userRoutes";
 import { taskRouter } from "./taskRoutes";
 import { familyRouter } from "./familyRoutes";
+import { invitationRouter } from "./invitationRoutes";
 
 export const setRoutes = (app: express.Express) => {
   app.get("/", (req, res) => {
@@ -13,4 +14,5 @@ export const setRoutes = (app: express.Express) => {
   app.use("/users", userRouter);
   app.use("/families", familyRouter);
   app.use("/tasks", taskRouter);
+  app.use("/invitation", invitationRouter);
 };

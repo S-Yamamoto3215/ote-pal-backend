@@ -3,14 +3,19 @@ import * as crypto from "crypto";
 import { User } from "@/domain/entities/User";
 import { Family } from "@/domain/entities/Family";
 import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
+import { FamilyInvitationToken } from "@/domain/entities/FamilyInvitationToken";
 import { Password } from "@/domain/valueObjects/Password";
 import {
   CreateUserInput,
   RegisterUserInput,
+  InviteFamilyMemberInput,
+  AcceptInvitationInput,
 } from "@/types/UserTypes";
 
 import { IUserRepository } from "@/domain/repositories/UserRepository";
+import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
 import { IEmailVerificationTokenRepository } from "@/domain/repositories/EmailVerificationTokenRepository";
+import { IFamilyInvitationTokenRepository } from "@/domain/repositories/FamilyInvitationTokenRepository";
 import { IMailService } from "@/application/services/MailService";
 
 import { IUserUseCase } from "@/application/usecases/UserUseCase";
@@ -22,6 +27,8 @@ export class UserUseCase implements IUserUseCase {
   constructor(
     private userRepository: IUserRepository,
     private tokenRepository: IEmailVerificationTokenRepository,
+    private invitationRepository: IFamilyInvitationTokenRepository,
+    private familyRepository: IFamilyRepository,
     private mailService: IMailService
   ) {}
 
@@ -129,5 +136,182 @@ export class UserUseCase implements IUserUseCase {
     await this.tokenRepository.save(verificationToken);
 
     await this.mailService.sendVerificationEmail(user.email, user.name, token);
+  }
+
+  async inviteFamilyMember(input: InviteFamilyMemberInput): Promise<void> {
+    try {
+      // すでに登録済みのユーザーが存在するか確認
+      const existingUser = await this.userRepository.findByEmail(input.email);
+      if (existingUser) {
+        // すでにこの家族のメンバーの場合はエラー
+        if (existingUser.familyId === input.familyId) {
+          throw new AppError("ValidationError", "このユーザーはすでに家族のメンバーです");
+        }
+        // 他の家族のメンバーの場合はエラー
+        if (existingUser.familyId) {
+          throw new AppError("ValidationError", "このユーザーは他の家族に所属しています");
+        }
+      }
+
+      // 家族が存在するか確認
+      const family = await this.familyRepository.findById(input.familyId);
+      if (!family) {
+        throw new AppError("NotFound", "指定された家族が見つかりません");
+      }
+
+      // 招待者が存在するか確認
+      const inviter = await this.userRepository.findById(input.inviterId);
+      if (!inviter) {
+        throw new AppError("NotFound", "招待者が見つかりません");
+      }
+
+      // 招待者が親ロールで、指定された家族のメンバーか確認
+      if (inviter.role !== "Parent" || inviter.familyId !== input.familyId) {
+        throw new AppError("Unauthorized", "招待権限がありません");
+      }
+
+      // 同じメールアドレスへの既存の招待を削除
+      await this.invitationRepository.deleteByEmail(input.email, input.familyId);
+
+      // 招待トークンを生成
+      const token = crypto.randomBytes(32).toString("hex");
+
+      // 有効期限を設定（24時間）
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+
+      // 招待トークンをデータベースに保存
+      const invitationToken = new FamilyInvitationToken(
+        token,
+        expiresAt,
+        input.email,
+        input.role,
+        input.familyId,
+        input.inviterId
+      );
+      await this.invitationRepository.save(invitationToken);
+
+      // 招待メールを送信
+      await this.mailService.sendFamilyInvitationEmail(
+        input.email,
+        inviter.name,
+        family.name,
+        input.role,
+        token
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async acceptInvitation(input: AcceptInvitationInput): Promise<User> {
+    try {
+      // トークンが有効か確認
+      const invitationToken = await this.invitationRepository.findByToken(input.token);
+      if (!invitationToken) {
+        throw new AppError("ValidationError", "無効な招待トークンです");
+      }
+
+      // トークンの有効期限を確認
+      if (invitationToken.isExpired()) {
+        await this.invitationRepository.deleteByToken(input.token);
+        throw new AppError("ValidationError", "招待の有効期限が切れています");
+      }
+
+      // 家族が存在するか確認
+      const family = await this.familyRepository.findById(invitationToken.familyId);
+      if (!family) {
+        throw new AppError("NotFound", "指定された家族が見つかりません");
+      }
+
+      // メールアドレスが既に登録されているか確認
+      const existingUser = await this.userRepository.findByEmail(invitationToken.email);
+
+      let user: User;
+
+      if (existingUser) {
+        // すでに登録済みのユーザーの場合
+        if (existingUser.familyId) {
+          throw new AppError("ValidationError", "このユーザーはすでに家族に所属しています");
+        }
+
+        // 家族IDを更新
+        existingUser.familyId = invitationToken.familyId;
+        user = await this.userRepository.save(existingUser);
+      } else {
+        // 新規ユーザーの場合は作成
+        user = new User(
+          input.name,
+          invitationToken.email,
+          new Password(input.password),
+          invitationToken.role,
+          true, // 招待から登録の場合は検証済みとする
+          invitationToken.familyId
+        );
+
+        user = await this.userRepository.save(user);
+      }
+
+      // 使用済みの招待トークンを削除
+      await this.invitationRepository.deleteByToken(input.token);
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async resendInvitation(email: string, familyId: number): Promise<void> {
+    try {
+      // 招待トークンを確認
+      const invitationToken = await this.invitationRepository.findByEmail(email, familyId);
+      if (!invitationToken) {
+        throw new AppError("ValidationError", "招待が見つかりません");
+      }
+
+      // 招待者が存在するか確認
+      const inviter = await this.userRepository.findById(invitationToken.inviterId);
+      if (!inviter) {
+        throw new AppError("NotFound", "招待者が見つかりません");
+      }
+
+      // 家族が存在するか確認
+      const family = await this.familyRepository.findById(familyId);
+      if (!family) {
+        throw new AppError("NotFound", "指定された家族が見つかりません");
+      }
+
+      // 古い招待トークンを削除
+      await this.invitationRepository.deleteByEmail(email, familyId);
+
+      // 新しい招待トークンを生成
+      const token = crypto.randomBytes(32).toString("hex");
+
+      // 有効期限を設定（24時間）
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+
+      // 新しい招待トークンをデータベースに保存
+      const newInvitationToken = new FamilyInvitationToken(
+        token,
+        expiresAt,
+        email,
+        invitationToken.role,
+        familyId,
+        invitationToken.inviterId
+      );
+      await this.invitationRepository.save(newInvitationToken);
+
+      // 招待メールを再送信
+      await this.mailService.sendFamilyInvitationEmail(
+        email,
+        inviter.name,
+        family.name,
+        invitationToken.role,
+        token
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 }

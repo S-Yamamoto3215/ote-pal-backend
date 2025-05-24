@@ -11,3 +11,16 @@ export type RegisterUserInput = {
   email: string;
   password: string;
 }
+
+export type InviteFamilyMemberInput = {
+  email: string;
+  role: "Parent" | "Child";
+  familyId: number;
+  inviterId: number;
+}
+
+export type AcceptInvitationInput = {
+  token: string;
+  name: string;
+  password: string;
+}

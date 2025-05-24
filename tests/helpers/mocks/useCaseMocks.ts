@@ -1,6 +1,7 @@
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { ITaskRepository } from "@/domain/repositories/TaskRepository";
 import { IEmailVerificationTokenRepository } from "@/domain/repositories/EmailVerificationTokenRepository";
+import { IFamilyInvitationTokenRepository } from "@/domain/repositories/FamilyInvitationTokenRepository";
 import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
 import { IWorkRepository } from "@/domain/repositories/WorkRepository";
 import { IMailService } from "@/application/services/MailService";
@@ -43,6 +44,19 @@ export const createMockEmailVerificationTokenRepository = (): jest.Mocked<IEmail
 };
 
 /**
+ * 家族招待トークンリポジトリのモックを作成する
+ */
+export const createMockFamilyInvitationTokenRepository = (): jest.Mocked<IFamilyInvitationTokenRepository> => {
+  return {
+    save: jest.fn(),
+    findByToken: jest.fn(),
+    findByEmail: jest.fn(),
+    deleteByToken: jest.fn(),
+    deleteByEmail: jest.fn(),
+  } as jest.Mocked<IFamilyInvitationTokenRepository>;
+};
+
+/**
  * ファミリーリポジトリのモックを作成する
  */
 export const createMockFamilyRepository = (): jest.Mocked<IFamilyRepository> => {
@@ -69,6 +83,7 @@ export const createMockWorkRepository = (): jest.Mocked<IWorkRepository> => {
 export const createMockMailService = (): jest.Mocked<IMailService> => {
   return {
     sendVerificationEmail: jest.fn(),
+    sendFamilyInvitationEmail: jest.fn(),
   } as jest.Mocked<IMailService>;
 };
 

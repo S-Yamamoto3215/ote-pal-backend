@@ -14,6 +14,9 @@ export const createMockUserUseCase = (): jest.Mocked<IUserUseCase> => {
     registerUser: jest.fn(),
     verifyEmail: jest.fn(),
     resendVerificationEmail: jest.fn(),
+    inviteFamilyMember: jest.fn(),
+    acceptInvitation: jest.fn(),
+    resendInvitation: jest.fn(),
   } as jest.Mocked<IUserUseCase>;
 };
 

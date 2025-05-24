@@ -1,5 +1,7 @@
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { IEmailVerificationTokenRepository } from "@/domain/repositories/EmailVerificationTokenRepository";
+import { IFamilyInvitationTokenRepository } from "@/domain/repositories/FamilyInvitationTokenRepository";
+import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
 import { IMailService } from "@/application/services/MailService";
 import { User } from "@/domain/entities/User";
 import { EmailVerificationToken } from "@/domain/entities/EmailVerificationToken";
@@ -8,6 +10,8 @@ import { createMockUser, createMockEmailVerificationToken } from "@tests/helpers
 export interface UserUseCaseMocks {
   userRepository: jest.Mocked<IUserRepository>;
   emailVerificationTokenRepository: jest.Mocked<IEmailVerificationTokenRepository>;
+  familyInvitationTokenRepository: jest.Mocked<IFamilyInvitationTokenRepository>;
+  familyRepository: jest.Mocked<IFamilyRepository>;
   mailService: jest.Mocked<IMailService>;
 }
 
@@ -26,13 +30,30 @@ export const createUserUseCaseMocks = (): UserUseCaseMocks => {
     deleteByUserId: jest.fn(),
   } as jest.Mocked<IEmailVerificationTokenRepository>;
 
+  const familyInvitationTokenRepository = {
+    save: jest.fn(),
+    findByToken: jest.fn(),
+    findByEmail: jest.fn(),
+    deleteByToken: jest.fn(),
+    deleteByEmail: jest.fn(),
+  } as jest.Mocked<IFamilyInvitationTokenRepository>;
+
+  const familyRepository = {
+    findById: jest.fn(),
+    save: jest.fn(),
+    delete: jest.fn(),
+  } as jest.Mocked<IFamilyRepository>;
+
   const mailService = {
     sendVerificationEmail: jest.fn(),
+    sendFamilyInvitationEmail: jest.fn(),
   } as jest.Mocked<IMailService>;
 
   return {
     userRepository,
     emailVerificationTokenRepository,
+    familyInvitationTokenRepository,
+    familyRepository,
     mailService,
   };
 };
