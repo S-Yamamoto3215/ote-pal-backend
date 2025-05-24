@@ -13,12 +13,11 @@ export class UserInvitationController implements IUserInvitationController {
         return;
       }
 
-      const { email, role, familyId } = req.body;
+      const { email, role } = req.body;
 
       await this.userUseCase.inviteFamilyMember({
         email,
         role,
-        familyId,
         inviterId: userId,
       });
 

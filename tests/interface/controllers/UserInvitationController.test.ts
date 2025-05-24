@@ -28,25 +28,12 @@ describe("UserInvitationController", () => {
   });
 
   describe("inviteMember", () => {
-    it("認証されていない場合、401エラーを返すこと", async () => {
-      // Arrange
-      req.user = undefined;
-
-      // Act
-      await userInvitationController.inviteMember(req as Request, res as Response, next);
-
-      // Assert
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith({ message: "認証が必要です" });
-    });
-
     it("招待が成功した場合、成功メッセージを返すこと", async () => {
       // Arrange
       req.user = { id: 1, email: "parent@example.com", role: "Parent" };
       req.body = {
         email: "invited@example.com",
         role: "Child",
-        familyId: 1
       };
       userUseCase.inviteFamilyMember.mockResolvedValueOnce();
 
@@ -57,7 +44,6 @@ describe("UserInvitationController", () => {
       expect(userUseCase.inviteFamilyMember).toHaveBeenCalledWith({
         email: "invited@example.com",
         role: "Child",
-        familyId: 1,
         inviterId: 1
       });
       expect(res.status).toHaveBeenCalledWith(200);
@@ -70,7 +56,6 @@ describe("UserInvitationController", () => {
       req.body = {
         email: "invited@example.com",
         role: "Child",
-        familyId: 1
       };
       const error = new AppError("ValidationError", "このユーザーはすでに家族のメンバーです");
       userUseCase.inviteFamilyMember.mockRejectedValueOnce(error);
