@@ -253,4 +253,190 @@ describe("FamilyUseCase", () => {
       expect(userRepository.findByFamilyId).toHaveBeenCalledWith(familyId);
     });
   });
+
+  describe("updateFamilyName", () => {
+    const familyId = 1;
+    const requestUserId = 1;
+    const newName = "新しい家族名";
+
+    it("親権限を持つユーザーが家族名を更新できること", async () => {
+      // Arrange
+      const user = createMockUser({
+        id: requestUserId,
+        familyId: familyId,
+        isVerified: true,
+        role: "Parent"
+      });
+
+      const family = createMockFamily({
+        id: familyId,
+        name: "古い家族名",
+        payment_schedule: 15
+      });
+
+      const updatedFamily = {
+        ...family,
+        name: newName
+      };
+
+      userRepository.findById.mockResolvedValue(user);
+      familyRepository.findById.mockResolvedValue(family);
+      familyRepository.save.mockResolvedValue(updatedFamily);
+
+      // Act
+      const result = await familyUseCase.updateFamilyName(newName, familyId, requestUserId);
+
+      // Assert
+      expect(result.name).toBe(newName);
+      expect(userRepository.findById).toHaveBeenCalledWith(requestUserId);
+      expect(familyRepository.findById).toHaveBeenCalledWith(familyId);
+      expect(familyRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({ name: newName }),
+        user
+      );
+    });
+
+    it("親権限がないユーザーは家族名を更新できないこと", async () => {
+      // Arrange
+      const user = createMockUser({
+        id: requestUserId,
+        familyId: familyId,
+        isVerified: true,
+        role: "Child" // 子供ロール
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+
+      // Act & Assert
+      await expect(familyUseCase.updateFamilyName(newName, familyId, requestUserId)).rejects.toThrow(
+        new AppError("Forbidden", "User does not have permission to update family name")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(requestUserId);
+      expect(familyRepository.findById).not.toHaveBeenCalled();
+    });
+
+    it("ユーザーが存在しない場合はエラーになること", async () => {
+      // Arrange
+      userRepository.findById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(familyUseCase.updateFamilyName(newName, familyId, 9999)).rejects.toThrow(
+        new AppError("Forbidden", "User does not have permission to update family name")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(9999);
+    });
+
+    it("家族が存在しない場合はエラーになること", async () => {
+      // Arrange
+      const user = createMockUser({
+        id: requestUserId,
+        familyId: 9999, // 存在しない家族IDにマッチさせる
+        isVerified: true,
+        role: "Parent"
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+      familyRepository.findById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(familyUseCase.updateFamilyName(newName, 9999, requestUserId)).rejects.toThrow(
+        new AppError("NotFound", "Family not found")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(requestUserId);
+      expect(familyRepository.findById).toHaveBeenCalledWith(9999);
+    });
+  });
+
+  describe("updateFamilyPaymentSchedule", () => {
+    const familyId = 1;
+    const requestUserId = 1;
+    const newPaymentSchedule = 25;
+
+    it("親権限を持つユーザーが支払日を更新できること", async () => {
+      // Arrange
+      const user = createMockUser({
+        id: requestUserId,
+        familyId: familyId,
+        isVerified: true,
+        role: "Parent"
+      });
+
+      const family = createMockFamily({
+        id: familyId,
+        name: "テスト家族",
+        payment_schedule: 15
+      });
+
+      const updatedFamily = {
+        ...family,
+        payment_schedule: newPaymentSchedule
+      };
+
+      userRepository.findById.mockResolvedValue(user);
+      familyRepository.findById.mockResolvedValue(family);
+      familyRepository.save.mockResolvedValue(updatedFamily);
+
+      // Act
+      const result = await familyUseCase.updateFamilyPaymentSchedule(newPaymentSchedule, familyId, requestUserId);
+
+      // Assert
+      expect(result.payment_schedule).toBe(newPaymentSchedule);
+      expect(userRepository.findById).toHaveBeenCalledWith(requestUserId);
+      expect(familyRepository.findById).toHaveBeenCalledWith(familyId);
+      expect(familyRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({ payment_schedule: newPaymentSchedule }),
+        user
+      );
+    });
+
+    it("親権限がないユーザーは支払日を更新できないこと", async () => {
+      // Arrange
+      const user = createMockUser({
+        id: requestUserId,
+        familyId: familyId,
+        isVerified: true,
+        role: "Child" // 子供ロール
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+
+      // Act & Assert
+      await expect(familyUseCase.updateFamilyPaymentSchedule(newPaymentSchedule, familyId, requestUserId)).rejects.toThrow(
+        new AppError("Forbidden", "User does not have permission to update family payment schedule")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(requestUserId);
+      expect(familyRepository.findById).not.toHaveBeenCalled();
+    });
+
+    it("ユーザーが存在しない場合はエラーになること", async () => {
+      // Arrange
+      userRepository.findById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(familyUseCase.updateFamilyPaymentSchedule(newPaymentSchedule, familyId, 9999)).rejects.toThrow(
+        new AppError("Forbidden", "User does not have permission to update family payment schedule")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(9999);
+    });
+
+    it("家族が存在しない場合はエラーになること", async () => {
+      // Arrange
+      const user = createMockUser({
+        id: requestUserId,
+        familyId: 9999, // 存在しない家族IDにマッチさせる
+        isVerified: true,
+        role: "Parent"
+      });
+
+      userRepository.findById.mockResolvedValue(user);
+      familyRepository.findById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(familyUseCase.updateFamilyPaymentSchedule(newPaymentSchedule, 9999, requestUserId)).rejects.toThrow(
+        new AppError("NotFound", "Family not found")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(requestUserId);
+      expect(familyRepository.findById).toHaveBeenCalledWith(9999);
+    });
+  });
 });

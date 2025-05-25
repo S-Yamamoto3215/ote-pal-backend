@@ -258,4 +258,228 @@ describe("FamilyController", () => {
       expect(familyUseCase.getFamilyDetailById).toHaveBeenCalledWith(familyId, userId);
     });
   });
+
+  describe("updateFamilyName", () => {
+    const familyId = 1;
+    const userId = 1;
+    const newName = "新しい家族名";
+
+    beforeEach(() => {
+      req.params = { family_id: familyId.toString() };
+      req.user = { id: userId, email: "test@example.com", role: "Parent" };
+      req.body = { name: newName };
+    });
+
+    it("有効なリクエストでfamily名が更新されること", async () => {
+      // Arrange
+      const updatedFamily = createMockFamily({
+        id: familyId,
+        name: newName,
+        payment_schedule: 15
+      });
+      familyUseCase.updateFamilyName.mockResolvedValue(updatedFamily);
+
+      // Act
+      await familyController.updateFamilyName(req as Request, res as Response, next);
+
+      // Assert
+      expect(familyUseCase.updateFamilyName).toHaveBeenCalledWith(newName, familyId, userId);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(updatedFamily);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("nameがリクエストボディにない場合にValidationErrorを返すこと", async () => {
+      // Arrange
+      req.body = {}; // nameなし
+
+      // Act
+      await familyController.updateFamilyName(req as Request, res as Response, next);
+
+      // Assert
+      expectErrorToBeCalled(
+        next,
+        "ValidationError",
+        "Missing required fields: name"
+      );
+      expect(familyUseCase.updateFamilyName).not.toHaveBeenCalled();
+    });
+
+    it("無効なfamily_idでValidationErrorを返すこと", async () => {
+      // Arrange
+      req.params = { family_id: "invalid" };
+
+      // Act
+      await familyController.updateFamilyName(req as Request, res as Response, next);
+
+      // Assert
+      expectErrorToBeCalled(
+        next,
+        "ValidationError",
+        "Invalid family ID"
+      );
+      expect(familyUseCase.updateFamilyName).not.toHaveBeenCalled();
+    });
+
+    it("認証されていない場合にUnauthorizedエラーを返すこと", async () => {
+      // Arrange
+      req.user = undefined;
+
+      // Act
+      await familyController.updateFamilyName(req as Request, res as Response, next);
+
+      // Assert
+      expect(next).toHaveBeenCalled();
+      const error = next.mock.calls[0][0];
+      expect(error.errorType).toBe("Unauthorized");
+      expect(error.message).toBe("Authentication required");
+      expect(familyUseCase.updateFamilyName).not.toHaveBeenCalled();
+    });
+
+    it("権限がない場合にForbiddenエラーが伝搬されること", async () => {
+      // Arrange
+      const error = new AppError("Forbidden", "User does not have permission to update family name");
+      familyUseCase.updateFamilyName.mockRejectedValue(error);
+
+      // Act
+      await familyController.updateFamilyName(req as Request, res as Response, next);
+
+      // Assert
+      expect(next).toHaveBeenCalledWith(error);
+      expect(familyUseCase.updateFamilyName).toHaveBeenCalledWith(newName, familyId, userId);
+    });
+
+    it("家族が見つからない場合にNotFoundエラーが伝搬されること", async () => {
+      // Arrange
+      const error = new AppError("NotFound", "Family not found");
+      familyUseCase.updateFamilyName.mockRejectedValue(error);
+
+      // Act
+      await familyController.updateFamilyName(req as Request, res as Response, next);
+
+      // Assert
+      expect(next).toHaveBeenCalledWith(error);
+      expect(familyUseCase.updateFamilyName).toHaveBeenCalledWith(newName, familyId, userId);
+    });
+  });
+
+  describe("updateFamilyPaymentSchedule", () => {
+    const familyId = 1;
+    const userId = 1;
+    const newPaymentSchedule = 25;
+
+    beforeEach(() => {
+      req.params = { family_id: familyId.toString() };
+      req.user = { id: userId, email: "test@example.com", role: "Parent" };
+      req.body = { paymentSchedule: newPaymentSchedule };
+    });
+
+    it("有効なリクエストで支払日が更新されること", async () => {
+      // Arrange
+      const updatedFamily = createMockFamily({
+        id: familyId,
+        name: "テスト家族",
+        payment_schedule: newPaymentSchedule
+      });
+      familyUseCase.updateFamilyPaymentSchedule.mockResolvedValue(updatedFamily);
+
+      // Act
+      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
+
+      // Assert
+      expect(familyUseCase.updateFamilyPaymentSchedule).toHaveBeenCalledWith(newPaymentSchedule, familyId, userId);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(updatedFamily);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("paymentScheduleがリクエストボディにない場合にValidationErrorを返すこと", async () => {
+      // Arrange
+      req.body = {}; // paymentScheduleなし
+
+      // Act
+      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
+
+      // Assert
+      expectErrorToBeCalled(
+        next,
+        "ValidationError",
+        "Missing required fields: paymentSchedule"
+      );
+      expect(familyUseCase.updateFamilyPaymentSchedule).not.toHaveBeenCalled();
+    });
+
+    it("paymentScheduleが範囲外の場合にValidationErrorを返すこと", async () => {
+      // Arrange - 範囲外の値をテスト
+      req.body = { paymentSchedule: 32 }; // 31日を超える
+
+      // Act
+      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
+
+      // Assert
+      expectErrorToBeCalled(
+        next,
+        "ValidationError",
+        "Payment schedule must be between 1 and 31"
+      );
+      expect(familyUseCase.updateFamilyPaymentSchedule).not.toHaveBeenCalled();
+    });
+
+    it("無効なfamily_idでValidationErrorを返すこと", async () => {
+      // Arrange
+      req.params = { family_id: "invalid" };
+
+      // Act
+      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
+
+      // Assert
+      expectErrorToBeCalled(
+        next,
+        "ValidationError",
+        "Invalid family ID"
+      );
+      expect(familyUseCase.updateFamilyPaymentSchedule).not.toHaveBeenCalled();
+    });
+
+    it("認証されていない場合にUnauthorizedエラーを返すこと", async () => {
+      // Arrange
+      req.user = undefined;
+
+      // Act
+      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
+
+      // Assert
+      expect(next).toHaveBeenCalled();
+      const error = next.mock.calls[0][0];
+      expect(error.errorType).toBe("Unauthorized");
+      expect(error.message).toBe("Authentication required");
+      expect(familyUseCase.updateFamilyPaymentSchedule).not.toHaveBeenCalled();
+    });
+
+    it("権限がない場合にForbiddenエラーが伝搬されること", async () => {
+      // Arrange
+      const error = new AppError("Forbidden", "User does not have permission to update family payment schedule");
+      familyUseCase.updateFamilyPaymentSchedule.mockRejectedValue(error);
+
+      // Act
+      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
+
+      // Assert
+      expect(next).toHaveBeenCalledWith(error);
+      expect(familyUseCase.updateFamilyPaymentSchedule).toHaveBeenCalledWith(newPaymentSchedule, familyId, userId);
+    });
+
+    it("家族が見つからない場合にNotFoundエラーが伝搬されること", async () => {
+      // Arrange
+      const error = new AppError("NotFound", "Family not found");
+      familyUseCase.updateFamilyPaymentSchedule.mockRejectedValue(error);
+
+      // Act
+      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
+
+      // Assert
+      expect(next).toHaveBeenCalledWith(error);
+      expect(familyUseCase.updateFamilyPaymentSchedule).toHaveBeenCalledWith(newPaymentSchedule, familyId, userId);
+    });
+  });
 });

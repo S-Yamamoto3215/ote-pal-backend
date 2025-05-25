@@ -12,7 +12,7 @@ export class FamilyUseCase implements IFamilyUseCase {
   constructor(
     private familyRepository: IFamilyRepository,
     private userRepository: IUserRepository
-  ) { }
+  ) {}
 
   async createFamily(input: CreateFamilyInput): Promise<Family> {
     try {
@@ -26,7 +26,10 @@ export class FamilyUseCase implements IFamilyUseCase {
       }
 
       if (user.familyId) {
-        throw new AppError("ValidationError", "User already belongs to a family");
+        throw new AppError(
+          "ValidationError",
+          "User already belongs to a family"
+        );
       }
 
       const family = new Family(input.name, input.paymentSchedule);
@@ -38,7 +41,10 @@ export class FamilyUseCase implements IFamilyUseCase {
     }
   }
 
-  async getFamilyDetailById(familyId: number, requestUserId: number): Promise<FamilyDetailOutput> {
+  async getFamilyDetailById(
+    familyId: number,
+    requestUserId: number
+  ): Promise<FamilyDetailOutput> {
     try {
       // リクエストしているユーザーの確認
       const requestUser = await this.userRepository.findById(requestUserId);
@@ -61,18 +67,70 @@ export class FamilyUseCase implements IFamilyUseCase {
       const users = await this.userRepository.findByFamilyId(familyId);
 
       // レスポンス形式に整形
-      const familyUsers: FamilyUser[] = users.map(user => ({
+      const familyUsers: FamilyUser[] = users.map((user) => ({
         userId: user.id!,
-        userName: user.name
+        userName: user.name,
       }));
 
       return {
         name: family.name,
         paymentSchedule: family.payment_schedule,
-        users: familyUsers
+        users: familyUsers,
       };
     } catch (error) {
       throw error;
     }
   }
+
+  async updateFamilyName(name: string, familyId: number, requestUserId: number): Promise<Family> {
+    try {
+      // requestUserIdのユーザーが更新権限を持っているか確認
+      const requestUser = await this.userRepository.findById(requestUserId);
+      if (!requestUser || requestUser.familyId !== familyId || !requestUser.isVerified || requestUser.role !== "Parent") {
+        throw new AppError("Forbidden", "User does not have permission to update family name");
+      }
+
+      // 家族情報の取得
+      const family = await this.familyRepository.findById(familyId);
+      if (!family) {
+        throw new AppError("NotFound", "Family not found");
+      }
+
+      // 家族名の更新
+      family.name = name;
+      const updatedFamily = await this.familyRepository.save(family, requestUser);
+      return updatedFamily;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  async updateFamilyPaymentSchedule(paymentSchedule: number, familyId: number, requestUserId: number): Promise<Family> {
+    try {
+      // requestUserIdのユーザーが更新権限を持っているか確認
+      const requestUser = await this.userRepository.findById(requestUserId);
+      if (!requestUser || requestUser.familyId !== familyId || !requestUser.isVerified || requestUser.role !== "Parent") {
+        throw new AppError(
+          "Forbidden",
+          "User does not have permission to update family payment schedule"
+        );
+      }
+
+      // 家族情報の取得
+      const family = await this.familyRepository.findById(familyId);
+      if (!family) {
+        throw new AppError("NotFound", "Family not found");
+      }
+
+      // 家族名の更新
+      family.payment_schedule = paymentSchedule;
+      const updatedFamily = await this.familyRepository.save(
+        family,
+        requestUser
+      );
+      return updatedFamily;
+    } catch (error) {
+      throw error;
+    }
+  };
 }

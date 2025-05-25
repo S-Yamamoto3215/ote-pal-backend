@@ -49,6 +49,8 @@ export const createMockFamilyUseCase = (): jest.Mocked<IFamilyUseCase> => {
     createFamily: jest.fn(),
     getFamilyById: jest.fn(),
     getFamilyDetailById: jest.fn(),
+    updateFamilyName: jest.fn(),
+    updateFamilyPaymentSchedule: jest.fn(),
   } as jest.Mocked<IFamilyUseCase>;
 };
 

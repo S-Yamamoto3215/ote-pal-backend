@@ -12,3 +12,11 @@ familyRouter.post("/new", (req, res, next) => {
 familyRouter.get("/:family_id", (req, res, next) => {
   familyController.getFamilyById(req, res, next);
 });
+
+familyRouter.put("/:family_id/name", (req, res, next) => {
+  familyController.updateFamilyName(req, res, next);
+});
+
+familyRouter.put("/:family_id/payment-schedule", (req, res, next) => {
+  familyController.updateFamilyPaymentSchedule(req, res, next);
+});
