@@ -22,6 +22,7 @@ export const createUserUseCaseMocks = (): UserUseCaseMocks => {
     save: jest.fn(),
     saveWithFamily: jest.fn(),
     updateVerificationStatus: jest.fn(),
+    findByFamilyId: jest.fn(),
   } as jest.Mocked<IUserRepository>;
 
   const emailVerificationTokenRepository = {

@@ -1,5 +1,5 @@
 import { Family } from "@/domain/entities/Family";
-import { CreateFamilyInput } from "@/types/FamilyTypes";
+import { CreateFamilyInput, FamilyDetailOutput, FamilyUser } from "@/types/FamilyTypes";
 
 import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
@@ -33,6 +33,44 @@ export class FamilyUseCase implements IFamilyUseCase {
       const savedFamily = await this.familyRepository.save(family, user);
 
       return savedFamily;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFamilyDetailById(familyId: number, requestUserId: number): Promise<FamilyDetailOutput> {
+    try {
+      // リクエストしているユーザーの確認
+      const requestUser = await this.userRepository.findById(requestUserId);
+      if (!requestUser) {
+        throw new AppError("NotFound", "User not found");
+      }
+
+      // ユーザーが指定された家族に属しているかチェック
+      if (requestUser.familyId !== familyId) {
+        throw new AppError("Forbidden", "User does not belong to this family");
+      }
+
+      // 家族情報の取得
+      const family = await this.familyRepository.findById(familyId);
+      if (!family) {
+        throw new AppError("NotFound", "Family not found");
+      }
+
+      // 家族に属するユーザーの取得
+      const users = await this.userRepository.findByFamilyId(familyId);
+
+      // レスポンス形式に整形
+      const familyUsers: FamilyUser[] = users.map(user => ({
+        userId: user.id!,
+        userName: user.name
+      }));
+
+      return {
+        name: family.name,
+        paymentSchedule: family.payment_schedule,
+        users: familyUsers
+      };
     } catch (error) {
       throw error;
     }

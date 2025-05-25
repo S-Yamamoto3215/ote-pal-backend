@@ -17,6 +17,7 @@ export const createMockUserRepository = (): jest.Mocked<IUserRepository> => {
     save: jest.fn(),
     saveWithFamily: jest.fn(),
     updateVerificationStatus: jest.fn(),
+    findByFamilyId: jest.fn(),
   } as jest.Mocked<IUserRepository>;
 };
 

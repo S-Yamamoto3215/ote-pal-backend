@@ -74,4 +74,13 @@ export class UserRepository implements IUserRepository {
       throw new AppError("DatabaseError", "Failed to update verification status");
     }
   }
+
+  async findByFamilyId(familyId: number): Promise<User[]> {
+    try {
+      const users = await this.userRepo.find({ where: { familyId } });
+      return users;
+    } catch (error) {
+      throw new AppError("DatabaseError", "Database error");
+    }
+  }
 }

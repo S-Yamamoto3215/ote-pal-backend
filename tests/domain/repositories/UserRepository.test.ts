@@ -8,6 +8,7 @@ import { Password } from "@/domain/valueObjects/Password";
 import { parentUser } from "@tests/resources/User/UserEntitys";
 import { userSeeds } from "@tests/resources/User/UserSeeds";
 import { testFamily1 } from "@tests/resources/Family/FamilyEntitys";
+import { familySeeds } from "@tests/resources/Family/FamilySeeds";
 
 import {
   createTestDatabase,
@@ -227,6 +228,69 @@ describe("UserRepository", () => {
 
       await expect(userRepository.updateVerificationStatus(1, true)).rejects.toThrow(AppError);
       await expect(userRepository.updateVerificationStatus(1, true)).rejects.toThrow("Failed to update verification status");
+
+      jest.restoreAllMocks();
+    });
+  });
+
+  describe("findByFamilyId", () => {
+    it("特定の家族IDに属するユーザー一覧を正しく取得できること", async () => {
+      // Arrange
+      const familyId = familySeeds[0].id!; // テストデータの最初の家族ID
+
+      // 特定の家族IDを持つユーザーを事前に追加
+      const user1 = new User(
+        "Test User 1",
+        "test1@example.com",
+        new Password("password123"),
+        "Parent",
+        true,
+        familyId
+      );
+
+      const user2 = new User(
+        "Test User 2",
+        "test2@example.com",
+        new Password("password123"),
+        "Child",
+        true,
+        familyId
+      );
+
+      await userRepository.save(user1);
+      await userRepository.save(user2);
+
+      // Act
+      const users = await userRepository.findByFamilyId(familyId);
+
+      // Assert
+      expect(users.length).toBeGreaterThanOrEqual(2); // 少なくとも2ユーザー以上存在する
+      expect(users.some(u => u.email === "test1@example.com")).toBeTruthy();
+      expect(users.some(u => u.email === "test2@example.com")).toBeTruthy();
+      // 全てのユーザーが指定の家族IDを持っていることを確認
+      expect(users.every(u => u.familyId === familyId)).toBeTruthy();
+    });
+
+    it("存在しない家族IDの場合、空の配列を返すこと", async () => {
+      // Arrange
+      const nonExistentFamilyId = 99999;
+
+      // Act
+      const users = await userRepository.findByFamilyId(nonExistentFamilyId);
+
+      // Assert
+      expect(users).toEqual([]);
+    });
+
+    it("データベースクエリが失敗した場合、'Database error'メッセージのAppErrorをスローすること", async () => {
+      // Arrange
+      jest
+        .spyOn(userRepository["userRepo"], "find")
+        .mockRejectedValue(new Error("Mock Database Error"));
+
+      // Act & Assert
+      await expect(userRepository.findByFamilyId(1)).rejects.toThrow(AppError);
+      await expect(userRepository.findByFamilyId(1)).rejects.toThrow("Database error");
 
       jest.restoreAllMocks();
     });

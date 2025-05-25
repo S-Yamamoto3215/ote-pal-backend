@@ -5,6 +5,7 @@ export interface IUserRepository {
   save(user: User): Promise<User>;
   findByEmail(email: string): Promise<User | null>;
   findById(id: number): Promise<User | null>;
+  findByFamilyId(familyId: number): Promise<User[]>;
   saveWithFamily(user: User, family: Family): Promise<User>;
   updateVerificationStatus(userId: number, isVerified: boolean): Promise<User>;
 }
