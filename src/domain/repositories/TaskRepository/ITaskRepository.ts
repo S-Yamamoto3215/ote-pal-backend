@@ -4,4 +4,5 @@ export interface ITaskRepository {
   save(task: Task): Promise<Task>;
   findById(id: number): Promise<Task | null>;
   delete(taskId: number): Promise<void>;
+  findByFamilyId(familyId: number): Promise<Task[]>;
 }

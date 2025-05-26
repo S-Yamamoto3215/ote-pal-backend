@@ -164,4 +164,77 @@ describe("TaskController", () => {
       expectErrorWithMessageToBeCalled(next, "Missing required fields: id");
     });
   });
+
+  describe("getTasks", () => {
+    const userId = 1;
+    const tasks = [
+      createMockTask({ id: 1, name: "掃除", familyId: 1 }),
+      createMockTask({ id: 2, name: "料理", familyId: 1 })
+    ];
+
+    beforeEach(() => {
+      req.user = { id: userId, email: "test@example.com", role: "Parent" };
+    });
+
+    it("認証済みユーザーがタスク一覧を取得できること", async () => {
+      // Arrange
+      taskUseCase.getTasksByUserId.mockResolvedValue(tasks);
+
+      // Act
+      await taskController.getTasks(req as Request, res as Response, next);
+
+      // Assert
+      expect(taskUseCase.getTasksByUserId).toHaveBeenCalledWith(userId);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(tasks);
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it("認証されていない場合はエラーを返すこと", async () => {
+      // Arrange
+      req.user = undefined; // 認証なし
+
+      // Act
+      await taskController.getTasks(req as Request, res as Response, next);
+
+      // Assert
+      expect(taskUseCase.getTasksByUserId).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          errorType: "Unauthorized",
+          message: "Authentication required"
+        })
+      );
+    });
+
+    it("ユーザーにIDがない場合はエラーを返すこと", async () => {
+      // Arrange
+      req.user = { email: "test@example.com", role: "Parent" } as any; // idなし
+
+      // Act
+      await taskController.getTasks(req as Request, res as Response, next);
+
+      // Assert
+      expect(taskUseCase.getTasksByUserId).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          errorType: "Unauthorized",
+          message: "Authentication required"
+        })
+      );
+    });
+
+    it("ユースケースでエラーが発生した場合は次のミドルウェアに渡すこと", async () => {
+      // Arrange
+      const error = new Error("テストエラー");
+      taskUseCase.getTasksByUserId.mockRejectedValue(error);
+
+      // Act
+      await taskController.getTasks(req as Request, res as Response, next);
+
+      // Assert
+      expect(taskUseCase.getTasksByUserId).toHaveBeenCalledWith(userId);
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
 });

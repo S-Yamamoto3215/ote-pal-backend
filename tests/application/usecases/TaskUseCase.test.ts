@@ -1,18 +1,22 @@
 import { TaskUseCase } from "@/application/usecases/TaskUseCase/TaskUseCase";
 import { ITaskRepository } from "@/domain/repositories/TaskRepository";
+import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { Task } from "@/domain/entities/Task";
+import { User } from "@/domain/entities/User";
 import { CreateTaskInput } from "@/types/TaskTypes";
 import { AppError } from "@/infrastructure/errors/AppError";
 import { createMockTask } from "@tests/helpers/factories";
-import { createMockTaskRepository } from "@tests/helpers/mocks";
+import { createMockTaskRepository, createMockUserRepository } from "@tests/helpers/mocks";
 
 describe("TaskUseCase", () => {
   let taskRepository: jest.Mocked<ITaskRepository>;
+  let userRepository: jest.Mocked<IUserRepository>;
   let taskUseCase: TaskUseCase;
 
   beforeEach(() => {
     taskRepository = createMockTaskRepository();
-    taskUseCase = new TaskUseCase(taskRepository);
+    userRepository = createMockUserRepository();
+    taskUseCase = new TaskUseCase(taskRepository, userRepository);
   });
 
   describe("getTaskById", () => {
@@ -189,6 +193,119 @@ describe("TaskUseCase", () => {
       // Act & Assert
       await expect(taskUseCase.deleteTask(1)).rejects.toThrow("Delete error");
       expect(taskRepository.delete).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe("getTasks", () => {
+    it("should return all tasks for a specific family", async () => {
+      // Arrange
+      const familyId = 1;
+      const mockTasks = [
+        createMockTask({ id: 1, name: "掃除", familyId }),
+        createMockTask({ id: 2, name: "料理", familyId })
+      ];
+      taskRepository.findByFamilyId.mockResolvedValue(mockTasks);
+
+      // Act
+      const result = await taskUseCase.getTasks(familyId);
+
+      // Assert
+      expect(taskRepository.findByFamilyId).toHaveBeenCalledWith(familyId);
+      expect(result).toEqual(mockTasks);
+    });
+
+    it("should return an empty array when no tasks exist for the family", async () => {
+      // Arrange
+      const familyId = 999;
+      taskRepository.findByFamilyId.mockResolvedValue([]);
+
+      // Act
+      const result = await taskUseCase.getTasks(familyId);
+
+      // Assert
+      expect(taskRepository.findByFamilyId).toHaveBeenCalledWith(familyId);
+      expect(result).toEqual([]);
+    });
+
+    it("should propagate errors when repository operation fails", async () => {
+      // Arrange
+      const error = new AppError("DatabaseError", "Failed to find tasks");
+      taskRepository.findByFamilyId.mockRejectedValue(error);
+
+      // Act & Assert
+      await expect(taskUseCase.getTasks(1)).rejects.toThrow(error);
+      expect(taskRepository.findByFamilyId).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe("getTasksByUserId", () => {
+    it("should return all tasks for a user's family", async () => {
+      // Arrange
+      const userId = 1;
+      const familyId = 1;
+
+      // ユーザー情報のモック
+      const mockUser = { id: userId, familyId, isVerified: true } as unknown as User;
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      // 家族のタスク一覧のモック
+      const mockTasks = [
+        createMockTask({ id: 1, name: "掃除", familyId }),
+        createMockTask({ id: 2, name: "料理", familyId })
+      ];
+      taskRepository.findByFamilyId.mockResolvedValue(mockTasks);
+
+      // Act
+      const result = await taskUseCase.getTasksByUserId(userId);
+
+      // Assert
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(taskRepository.findByFamilyId).toHaveBeenCalledWith(familyId);
+      expect(result).toEqual(mockTasks);
+    });
+
+    it("should throw NotFound error when user does not exist", async () => {
+      // Arrange
+      const userId = 999;
+      userRepository.findById.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(taskUseCase.getTasksByUserId(userId)).rejects.toThrow(
+        new AppError("NotFound", "User not found")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(taskRepository.findByFamilyId).not.toHaveBeenCalled();
+    });
+
+    it("should throw ValidationError when user does not belong to any family", async () => {
+      // Arrange
+      const userId = 1;
+      // familyIdがnullのユーザー
+      const mockUser = { id: userId, familyId: null, isVerified: true } as unknown as User;
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      // Act & Assert
+      await expect(taskUseCase.getTasksByUserId(userId)).rejects.toThrow(
+        new AppError("ValidationError", "User does not belong to any family")
+      );
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(taskRepository.findByFamilyId).not.toHaveBeenCalled();
+    });
+
+    it("should propagate errors when repository operation fails", async () => {
+      // Arrange
+      const userId = 1;
+      const familyId = 1;
+      const mockUser = { id: userId, familyId, isVerified: true } as unknown as User;
+      userRepository.findById.mockResolvedValue(mockUser);
+
+      const error = new AppError("DatabaseError", "Failed to find tasks");
+      taskRepository.findByFamilyId.mockRejectedValue(error);
+
+      // Act & Assert
+      await expect(taskUseCase.getTasksByUserId(userId)).rejects.toThrow(error);
+      expect(userRepository.findById).toHaveBeenCalledWith(userId);
+      expect(taskRepository.findByFamilyId).toHaveBeenCalledWith(familyId);
     });
   });
 });

@@ -29,6 +29,8 @@ export const createMockTaskUseCase = (): jest.Mocked<ITaskUseCase> => {
     createTask: jest.fn(),
     updateTask: jest.fn(),
     deleteTask: jest.fn(),
+    getTasks: jest.fn(),
+    getTasksByUserId: jest.fn(),
   } as jest.Mocked<ITaskUseCase>;
 };
 

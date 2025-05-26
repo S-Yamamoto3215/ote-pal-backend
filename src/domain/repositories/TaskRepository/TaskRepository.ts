@@ -36,4 +36,16 @@ export class TaskRepository implements ITaskRepository {
       throw new AppError("DatabaseError", "Failed to delete task");
     }
   }
+
+  async findByFamilyId(familyId: number): Promise<Task[]> {
+    try {
+      const tasks = await this.repo.find({
+        where: { familyId },
+        order: { id: "DESC" } // 新しいタスク順に並べる
+      });
+      return tasks;
+    } catch (error) {
+      throw new AppError("DatabaseError", "Failed to find tasks by family ID");
+    }
+  }
 }

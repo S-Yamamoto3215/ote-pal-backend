@@ -5,6 +5,11 @@ import { TaskControllerFactory } from "@/application/factories/Task/TaskControll
 export const taskRouter = Router();
 const taskController = TaskControllerFactory.create();
 
+// タスク一覧の取得（ログイン中のユーザーに紐づく家族のタスク）
+taskRouter.get("/", (req, res, next) => {
+  taskController.getTasks(req, res, next);
+});
+
 taskRouter.post("/new", (req, res, next) => {
   taskController.createTask(req, res, next);
 });

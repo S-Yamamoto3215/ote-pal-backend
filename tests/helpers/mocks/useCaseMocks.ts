@@ -30,6 +30,7 @@ export const createMockTaskRepository = (): jest.Mocked<ITaskRepository> => {
     save: jest.fn(),
     delete: jest.fn(),
     update: jest.fn(),
+    findByFamilyId: jest.fn(),
   } as jest.Mocked<ITaskRepository>;
 };
 

@@ -115,4 +115,54 @@ describe("TaskRepository", () => {
       jest.restoreAllMocks();
     });
   });
+
+  describe("findByFamilyId", () => {
+    it("should return all tasks for a specific family", async () => {
+      // Arrange
+      const familyId = 1;
+
+      // Act
+      const tasks = await taskRepository.findByFamilyId(familyId);
+
+      // Assert
+      expect(tasks).toHaveLength(3); // family_id=1のタスクは3つ
+      expect(tasks[0].familyId).toBe(familyId);
+      expect(tasks[1].familyId).toBe(familyId);
+      expect(tasks[2].familyId).toBe(familyId);
+      // IDの降順に並んでいることを確認（null/undefinedをチェック）
+      expect(tasks[0].id).toBeDefined();
+      expect(tasks[1].id).toBeDefined();
+      expect(tasks[2].id).toBeDefined();
+      expect(tasks[0].id!).toBeGreaterThan(tasks[1].id!);
+    });
+
+    it("should return an empty array when no tasks exist for that family", async () => {
+      // Arrange
+      const nonExistentFamilyId = 9999;
+
+      // Act
+      const tasks = await taskRepository.findByFamilyId(nonExistentFamilyId);
+
+      // Assert
+      expect(tasks).toHaveLength(0);
+    });
+
+    it("should throw an error when database operation fails", async () => {
+      // Arrange
+      const brokenDataSource = {
+        getRepository: jest.fn().mockImplementation(() => {
+          return {
+            find: jest.fn().mockRejectedValue(new Error("Database error"))
+          };
+        })
+      } as unknown as DataSource;
+
+      const brokenRepo = new TaskRepository(brokenDataSource);
+
+      // Act & Assert
+      await expect(brokenRepo.findByFamilyId(1)).rejects.toThrow(
+        new AppError("DatabaseError", "Failed to find tasks by family ID")
+      );
+    });
+  });
 });

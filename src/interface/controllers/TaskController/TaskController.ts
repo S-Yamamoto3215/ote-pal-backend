@@ -87,4 +87,24 @@ export class TaskController implements ITaskController {
       next(error);
     }
   }
+
+  async getTasks(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      // 認証されたユーザーの確認
+      if (!req.user || !req.user.id) {
+        return next(new AppError("Unauthorized", "Authentication required"));
+      }
+
+      // ユーザーIDを取得
+      const userId = req.user.id;
+
+      // ユーザーIDからタスクの一覧を取得
+      const tasks = await this.taskUseCase.getTasksByUserId(userId);
+
+      // 結果を返す
+      res.status(200).json(tasks);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
