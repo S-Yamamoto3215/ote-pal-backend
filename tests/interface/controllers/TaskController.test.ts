@@ -52,17 +52,6 @@ describe("TaskController", () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(mockTask);
     });
-
-    it("should call next with validation error when required fields are missing", async () => {
-      // Arrange
-      req.body = { name: "掃除" };
-
-      // Act
-      await taskController.createTask(req as Request, res as Response, next);
-
-      // Assert
-      expectMissingFieldsErrorToBeCalled(next, "name", "description", "reward", "familyId");
-    });
   });
 
   describe("getTaskById", () => {
@@ -127,15 +116,22 @@ describe("TaskController", () => {
       expect(res.json).toHaveBeenCalledWith(updatedTask);
     });
 
-    it("should call next with validation error when required fields are missing", async () => {
+    it("should call next with validation error when id parameter is missing", async () => {
       // Arrange
       req.params = {};
+      req.body = {
+        name: "更新タスク",
+        description: "更新説明",
+        reward: 500,
+        familyId: 1
+      };
 
       // Act
       await taskController.updateTaskById(req as Request, res as Response, next);
 
       // Assert
-      expectMissingFieldsErrorToBeCalled(next, "id", "name", "description", "reward", "familyId");
+      // idのバリデーションはコントローラーに残っているが、bodyのバリデーションはDTOに移行
+      expectErrorWithMessageToBeCalled(next, "Missing required fields: id");
     });
   });
 

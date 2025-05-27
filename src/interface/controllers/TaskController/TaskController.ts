@@ -8,18 +8,8 @@ export class TaskController implements ITaskController {
   constructor(private taskUseCase: ITaskUseCase) {}
 
   async createTask(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { name, description, reward, familyId } = req.body;
-
-    if (!name || !description || !reward || !familyId) {
-      return next(
-        new AppError(
-          "ValidationError",
-          "Missing required fields: name, description, reward, familyId",
-        ),
-      );
-    }
-
     try {
+      const { name, description, reward, familyId } = req.body;
       const task = await this.taskUseCase.createTask({name, description, reward, familyId})
       res.status(201).json(task);
     } catch (error) {
@@ -55,7 +45,7 @@ export class TaskController implements ITaskController {
       return next(
         new AppError(
           "ValidationError",
-          "Missing required fields: id, name, description, reward, familyId",
+          "Missing required fields: id",
         ),
       );
     }
