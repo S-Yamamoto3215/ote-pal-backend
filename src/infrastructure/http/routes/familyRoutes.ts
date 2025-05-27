@@ -2,9 +2,11 @@ import { Router } from "express";
 
 import { FamilyControllerFactory } from "@/application/factories/Family/FamilyControllerFactory";
 import { validationMiddleware } from "@/infrastructure/http/middlewares/validationMiddleware";
-import { CreateFamilyDTO } from "@/interface/dto/Family/CreateFamilyDTO";
-import { UpdateFamilyNameDTO } from "@/interface/dto/Family/UpdateFamilyNameDTO";
-import { UpdateFamilyPaymentScheduleDTO } from "@/interface/dto/Family/UpdateFamilyPaymentScheduleDTO";
+import {
+  CreateFamilyDTO,
+  UpdateFamilyNameDTO,
+  UpdateFamilyPaymentScheduleDTO,
+} from "@/interface/dto/Family";
 
 export const familyRouter = Router();
 const familyController = FamilyControllerFactory.create();
