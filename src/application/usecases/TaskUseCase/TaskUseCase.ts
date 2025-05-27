@@ -1,5 +1,5 @@
 import { Task } from "@/domain/entities/Task";
-import { CreateTaskInput } from "@/types/TaskTypes";
+import { CreateTaskInput } from "@/domain/types/TaskTypes";
 
 import { ITaskRepository } from "@/domain/repositories/TaskRepository";
 import { IUserRepository } from "@/domain/repositories/UserRepository";

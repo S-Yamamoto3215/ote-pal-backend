@@ -4,7 +4,7 @@ import {
   RegisterUserInput,
   InviteFamilyMemberInput,
   AcceptInvitationInput
-} from "@/types/UserTypes";
+} from "@/domain/types/UserTypes";
 
 export interface IUserUseCase {
   createUser(input: CreateUserInput): Promise<User>;

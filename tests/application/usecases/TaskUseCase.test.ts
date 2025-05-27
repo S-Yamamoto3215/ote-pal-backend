@@ -3,7 +3,7 @@ import { ITaskRepository } from "@/domain/repositories/TaskRepository";
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { Task } from "@/domain/entities/Task";
 import { User } from "@/domain/entities/User";
-import { CreateTaskInput } from "@/types/TaskTypes";
+import { CreateTaskInput } from "@/domain/types/TaskTypes";
 import { AppError } from "@/infrastructure/errors/AppError";
 import { createMockTask } from "@tests/helpers/factories";
 import { createMockTaskRepository, createMockUserRepository } from "@tests/helpers/mocks";

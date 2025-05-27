@@ -1,4 +1,4 @@
-import { CreateFamilyInput, FamilyDetailOutput } from "@/types/FamilyTypes";
+import { CreateFamilyInput, FamilyDetailOutput } from "@/domain/types/FamilyTypes";
 import { Family } from "@/domain/entities/Family";
 
 export interface IFamilyUseCase {

@@ -1,5 +1,5 @@
 import { Task } from "@/domain/entities/Task";
-import { CreateTaskInput } from "@/types/TaskTypes";
+import { CreateTaskInput } from "@/domain/types/TaskTypes";
 
 export interface ITaskUseCase {
   getTaskById(taskId: number): Promise<Task | null>;

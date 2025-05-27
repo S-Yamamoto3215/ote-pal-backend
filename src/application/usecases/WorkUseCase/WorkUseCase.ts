@@ -1,5 +1,5 @@
 import { Work } from "@/domain/entities/Work";
-import { CreateWorkInput } from "@/types/WorkTypes";
+import { CreateWorkInput } from "@/domain/types/WorkTypes";
 
 import { IWorkRepository } from "@/domain/repositories/WorkRepository";
 

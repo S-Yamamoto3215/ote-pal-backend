@@ -10,7 +10,7 @@ import {
   RegisterUserInput,
   InviteFamilyMemberInput,
   AcceptInvitationInput,
-} from "@/types/UserTypes";
+} from "@/domain/types/UserTypes";
 
 import { IUserRepository } from "@/domain/repositories/UserRepository";
 import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";

@@ -1,5 +1,9 @@
 import { Family } from "@/domain/entities/Family";
-import { CreateFamilyInput, FamilyDetailOutput, FamilyUser } from "@/types/FamilyTypes";
+import {
+  CreateFamilyInput,
+  FamilyDetailOutput,
+  FamilyUser,
+} from "@/domain/types/FamilyTypes";
 
 import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
 import { IUserRepository } from "@/domain/repositories/UserRepository";

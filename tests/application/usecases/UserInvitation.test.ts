@@ -6,7 +6,7 @@ import { IFamilyRepository } from "@/domain/repositories/FamilyRepository";
 import { IMailService } from "@/application/services/MailService";
 import { AppError } from "@/infrastructure/errors/AppError";
 import { User } from "@/domain/entities/User";
-import { InviteFamilyMemberInput } from "@/types/UserTypes";
+import { InviteFamilyMemberInput } from "@/domain/types/UserTypes";
 import { FamilyInvitationToken } from "@/domain/entities/FamilyInvitationToken";
 
 import { createMockUser, createMockFamily, createMockFamilyInvitationToken } from "@tests/helpers/factories";
