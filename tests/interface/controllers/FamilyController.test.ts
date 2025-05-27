@@ -57,18 +57,6 @@ describe("FamilyController", () => {
       expect(res.json).toHaveBeenCalledWith(mockFamily);
     });
 
-    it("should call next with validation error when required fields are missing", async () => {
-      // Arrange
-      req.body = { name: "山田家" };
-
-      // Act
-      await familyController.createFamily(req as Request, res as Response, next);
-
-      // Assert
-      expectMissingFieldsErrorToBeCalled(next, "name", "paymentSchedule", "userId");
-      expect(familyUseCase.createFamily).not.toHaveBeenCalled();
-    });
-
     it("should call next with use case error when family creation fails", async () => {
       // Arrange
       req.body = {
@@ -289,22 +277,6 @@ describe("FamilyController", () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it("nameがリクエストボディにない場合にValidationErrorを返すこと", async () => {
-      // Arrange
-      req.body = {}; // nameなし
-
-      // Act
-      await familyController.updateFamilyName(req as Request, res as Response, next);
-
-      // Assert
-      expectErrorToBeCalled(
-        next,
-        "ValidationError",
-        "Missing required fields: name"
-      );
-      expect(familyUseCase.updateFamilyName).not.toHaveBeenCalled();
-    });
-
     it("無効なfamily_idでValidationErrorを返すこと", async () => {
       // Arrange
       req.params = { family_id: "invalid" };
@@ -391,38 +363,6 @@ describe("FamilyController", () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(updatedFamily);
       expect(next).not.toHaveBeenCalled();
-    });
-
-    it("paymentScheduleがリクエストボディにない場合にValidationErrorを返すこと", async () => {
-      // Arrange
-      req.body = {}; // paymentScheduleなし
-
-      // Act
-      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
-
-      // Assert
-      expectErrorToBeCalled(
-        next,
-        "ValidationError",
-        "Missing required fields: paymentSchedule"
-      );
-      expect(familyUseCase.updateFamilyPaymentSchedule).not.toHaveBeenCalled();
-    });
-
-    it("paymentScheduleが範囲外の場合にValidationErrorを返すこと", async () => {
-      // Arrange - 範囲外の値をテスト
-      req.body = { paymentSchedule: 32 }; // 31日を超える
-
-      // Act
-      await familyController.updateFamilyPaymentSchedule(req as Request, res as Response, next);
-
-      // Assert
-      expectErrorToBeCalled(
-        next,
-        "ValidationError",
-        "Payment schedule must be between 1 and 31"
-      );
-      expect(familyUseCase.updateFamilyPaymentSchedule).not.toHaveBeenCalled();
     });
 
     it("無効なfamily_idでValidationErrorを返すこと", async () => {

@@ -12,18 +12,8 @@ export class FamilyController implements IFamilyController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const { name, paymentSchedule, userId } = req.body;
-
-    if (!name || !paymentSchedule || !userId) {
-      return next(
-        new AppError(
-          "ValidationError",
-          "Missing required fields: name, paymentSchedule, userId"
-        )
-      );
-    }
-
     try {
+      const { name, paymentSchedule, userId } = req.body;
       const family = await this.familyUseCase.createFamily({
         name,
         paymentSchedule,
@@ -76,12 +66,6 @@ export class FamilyController implements IFamilyController {
     try {
       const { name } = req.body;
 
-      if (!name) {
-        return next(
-          new AppError("ValidationError", "Missing required fields: name")
-        );
-      }
-
       // リクエストパラメータからfamily_idを取得
       const familyId = parseInt(req.params.family_id, 10);
 
@@ -117,19 +101,6 @@ export class FamilyController implements IFamilyController {
   ): Promise<void> {
     try {
       const { paymentSchedule } = req.body;
-
-      if (!paymentSchedule) {
-        return next(
-          new AppError("ValidationError", "Missing required fields: paymentSchedule")
-        );
-      }
-
-      // 支払日が1-31の範囲内か確認
-      if (paymentSchedule < 1 || paymentSchedule > 31) {
-        return next(
-          new AppError("ValidationError", "Payment schedule must be between 1 and 31")
-        );
-      }
 
       // リクエストパラメータからfamily_idを取得
       const familyId = parseInt(req.params.family_id, 10);
