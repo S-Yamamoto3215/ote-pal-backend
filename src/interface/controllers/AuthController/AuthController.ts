@@ -11,12 +11,6 @@ export class AuthController implements IAuthController {
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return next(
-        new AppError("ValidationError", "Email and password are required"),
-      );
-    }
-
     try {
       const token = await this.authUseCase.login(email, password);
       res.json({ token });

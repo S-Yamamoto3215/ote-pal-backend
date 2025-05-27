@@ -4,8 +4,7 @@ import { IAuthUseCase } from "@/application/usecases/AuthUseCase";
 import {
   createMockRequest,
   createMockResponse,
-  createMockNext,
-  expectErrorToBeCalled
+  createMockNext
 } from "@tests/helpers/controllers";
 import { createMockAuthUseCase } from "@tests/helpers/mocks";
 
@@ -55,16 +54,7 @@ describe("AuthController", () => {
       expect(next).toHaveBeenCalledWith(error);
     });
 
-    it("should call next with validation error when email or password is missing", async () => {
-      // Arrange
-      req.body = {};
-
-      // Act
-      await authController.login(req as Request, res as Response, next);
-
-      // Assert
-      expect(authUseCase.login).not.toHaveBeenCalled();
-      expectErrorToBeCalled(next, "ValidationError", "Email and password are required");
-    });
+    // バリデーションはミドルウェアに移行したため、このテストは不要
+    // コントローラーはバリデーション済みのデータを受け取る前提になる
   });
 });
