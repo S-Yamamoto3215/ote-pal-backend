@@ -1,10 +1,27 @@
+// ロールベース権限管理
 import { UserRole, RoleCheckResult, RoleCondition, CustomRoleCheckFn } from "./role/types";
 import { IRoleChecker } from "./role/IRoleChecker";
 import { RoleChecker } from "./role/RoleChecker";
 import { UserPermissionUtil } from "./UserPermissionUtil";
 
+// リソースベース権限管理
+import {
+  ResourceType,
+  OperationType,
+  ResourcePermissionResult,
+  ResourcePermissionContext,
+  ResourceOwnershipContext,
+  CustomPermissionCheckFn,
+  PermissionPolicy
+} from "./resource/types";
+import { IResourcePermissionChecker } from "./resource/IResourcePermissionChecker";
+import { ResourcePermissionChecker } from "./resource/ResourcePermissionChecker";
+import { ResourcePermissionMatrix } from "./resource/ResourcePermissionMatrix";
+import { ResourcePermissionUtil } from "./resource/ResourcePermissionUtil";
+
 // シングルトンインスタンスを作成
 const roleChecker: IRoleChecker = new RoleChecker();
+const resourcePermissionChecker: IResourcePermissionChecker = new ResourcePermissionChecker();
 
 // 便利なヘルパー関数をエクスポート
 
@@ -52,7 +69,22 @@ export const hasAnyRole = (role: UserRole, expectedRoles: UserRole[]): RoleCheck
 export const createRoleCondition = RoleChecker.createRoleCondition;
 export const createCustomCondition = RoleChecker.createCustomCondition;
 
-// 型とクラスのエクスポート
+// リソース権限チェック関連のヘルパー関数
+export const canAccessResource = ResourcePermissionUtil.canAccess;
+export const requirePermission = ResourcePermissionUtil.requirePermission;
+export const requireResourceOwnership = ResourcePermissionUtil.requireResourceOwnership;
+export const registerResourceRepository = ResourcePermissionUtil.registerRepository;
+
+// 型とクラスのエクスポート（ロールベース）
 export { UserRole, RoleCheckResult, RoleCondition, CustomRoleCheckFn };
 export { IRoleChecker, RoleChecker };
 export { UserPermissionUtil };
+
+// 型とクラスのエクスポート（リソースベース）
+export {
+  ResourceType, OperationType, ResourcePermissionResult,
+  ResourcePermissionContext, ResourceOwnershipContext,
+  CustomPermissionCheckFn, PermissionPolicy
+};
+export { IResourcePermissionChecker, ResourcePermissionChecker };
+export { ResourcePermissionMatrix, ResourcePermissionUtil };

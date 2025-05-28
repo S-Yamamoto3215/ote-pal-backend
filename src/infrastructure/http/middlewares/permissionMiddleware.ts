@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "@/infrastructure/errors/AppError";
+import { ResourcePermissionUtil } from "@/domain/permissions/resource/ResourcePermissionUtil";
+import { ResourceType, OperationType } from "@/domain/permissions/resource/types";
 
 export const checkResourcePermission = (resourceType: string, action: string) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -9,43 +11,14 @@ export const checkResourcePermission = (resourceType: string, action: string) =>
       }
 
       const userRole = req.user.role as "Parent" | "Child";
-      let hasPermission = false;
+      const userId = req.user.id;
 
-      switch (resourceType) {
-        case 'family':
-          hasPermission = userRole === 'Parent';
-          break;
-        case 'task':
-          if (action === 'create' || action === 'update' || action === 'delete') {
-            hasPermission = userRole === 'Parent';
-          } else if (action === 'read') {
-            hasPermission = true;
-          }
-          break;
-        case 'taskDetail':
-          if (action === 'create' || action === 'update' || action === 'delete') {
-            hasPermission = userRole === 'Parent';
-          } else if (action === 'read') {
-            hasPermission = true;
-          }
-          break;
-        case 'work':
-          if (action === 'create' || action === 'update') {
-            hasPermission = userRole === 'Child';
-          } else if (action === 'read') {
-            hasPermission = true;
-          } else if (action === 'delete') {
-            hasPermission = userRole === 'Child';
-          } else if (action === 'approve') {
-            hasPermission = userRole === 'Parent';
-          }
-          break;
-        case 'payment':
-          hasPermission = userRole === 'Parent';
-          break;
-        default:
-          hasPermission = false;
-      }
+      // 新しい権限マトリックスを使用して権限チェック
+      const hasPermission = ResourcePermissionUtil.canAccess(
+        resourceType as ResourceType,
+        action as OperationType,
+        userRole
+      );
 
       if (!hasPermission) {
         throw new AppError(
