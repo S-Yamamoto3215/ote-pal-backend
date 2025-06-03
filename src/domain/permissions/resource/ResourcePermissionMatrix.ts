@@ -1,8 +1,11 @@
 import { OperationType, PermissionPolicy, ResourceType } from "./types";
 
 /**
- * リソース権限マトリックスクラス
- * リソースタイプと操作タイプに基づいた権限マッピングを定義
+ * リソース権限ポリシークラス
+ * リソースタイプと操作タイプに基づいた権限ポリシーを定義・管理する
+ *
+ * このクラスは権限ポリシーの設定と管理のみを担当し、実際の権限チェックロジックは
+ * ResourcePermissionCheckerクラスが担当する
  */
 export class ResourcePermissionMatrix {
   private static policies: PermissionPolicy[] = [
@@ -93,45 +96,46 @@ export class ResourcePermissionMatrix {
   }
 
   /**
-   * 指定されたリソースに対する操作が特定のロールに許可されているかチェック
-   * @param resourceType リソースタイプ
-   * @param operation 操作タイプ
-   * @param role ユーザーロール
-   * @returns 許可されていればtrue、そうでなければfalse
+   * 指定されたリソースタイプに対して定義されている全ポリシーを取得
+   * @returns 全ポリシーの配列
    */
-  static isOperationAllowedForRole(resourceType: ResourceType, operation: OperationType, role: string): boolean {
-    const policy = this.getPolicy(resourceType);
-    if (!policy || !policy.allowedRoles) {
-      return false;
-    }
-
-    // 型安全なアクセスのため、キーの存在を確認
-    if (!policy.allowedRoles.hasOwnProperty(operation)) {
-      return false;
-    }
-
-    const allowedRoles = policy.allowedRoles[operation as keyof typeof policy.allowedRoles];
-    return allowedRoles?.includes(role) || false;
+  static getAllPolicies(): PermissionPolicy[] {
+    return [...this.policies];
   }
 
   /**
-   * 特定のリソースタイプと操作に対して所有者チェックが必要かどうか
+   * 指定されたリソースタイプと操作に対する許可ロールを取得
+   * @param resourceType リソースタイプ
+   * @param operation 操作タイプ
+   * @returns 許可されたロールの配列、存在しない場合は空配列
+   */
+  static getAllowedRoles(resourceType: ResourceType, operation: OperationType): string[] {
+    const policy = this.getPolicy(resourceType);
+    if (!policy || !policy.allowedRoles || !policy.allowedRoles[operation as keyof typeof policy.allowedRoles]) {
+      return [];
+    }
+    return policy.allowedRoles[operation as keyof typeof policy.allowedRoles] || [];
+  }
+
+  /**
+   * 指定されたリソースタイプと操作に対して所有権チェック設定を取得
    * @param resourceType リソースタイプ
    * @param operation 操作タイプ
    * @returns 所有者チェックが必要であればtrue、そうでなければfalse
    */
-  static requiresOwnershipCheck(resourceType: ResourceType, operation: OperationType): boolean {
+  static getOwnershipRequirement(resourceType: ResourceType, operation: OperationType): boolean {
     const policy = this.getPolicy(resourceType);
     if (!policy || !policy.requiresOwnership) {
       return false;
     }
 
     // 型安全なアクセスのため、キーの存在を確認
-    return policy.requiresOwnership.hasOwnProperty(operation) ? !!policy.requiresOwnership[operation as keyof typeof policy.requiresOwnership] : false;
+    return policy.requiresOwnership.hasOwnProperty(operation) ?
+      !!policy.requiresOwnership[operation as keyof typeof policy.requiresOwnership] : false;
   }
 
   /**
-   * 特定のリソースタイプと操作に対するカスタムチェック関数を取得
+   * 指定されたリソースタイプと操作に対するカスタムチェック関数を取得
    * @param resourceType リソースタイプ
    * @param operation 操作タイプ
    * @returns カスタムチェック関数の配列、存在しない場合は空配列
@@ -148,6 +152,24 @@ export class ResourcePermissionMatrix {
     }
 
     return policy.customChecks[operation as keyof typeof policy.customChecks] || [];
+  }
+
+  // 互換性維持のためのメソッド
+  /**
+   * @deprecated isOperationAllowedForRoleメソッドはResourcePermissionCheckerに移行されました。
+   * 代わりにResourcePermissionChecker.isOperationAllowedForRoleを使用してください。
+   */
+  static isOperationAllowedForRole(resourceType: ResourceType, operation: OperationType, role: string): boolean {
+    const allowedRoles = this.getAllowedRoles(resourceType, operation);
+    return allowedRoles.includes(role);
+  }
+
+  /**
+   * @deprecated requiresOwnershipCheckメソッドはResourcePermissionCheckerに移行されました。
+   * 代わりにResourcePermissionChecker.requiresOwnershipCheckを使用してください。
+   */
+  static requiresOwnershipCheck(resourceType: ResourceType, operation: OperationType): boolean {
+    return this.getOwnershipRequirement(resourceType, operation);
   }
 
   /**

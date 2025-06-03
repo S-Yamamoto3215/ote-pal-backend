@@ -60,7 +60,7 @@ export class ResourcePermissionChecker implements IResourcePermissionChecker {
       }
 
       // 2. カスタムチェックの実行（順序を変更：カスタムチェックを先に実行）
-      const customChecks = ResourcePermissionMatrix.getCustomChecks(
+      const customChecks = this.getCustomChecks(
         context.resourceType,
         context.operation
       );
@@ -164,7 +164,7 @@ export class ResourcePermissionChecker implements IResourcePermissionChecker {
   }
 
   /**
-   * 指定されたリソースに対する操作が特定のロールに許可されているかチェ���ク
+   * 指定されたリソースに対する操作が特定のロールに許可されているかチェック
    * @param resourceType リソースタイプ
    * @param operation 操作タイプ
    * @param role ユーザーロール
@@ -175,7 +175,8 @@ export class ResourcePermissionChecker implements IResourcePermissionChecker {
     operation: OperationType,
     role: string
   ): boolean {
-    return ResourcePermissionMatrix.isOperationAllowedForRole(resourceType, operation, role);
+    const allowedRoles = ResourcePermissionMatrix.getAllowedRoles(resourceType, operation);
+    return allowedRoles.includes(role);
   }
 
   /**
@@ -198,6 +199,16 @@ export class ResourcePermissionChecker implements IResourcePermissionChecker {
    * @returns 所有者チェックが必要であればtrue、そうでなければfalse
    */
   requiresOwnershipCheck(resourceType: ResourceType, operation: OperationType): boolean {
-    return ResourcePermissionMatrix.requiresOwnershipCheck(resourceType, operation);
+    return ResourcePermissionMatrix.getOwnershipRequirement(resourceType, operation);
+  }
+
+  /**
+   * 特定のリソースタイプと操作に対するカスタムチェック関数の配列を取得
+   * @param resourceType リソースタイプ
+   * @param operation 操作タイプ
+   * @returns カスタムチェック関数の配列
+   */
+  getCustomChecks(resourceType: ResourceType, operation: OperationType): CustomPermissionCheckFn[] {
+    return ResourcePermissionMatrix.getCustomChecks(resourceType, operation);
   }
 }
